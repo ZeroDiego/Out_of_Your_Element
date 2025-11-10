@@ -17,13 +17,15 @@ class OUT_OF_YOUR_ELEMENT_API ADiegoPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	ADiegoPlayerController();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* DiegoMappingContext;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MovementVerticalAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MovementHorizontalAction;
 
 protected:
@@ -32,10 +34,6 @@ protected:
 	void MovementVertical(const FInputActionValue& Value);
 	
 	void MovementHorizontal(const FInputActionValue& Value);
-
-	void RotatePlayerTowardsJoystick(const FInputActionValue& Value) const;
-	
-	void RotatePlayerTowardsMouse() const;
 
 	virtual void SetupInputComponent() override;
 	
