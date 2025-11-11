@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ElementAbilitySystemComponent.h"
 #include "InputAction.h"
 #include "InputMappingContext.h"
 #include "GameFramework/PlayerController.h"
@@ -23,7 +22,7 @@ public:
 
 	// Input Mapping Context
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputMappingContext* DiegoMappingContext;
+	UInputMappingContext* ElementMappingContext;
 
 	// Input Action Movement Vertical
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
@@ -32,26 +31,12 @@ public:
 	// Input Action Movement Horizontal
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MovementHorizontalAction;
-
-	// Input Action Movement Horizontal
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* BaseAttackAction;
-
-	// Ability System Component
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "C++")
-	UElementAbilitySystemComponent* DiegoAbilitySystemComponent;
-
-	// Abilities array
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
-	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 	void ApplyMovement();
-
-	void BaseAttack(const FInputActionValue& Value);
 
 	void MovementVertical(const FInputActionValue& Value);
 	
@@ -63,6 +48,5 @@ protected:
 
 private:
 	FVector2D InputVector = FVector2D::ZeroVector;
-
-	bool bShouldRotateTowardsMouse = true;
+	
 };

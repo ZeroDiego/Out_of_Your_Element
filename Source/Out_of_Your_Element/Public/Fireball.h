@@ -18,4 +18,7 @@ class OUT_OF_YOUR_ELEMENT_API UFireball : public UGameplayAbility
 public:
 	//Override ActiveAbility
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialInstance* FireballMaterial;
 };

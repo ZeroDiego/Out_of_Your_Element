@@ -4,34 +4,18 @@
 #include "ElementPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Fireball.h"
 #include "GameFramework/Character.h"
 
 AElementPlayerController::AElementPlayerController()
 {
-	if (UInputMappingContext* InputMappingContext = Cast<UInputMappingContext>(StaticLoadObject(UInputMappingContext::StaticClass(), nullptr, TEXT("/Game/Characters/IMC_DiegoCharacter"))))
-	{
-		DiegoMappingContext = InputMappingContext;
-	}
-	if (UInputAction* VerticalInputAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Characters/IA_MovementVertical"))))
-	{
-		MovementVerticalAction = VerticalInputAction;
-	}
+	UInputMappingContext* InputMappingContext = Cast<UInputMappingContext>(StaticLoadObject(UInputMappingContext::StaticClass(), nullptr, TEXT("/Game/Characters/IMC_ElementCharacter")));
+	ElementMappingContext = InputMappingContext;
+	
+	UInputAction* VerticalInputAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Characters/IA_MovementVertical")));
+	MovementVerticalAction = VerticalInputAction;
 	
 	UInputAction* HorizontalInputAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Characters/IA_MovementHorizontal")));
 	MovementHorizontalAction = HorizontalInputAction;
-		
-	if (UInputAction* BaseAttackInputAction = Cast<UInputAction>(StaticLoadObject(UInputAction::StaticClass(), nullptr, TEXT("/Game/Characters/IA_BaseAttack"))))
-	{
-		BaseAttackAction = BaseAttackInputAction;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Error: BaseInputAction null"));
-	}
-
-	// Creates an ability system component in BP_DiegoCharacter
-	DiegoAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("DiegoAbilitySystemComponent"));
 
 	// Show mouse cursor during gameplay
 	SetShowMouseCursor(true);
@@ -50,7 +34,7 @@ void AElementPlayerController::SetupInputComponent()
 	// Add Input Mapping Context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		Subsystem->AddMappingContext(DiegoMappingContext, 0);
+		Subsystem->AddMappingContext(ElementMappingContext, 0);
 	}
 
 	// Set up action bindings
@@ -59,9 +43,6 @@ void AElementPlayerController::SetupInputComponent()
 		// Setup Movement
 		EnhancedInputComponent->BindAction(MovementHorizontalAction, ETriggerEvent::Triggered, this, &AElementPlayerController::MovementHorizontal);
 		EnhancedInputComponent->BindAction(MovementVerticalAction, ETriggerEvent::Triggered, this, &AElementPlayerController::MovementVertical);
-
-		// Setup Fireball
-		EnhancedInputComponent->BindAction(BaseAttackAction, ETriggerEvent::Triggered, this, &AElementPlayerController::BaseAttack);
 	}
 	else
 	{
@@ -83,33 +64,9 @@ void AElementPlayerController::MovementVertical(const FInputActionValue& Value)
 	ApplyMovement();
 }
 
-// Base Attack
-void AElementPlayerController::BaseAttack(const FInputActionValue& Value)
-{
-	if (DiegoAbilitySystemComponent)
-	{
-		
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("AbilitySystemComponent not found!!!"));
-	}
-}
-
 void AElementPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (DiegoAbilitySystemComponent)
-	{
-		for (TSubclassOf<UGameplayAbility>& Ability : DefaultAbilities)
-		{
-			if (Ability)
-			{
-				DiegoAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
-			}
-		}
-	}
 }
 
 // Apply both X and Y values to and place the vector to player character

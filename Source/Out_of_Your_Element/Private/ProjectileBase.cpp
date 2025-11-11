@@ -19,6 +19,8 @@ AProjectileBase::AProjectileBase()
 	}
 
 	Projectile->SetRelativeScale3D(ProjectileScale);
+	Projectile->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
+	Projectile->SetCollisionObjectType(ECC_GameTraceChannel1);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
@@ -30,7 +32,8 @@ AProjectileBase::AProjectileBase()
 void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	SetLifeSpan(LifeTime);
 }
 
 // Called every frame

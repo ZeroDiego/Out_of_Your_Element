@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ElementAbilitySystemComponent.h"
 #include "FiringOffset.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
@@ -32,7 +33,15 @@ public:
 	
 	// Firing offset
 	UPROPERTY(EditAnywhere, Category = "C++")
-	FVector FiringOffset = FVector(0.0f, 0.0f, 0.0f);
+	FVector FiringOffset = FVector(100.0f, 0.0f, 0.0f);
+	
+	// Ability System Component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "C++")
+	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
+
+	// Abilities array
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
+	TArray<TSubclassOf<UGameplayAbility>> UsableAbilities;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -41,6 +50,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
 	// Cube mesh ref

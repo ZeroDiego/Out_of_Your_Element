@@ -10,7 +10,7 @@ AElementCharacter::AElementCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Creates a visible cube component in BP_DiegoCharacter
+	// Creates a visible cube component in BP_ElementCharacter
 	CubeRef = CreateDefaultSubobject<UStaticMeshComponent>(FName("Cube"));
 
 	// Attempt to find a mesh for the cube component based on the file path
@@ -23,10 +23,10 @@ AElementCharacter::AElementCharacter()
     	CubeRef->SetupAttachment(RootComponent);
 	}
 
-	// Creates a camera component in BP_DiegoCharacter
+	// Creates a camera component in BP_ElementCharacter
 	CameraRef = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
 	
-	// Creates a spring arm component in BP_DiegoCharacter
+	// Creates a spring arm component in BP_ElementCharacter
 	CameraBoomRef = CreateDefaultSubobject<USpringArmComponent>(FName("SpringArm"));
 
 	// Attach the spring arm component to the root component
@@ -44,13 +44,28 @@ AElementCharacter::AElementCharacter()
 
 	// Creates a custom scene component called firing offset used for projectile spawn location
 	FiringOffsetRef = CreateDefaultSubobject<UFiringOffset>(TEXT("FiringOffset"));
+	FiringOffsetRef->SetupAttachment(RootComponent);
+	FiringOffsetRef->SetRelativeLocation(FiringOffset);
+
+	// Creates an ability system component in BP_ElementCharacter
+	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
 }
 
 // Called when the game starts or when spawned
 void AElementCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (ElementAbilitySystemComponent)
+	{
+		for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
+		{
+			if (Ability)
+			{
+				ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
+			}
+		}
+	}
 }
 
 // Called every frame
@@ -58,4 +73,9 @@ void AElementCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
