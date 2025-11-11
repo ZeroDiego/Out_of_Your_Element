@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "DiegoGameModeBase.generated.h"
+#include "ElementGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API ADiegoGameModeBase : public AGameModeBase
+class OUT_OF_YOUR_ELEMENT_API AElementGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	ADiegoGameModeBase();
+	AElementGameMode();
 	
 private:
 	virtual void BeginPlay() override;

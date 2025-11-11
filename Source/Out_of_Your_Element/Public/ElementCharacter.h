@@ -3,26 +3,36 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FiringOffset.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "DiegoCharacter.generated.h"
+#include "ElementCharacter.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API ADiegoCharacter : public ACharacter
+class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ADiegoCharacter();
-	
+	AElementCharacter();
+
+	// A float that determines how far away the camera will be from the player
 	UPROPERTY(EditAnywhere, Category = "C++")
 	float TargetArmLength = 500.0f;
+
+	// Offset from the initial TargetArmLength
 	UPROPERTY(EditAnywhere, Category = "C++")
 	FVector SocketOffset = FVector(0.0f, 0.0f, 500.0f);
+	
+	// Rotation of the camera
 	UPROPERTY(EditAnywhere, Category = "C++")
 	FRotator CameraRotation = FRotator(-45.0f, 0.0f, 0.0f);
+	
+	// Firing offset
+	UPROPERTY(EditAnywhere, Category = "C++")
+	FVector FiringOffset = FVector(0.0f, 0.0f, 0.0f);
 	
 protected:
 	// Called when the game starts or when spawned
@@ -33,12 +43,19 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+	// Cube mesh ref
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* Cube;
+	UStaticMeshComponent* CubeRef;
 	
+	// Camera component ref
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* Camera;
-	
+	UCameraComponent* CameraRef;
+
+	// Spring arm component ref
 	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* CameraBoom;
+	USpringArmComponent* CameraBoomRef;
+
+	// Firing offset ref
+	UPROPERTY(VisibleAnywhere)
+	UFiringOffset* FiringOffsetRef;
 };
