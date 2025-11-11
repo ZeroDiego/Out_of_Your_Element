@@ -9,14 +9,17 @@
 
 void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	//Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	if (const ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()))
+	if (AActor* Actor = GetAvatarActorFromActorInfo())
 	{
-		const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()->GetComponentLocation();
-		const FRotator SpawnProjectileRotation = Character->GetActorRotation();
-		const FActorSpawnParameters ActorSpawnParams;
-		GetWorld()->SpawnActor<AProjectileBase>(SpawnProjectileLocation, SpawnProjectileRotation, ActorSpawnParams);
+		if (const ACharacter* Character = Cast<ACharacter>(Actor))
+		{
+			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()->GetComponentLocation();
+			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
+			const FActorSpawnParameters ActorSpawnParams;
+			const AProjectileBase* Fireball = GetWorld()->SpawnActor<AProjectileBase>(SpawnProjectileLocation, SpawnProjectileRotation, ActorSpawnParams);
+			Fireball->Projectile->IgnoreActorWhenMoving(Actor, true);
+			Fireball->Projectile->SetMaterial(0, FireballMaterial);
+		}
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

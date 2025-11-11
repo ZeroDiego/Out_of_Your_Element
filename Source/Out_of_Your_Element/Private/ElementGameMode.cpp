@@ -7,13 +7,10 @@
 
 AElementGameMode::AElementGameMode()
 {
-	DefaultPawnClass = AElementCharacter::StaticClass();
-	PlayerControllerClass = AElementPlayerController::StaticClass();
+
 }
 
 void AElementGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UE_LOG(LogTemp, Warning, TEXT("ADiegoGameMode::BeginPlay"));
 }

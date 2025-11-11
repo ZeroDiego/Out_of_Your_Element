@@ -16,7 +16,7 @@ class OUT_OF_YOUR_ELEMENT_API AElementGameMode : public AGameModeBase
 
 public:
 	AElementGameMode();
-	
+
 private:
 	virtual void BeginPlay() override;
 };

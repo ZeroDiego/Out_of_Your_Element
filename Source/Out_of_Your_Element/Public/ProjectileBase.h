@@ -31,6 +31,9 @@ public:
 	// Projectile gravity scale
 	UPROPERTY(EditAnywhere)
 	float GravityScale = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	float LifeTime = 3.0f;
 	
 protected:
 	// Called when the game starts or when spawned
