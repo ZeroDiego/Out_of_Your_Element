@@ -3,29 +3,32 @@
 
 #include "ElementCharacter.h"
 #include "ElementAbilitySystemComponent.h"
+#include "HealthAttributeSet.h"
+#include "GameFramework/PlayerState.h"
 
 // Sets default values
 AElementCharacter::AElementCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Creates a visible cube component in BP_ElementCharacter
 	CubeRef = CreateDefaultSubobject<UStaticMeshComponent>(FName("Cube"));
 
 	// Attempt to find a mesh for the cube component based on the file path
-    if (UStaticMesh* CubeMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("/Engine/BasicShapes/Cube"))))
+	if (UStaticMesh* CubeMesh = Cast<UStaticMesh>(
+		StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("/Engine/BasicShapes/Cube"))))
 	{
-    	// If it succeeds, set the found mesh on the cube component
+		// If it succeeds, set the found mesh on the cube component
 		CubeRef->SetStaticMesh(CubeMesh);
-    	
-    	// Attach the cube component to the root component
-    	CubeRef->SetupAttachment(RootComponent);
+
+		// Attach the cube component to the root component
+		CubeRef->SetupAttachment(RootComponent);
 	}
 
 	// Creates a camera component in BP_ElementCharacter
 	CameraRef = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
-	
+
 	// Creates a spring arm component in BP_ElementCharacter
 	CameraBoomRef = CreateDefaultSubobject<USpringArmComponent>(FName("SpringArm"));
 
@@ -49,6 +52,7 @@ AElementCharacter::AElementCharacter()
 
 	// Creates an ability system component in BP_ElementCharacter
 	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
+	HealthAttributeSet = CreateDefaultSubobject<UHealthAttributeSet>(TEXT("Health Attribute Set"));
 }
 
 // Called when the game starts or when spawned
@@ -58,6 +62,22 @@ void AElementCharacter::BeginPlay()
 
 	if (ElementAbilitySystemComponent)
 	{
+		if (const APlayerState* CurrentPlayerState = GetPlayerState())
+		{
+			if (APlayerController* PlayerController = CurrentPlayerState->GetPlayerController())
+			{
+				ElementAbilitySystemComponent->InitAbilityActorInfo(PlayerController, this);
+			}
+			else
+			{
+				ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
+			}
+		}
+		else
+		{
+			ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
+		}
+
 		for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 		{
 			if (Ability)
@@ -72,10 +92,14 @@ void AElementCharacter::BeginPlay()
 void AElementCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+UAbilitySystemComponent* AElementCharacter::GetAbilitySystemComponent() const
+{
+	return ElementAbilitySystemComponent;
 }

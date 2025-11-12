@@ -8,10 +8,11 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "AbilitySystemInterface.h"
 #include "ElementCharacter.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public ACharacter
+class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -26,15 +27,15 @@ public:
 	// Offset from the initial TargetArmLength
 	UPROPERTY(EditAnywhere, Category = "C++")
 	FVector SocketOffset = FVector(0.0f, 0.0f, 500.0f);
-	
+
 	// Rotation of the camera
 	UPROPERTY(EditAnywhere, Category = "C++")
 	FRotator CameraRotation = FRotator(-45.0f, 0.0f, 0.0f);
-	
+
 	// Firing offset
 	UPROPERTY(EditAnywhere, Category = "C++")
 	FVector FiringOffset = FVector(100.0f, 0.0f, 0.0f);
-	
+
 	// Ability System Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "C++")
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
@@ -42,23 +43,28 @@ public:
 	// Abilities array
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
 	TArray<TSubclassOf<UGameplayAbility>> UsableAbilities;
+
+	UPROPERTY()
+	TObjectPtr<class UHealthAttributeSet> HealthAttributeSet;
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-public:	
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 private:
 	// Cube mesh ref
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* CubeRef;
-	
+
 	// Camera component ref
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraRef;
