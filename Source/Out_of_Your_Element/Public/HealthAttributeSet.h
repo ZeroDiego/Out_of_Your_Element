@@ -18,8 +18,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayAttributeData MaxHealth;
 	
+	UPROPERTY(VisibleAnywhere)
+	FGameplayAttributeData Damage;
+	
 	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Damage);
 	
 	ATTRIBUTE_EVENT(Health);
 	ATTRIBUTE_EVENT(MaxHealth);
@@ -27,4 +31,6 @@ public:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 };
