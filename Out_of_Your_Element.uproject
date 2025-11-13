@@ -10,7 +10,7 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"AIModule"
+				"GameplayAbilities"
 			]
 		}
 	],
@@ -24,6 +24,10 @@
 		},
 		{
 			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "BlueprintFileUtils",
 			"Enabled": true
 		}
 	]
