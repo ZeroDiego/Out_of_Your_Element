@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "ProjectileBase.generated.h"
@@ -34,7 +35,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float LifeTime = 3.0f;
-	
+
+	UPROPERTY(EditAnywhere)
+	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,4 +54,5 @@ public:
 	// Projectile movement component ref
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
+	
 };

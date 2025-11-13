@@ -21,4 +21,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance* FireballMaterial;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> FireballGameplayEffect;
 };

@@ -44,13 +44,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
 	TArray<TSubclassOf<UGameplayAbility>> UsableAbilities;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
+	TSubclassOf<UGameplayEffect> FireballEffect;
+	
 	UPROPERTY()
 	TObjectPtr<class UHealthAttributeSet> HealthAttributeSet;
 	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -60,11 +63,9 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UFUNCTION()
+	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
 private:
-	// Cube mesh ref
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* CubeRef;
-
 	// Camera component ref
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraRef;

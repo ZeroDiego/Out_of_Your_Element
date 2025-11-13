@@ -1,4 +1,5 @@
 ﻿#include "HealthAttributeSet.h"
+#include "GameplayEffectExtension.h"
 
 UHealthAttributeSet::UHealthAttributeSet()
 {
@@ -32,4 +33,22 @@ void UHealthAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribut
 	CHECK_AND_NOTIFY_UPDATE(Health, MaxHealth);
 
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+}
+
+void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+	
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		const float DamageValue = GetDamage();
+		const float OldHealthValue = GetHealth();
+		const float MaxHealthValue = GetMaxHealth();
+		const float NewHealthValue = FMath::Clamp(OldHealthValue - DamageValue, 0.0f, MaxHealthValue);
+	 
+		if (OldHealthValue != NewHealthValue)
+			SetHealth(NewHealthValue);
+	 
+		SetDamage(0.0f);
+	}
 }
