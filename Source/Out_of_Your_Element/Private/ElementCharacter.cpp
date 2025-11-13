@@ -96,10 +96,13 @@ UAbilitySystemComponent* AElementCharacter::GetAbilitySystemComponent() const
 void AElementCharacter::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	UE_LOG(LogTemp, Log, TEXT("AElementCharacter::OnActorOverlap"));
-	
-	if (const AProjectileBase* ProjectileBase = Cast<AProjectileBase>(OtherActor))
+
+	if (OverlappedActor && OtherActor)
 	{
-		ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
-		OtherActor->Destroy();
+		if (const AProjectileBase* ProjectileBase = Cast<AProjectileBase>(OtherActor))
+		{
+			ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
+			OtherActor->Destroy();
+		}
 	}
 }
