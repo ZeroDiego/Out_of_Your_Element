@@ -60,13 +60,12 @@ protected:
 	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIDeathEvent, AAI_Main*, DeadEnemy);
 	//UPROPERTY(BlueprintAssignable, Category = "Events")
 	//FAIDeathEvent OnEnemyDied;
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
 	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
-	
+
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bIsDead = false;
-	
 };

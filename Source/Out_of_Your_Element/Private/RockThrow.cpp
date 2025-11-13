@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Fireball.h"
+#include "RockThrow.h"
 #include "GameFramework/Character.h"
 #include "ElementAbilitySystemComponent.h"
 #include "ElementGameplayTags.h"
@@ -9,10 +9,10 @@
 #include "ProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
-void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                const FGameplayAbilityActorInfo* ActorInfo,
-                                const FGameplayAbilityActivationInfo ActivationInfo,
-                                const FGameplayEventData* TriggerEventData)
+void URockThrow::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                 const FGameplayAbilityActorInfo* ActorInfo,
+                                 const FGameplayAbilityActivationInfo ActivationInfo,
+                                 const FGameplayEventData* TriggerEventData)
 {
 	if (AActor* Actor = GetAvatarActorFromActorInfo())
 	{
@@ -23,25 +23,25 @@ void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
 
-			if (AProjectileBase* Fireball = GetWorld()->SpawnActorDeferred<AProjectileBase>(
+			if (AProjectileBase* RockThrow = GetWorld()->SpawnActorDeferred<AProjectileBase>(
 				ProjectileBase,
 				SpawnProjectileTransform,
 				nullptr,
 				nullptr,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				Fireball->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
-				Fireball->ProjectileMeshComponent->SetMaterial(0, FireballMaterial);
+				RockThrow->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
+				RockThrow->ProjectileMeshComponent->SetMaterial(0, RockThrowMaterial);
 
-				const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-					FireballGameplayEffect,
+				const FGameplayEffectSpecHandle RockThrowGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+					RockThrowGameplayEffect,
 					1);
-				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+				RockThrowGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 					ElementGameplayTags::Abilities_Parameters_Damage,
 					10);
-				Fireball->GameplayEffectSpecHandle = FireballGameplayEffectSpecHandle;
-				UGameplayStatics::FinishSpawningActor(Fireball, SpawnProjectileTransform);
-			} 
+				RockThrow->GameplayEffectSpecHandle = RockThrowGameplayEffectSpecHandle;
+				UGameplayStatics::FinishSpawningActor(RockThrow, SpawnProjectileTransform);
+			}
 		}
 	}
 

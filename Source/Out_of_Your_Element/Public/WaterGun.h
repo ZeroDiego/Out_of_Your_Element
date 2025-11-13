@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "ProjectileBase.h"
 #include "Abilities/GameplayAbility.h"
-#include "Fireball.generated.h"
+#include "WaterGun.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UFireball : public UGameplayAbility
+class OUT_OF_YOUR_ELEMENT_API UWaterGun : public UGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -23,10 +23,10 @@ public:
 	                             const FGameplayEventData* TriggerEventData) override;
 
 	UPROPERTY(EditAnywhere)
-	UMaterialInstance* FireballMaterial;
+	UMaterialInstance* WaterGunMaterial;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> FireballGameplayEffect;
+	TSubclassOf<UGameplayEffect> WaterGunGameplayEffect;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectileBase> ProjectileBase;

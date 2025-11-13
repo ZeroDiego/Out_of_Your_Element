@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Fireball.h"
+#include "WaterGun.h"
 #include "GameFramework/Character.h"
 #include "ElementAbilitySystemComponent.h"
 #include "ElementGameplayTags.h"
@@ -9,7 +9,7 @@
 #include "ProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
-void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UWaterGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                 const FGameplayAbilityActorInfo* ActorInfo,
                                 const FGameplayAbilityActivationInfo ActivationInfo,
                                 const FGameplayEventData* TriggerEventData)
@@ -18,30 +18,31 @@ void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()
-			                                                 ->GetComponentLocation();
+			
+			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()->
+			                                                   GetComponentLocation();
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
 
-			if (AProjectileBase* Fireball = GetWorld()->SpawnActorDeferred<AProjectileBase>(
+			if (AProjectileBase* WaterGun = GetWorld()->SpawnActorDeferred<AProjectileBase>(
 				ProjectileBase,
 				SpawnProjectileTransform,
 				nullptr,
 				nullptr,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				Fireball->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
-				Fireball->ProjectileMeshComponent->SetMaterial(0, FireballMaterial);
+				WaterGun->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
+				WaterGun->ProjectileMeshComponent->SetMaterial(0, WaterGunMaterial);
 
-				const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-					FireballGameplayEffect,
+				const FGameplayEffectSpecHandle WaterGunGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+					WaterGunGameplayEffect,
 					1);
-				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+				WaterGunGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 					ElementGameplayTags::Abilities_Parameters_Damage,
 					10);
-				Fireball->GameplayEffectSpecHandle = FireballGameplayEffectSpecHandle;
-				UGameplayStatics::FinishSpawningActor(Fireball, SpawnProjectileTransform);
-			} 
+				WaterGun->GameplayEffectSpecHandle = WaterGunGameplayEffectSpecHandle;
+				UGameplayStatics::FinishSpawningActor(WaterGun, SpawnProjectileTransform);
+			}
 		}
 	}
 

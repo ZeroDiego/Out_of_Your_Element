@@ -20,7 +20,6 @@ void UFiringOffset::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -31,4 +30,3 @@ void UFiringOffset::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 	// ...
 }
-

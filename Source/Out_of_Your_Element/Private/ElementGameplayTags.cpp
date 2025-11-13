@@ -10,6 +10,38 @@ namespace ElementGameplayTags
 	                               "Abilities.Parameters.Damage",
 	                               "Raw damage amount from an attack");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_BaseAttack,
+	                               "Abilities.BaseAttack",
+	                               "Tag granted for all elements' level 1 attack");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_BaseAttack,
+	                               "Abilities.Cooldowns.BaseAttack",
+	                               "Cooldown for all elements' level 1 attack");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Fire,
+	                               "Abilities.Fire",
+	                               "Tag granted when using fire attacks");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Water,
+	                               "Abilities.Water",
+	                               "Tag granted when using water attacks");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Nature,
+	                               "Abilities.Nature",
+	                               "Tag granted when using nature attacks");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_Fire,
+	                               "Abilities.Fire",
+	                               "Cooldown for fire element attacks");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_Water,
+	                               "Abilities.Water",
+	                               "Cooldown for water element attacks");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_Nature,
+	                               "Abilities.Nature",
+	                               "Cooldown for nature element attacks");
+
 	const FGameplayTagContainer DamageTypes = FGameplayTagContainer::CreateFromArray(TArray<FGameplayTag>{
 		Damage_Type_Fire, Damage_Type_Water, Damage_Type_Nature
 	});
