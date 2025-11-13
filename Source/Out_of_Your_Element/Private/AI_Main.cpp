@@ -85,7 +85,13 @@ void AAI_Main::BeginPlay()
 void AAI_Main::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	/*
+	for (TSubclassOf<UGameplayEffect>& Effect : ElementAbilitySystemComponent->GetActiveGameplayEffects())
+	{
+
+	}
+	*/
 }
 
 void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
