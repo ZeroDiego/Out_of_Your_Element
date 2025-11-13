@@ -15,13 +15,13 @@ AProjectileBase::AProjectileBase()
 	if (UStaticMesh* ProjectileMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("/Engine/EditorMeshes/EditorSphere"))))
 	{
 		Projectile->SetStaticMesh(ProjectileMesh);
-		Projectile->SetupAttachment(RootComponent);
 	}
 
 	Projectile->SetRelativeScale3D(ProjectileScale);
 	Projectile->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
 	Projectile->SetCollisionObjectType(ECC_GameTraceChannel1);
-
+	RootComponent = Projectile;
+	
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
 	ProjectileMovement->MaxSpeed = ProjectileMaxSpeed;
