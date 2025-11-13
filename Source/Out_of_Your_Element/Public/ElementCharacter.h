@@ -9,7 +9,6 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "AbilitySystemInterface.h"
-#include "ProjectileBase.h"
 #include "ElementCharacter.generated.h"
 
 UCLASS()

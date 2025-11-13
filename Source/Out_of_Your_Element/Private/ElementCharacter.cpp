@@ -3,7 +3,7 @@
 
 #include "ElementCharacter.h"
 #include "ElementAbilitySystemComponent.h"
-#include "ElementGameplayTags.h"
+#include "ProjectileBase.h"
 #include "HealthAttributeSet.h"
 #include "GameFramework/PlayerState.h"
 
