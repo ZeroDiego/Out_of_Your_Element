@@ -3,6 +3,7 @@
 
 #include "ElementCharacter.h"
 #include "ElementAbilitySystemComponent.h"
+#include "ElementGameplayTags.h"
 #include "HealthAttributeSet.h"
 #include "GameFramework/PlayerState.h"
 
@@ -11,20 +12,6 @@ AElementCharacter::AElementCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Creates a visible cube component in BP_ElementCharacter
-	CubeRef = CreateDefaultSubobject<UStaticMeshComponent>(FName("Cube"));
-
-	// Attempt to find a mesh for the cube component based on the file path
-	if (UStaticMesh* CubeMesh = Cast<UStaticMesh>(
-		StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("/Engine/BasicShapes/Cube"))))
-	{
-		// If it succeeds, set the found mesh on the cube component
-		CubeRef->SetStaticMesh(CubeMesh);
-
-		// Attach the cube component to the root component
-		CubeRef->SetupAttachment(RootComponent);
-	}
 
 	// Creates a camera component in BP_ElementCharacter
 	CameraRef = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
@@ -53,6 +40,8 @@ AElementCharacter::AElementCharacter()
 	// Creates an ability system component in BP_ElementCharacter
 	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<UHealthAttributeSet>(TEXT("Health Attribute Set"));
+
+	OnActorBeginOverlap.AddDynamic(this, &AElementCharacter::OnActorOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -102,4 +91,15 @@ void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 UAbilitySystemComponent* AElementCharacter::GetAbilitySystemComponent() const
 {
 	return ElementAbilitySystemComponent;
+}
+
+void AElementCharacter::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	UE_LOG(LogTemp, Log, TEXT("AElementCharacter::OnActorOverlap"));
+	
+	if (const AProjectileBase* ProjectileBase = Cast<AProjectileBase>(OtherActor))
+	{
+		ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
+		OtherActor->Destroy();
+	}
 }

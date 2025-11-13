@@ -4,6 +4,7 @@
 #include "Fireball.h"
 #include "GameFramework/Character.h"
 #include "ElementAbilitySystemComponent.h"
+#include "ElementGameplayTags.h"
 #include "FiringOffset.h"
 #include "ProjectileBase.h"
 
@@ -16,11 +17,15 @@ void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()->GetComponentLocation();
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FActorSpawnParameters ActorSpawnParams;
-			const AProjectileBase* Fireball = GetWorld()->SpawnActor<AProjectileBase>(SpawnProjectileLocation, SpawnProjectileRotation, ActorSpawnParams);
+			AProjectileBase* Fireball = GetWorld()->SpawnActor<AProjectileBase>(SpawnProjectileLocation, SpawnProjectileRotation, ActorSpawnParams);
 			Fireball->Projectile->IgnoreActorWhenMoving(Actor, true);
 			Fireball->Projectile->SetMaterial(0, FireballMaterial);
+			const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(FireballGameplayEffect, 1);
+			FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(ElementGameplayTags::Abilities_Parameters_Damage, 10);
+			Fireball->GameplayEffectSpecHandle = FireballGameplayEffectSpecHandle;
 		}
 	}
 
+	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true, nullptr);
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
