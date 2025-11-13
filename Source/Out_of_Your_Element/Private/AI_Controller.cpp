@@ -11,14 +11,14 @@ AAI_Controller::AAI_Controller(const FObjectInitializer& FObjectInitializer)
 	: Super(FObjectInitializer)            
 {
 	// bygger perception tidigt så den finns innan possession.
-	SetupPerceptionSystem();
+	//SetupPerceptionSystem();
 }
 // ───────────────────────────────────────────────────────────── OnPossess ──── //
 void AAI_Controller::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	SetMoveBlockDetection(true);
+	//SetMoveBlockDetection(true);
     
 	if (AAI_Main* AI = Cast<AAI_Main>(InPawn))
 	{
@@ -43,27 +43,28 @@ void AAI_Controller::OnPossess(APawn* InPawn)
 
 // ───────────────────────────────────────────────────── SetupPerceptionSystem ─── //
 //bygger UAIPerceptionComponent + en sight sense configuration, kopplar sen ihop dom så vi får OnTargetPerceptionUpdated events.
-void AAI_Controller::SetupPerceptionSystem()
+/*
+ *void AAI_Controller::SetupPerceptionSystem()
 {
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
     
 	UAIPerceptionComponent* Perception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 	SetPerceptionComponent(*Perception);
 
-	/* -------------------- vision parameters ------------------------ */
+	 -------------------- vision parameters ------------------------ 
 	SightConfig->SightRadius                 = 15000.0f;  
 	SightConfig->PeripheralVisionAngleDegrees = 360.f;     
 	SightConfig->DetectionByAffiliation.bDetectEnemies   = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals  = true;
 
-	/* ------------------ Hook up the perception component --------------- */
+	 ------------------ Hook up the perception component --------------- 
 	Perception->ConfigureSense(*SightConfig);
 	Perception->SetDominantSense(*SightConfig->GetSenseImplementation());
 
 	// Bind C++ callback for when perception state changes.
 	//     Perception->OnTargetPerceptionUpdated.AddDynamic(this, &AAI_Controller::OnTargetDetected);
-}
+}*/
 
 // ───────────────────────────────────────────────────── OnTargetDetected ─── //
 // Kallad vid sensed or lost.

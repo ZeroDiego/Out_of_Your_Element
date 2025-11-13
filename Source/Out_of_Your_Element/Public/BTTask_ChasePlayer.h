@@ -8,7 +8,7 @@
 
 
 UCLASS()
-class SPM_GROUPPROJECT_API UBTTask_ChasePlayer : public UBTTask_BlackboardBase
+class OUT_OF_YOUR_ELEMENT_API UBTTask_ChasePlayer : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
