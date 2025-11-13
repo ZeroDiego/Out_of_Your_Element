@@ -9,21 +9,37 @@
 #include "ProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
-void UWaterGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void UWaterGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                const FGameplayAbilityActorInfo* ActorInfo,
+                                const FGameplayAbilityActivationInfo ActivationInfo,
+                                const FGameplayEventData* TriggerEventData)
 {
 	if (AActor* Actor = GetAvatarActorFromActorInfo())
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()->GetComponentLocation();
+			
+			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()->
+			                                                   GetComponentLocation();
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
-			if (AProjectileBase* WaterGun = GetWorld()->SpawnActorDeferred<AProjectileBase>(AProjectileBase::StaticClass(), SpawnProjectileTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
+
+			if (AProjectileBase* WaterGun = GetWorld()->SpawnActorDeferred<AProjectileBase>(
+				ProjectileBase,
+				SpawnProjectileTransform,
+				nullptr,
+				nullptr,
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				WaterGun->Projectile->IgnoreActorWhenMoving(Actor, true);
-				WaterGun->Projectile->SetMaterial(0, WaterGunMaterial);
-				const FGameplayEffectSpecHandle WaterGunGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(WaterGunGameplayEffect, 1);
-				WaterGunGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(ElementGameplayTags::Abilities_Parameters_Damage, 10);
+				WaterGun->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
+				WaterGun->ProjectileMeshComponent->SetMaterial(0, WaterGunMaterial);
+
+				const FGameplayEffectSpecHandle WaterGunGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+					WaterGunGameplayEffect,
+					1);
+				WaterGunGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+					ElementGameplayTags::Abilities_Parameters_Damage,
+					10);
 				WaterGun->GameplayEffectSpecHandle = WaterGunGameplayEffectSpecHandle;
 				UGameplayStatics::FinishSpawningActor(WaterGun, SpawnProjectileTransform);
 			}

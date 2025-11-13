@@ -38,7 +38,8 @@ AElementCharacter::AElementCharacter()
 	FiringOffsetRef->SetRelativeLocation(FiringOffset);
 
 	// Creates an ability system component in BP_ElementCharacter
-	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
+	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(
+		TEXT("ElementAbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<UHealthAttributeSet>(TEXT("Health Attribute Set"));
 
 	OnActorBeginOverlap.AddDynamic(this, &AElementCharacter::OnActorOverlap);

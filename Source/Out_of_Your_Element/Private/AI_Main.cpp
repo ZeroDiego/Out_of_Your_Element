@@ -29,7 +29,8 @@ AAI_Main::AAI_Main()
 	AudioComponent->SetupAttachment(RootComponent);
 
 	// Creates an ability system component
-	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
+	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(
+		TEXT("ElementAbilitySystemComponent"));
 
 	// Creates an attribute set for health points
 	HealthAttributeSet = CreateDefaultSubobject<UHealthAttributeSet>(TEXT("Health Attribute Set"));
@@ -56,7 +57,7 @@ void AAI_Main::BeginPlay()
 		{
 			ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
 		}
-		
+
 		/*
 		for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 		{
@@ -67,7 +68,7 @@ void AAI_Main::BeginPlay()
 		}
 		*/
 	}
-	
+
 	/*AIHealth = MaxAIHealth;
 	
 
@@ -97,7 +98,7 @@ void AAI_Main::Tick(float DeltaTime)
 void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	UE_LOG(LogTemp, Log, TEXT("AAI_Main::OnActorOverlap"));
-	
+
 	if (OverlappedActor && OtherActor)
 	{
 		if (const AProjectileBase* ProjectileBase = Cast<AProjectileBase>(OtherActor))

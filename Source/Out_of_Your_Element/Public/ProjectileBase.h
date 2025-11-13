@@ -38,6 +38,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
+	
+	// Projectile mesh component ref
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* ProjectileMeshComponent;
 
 protected:
 	// Called when the game starts or when spawned
@@ -46,10 +50,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Projectile mesh ref
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* Projectile;
 
 	// Projectile movement component ref
 	UPROPERTY(VisibleAnywhere)
