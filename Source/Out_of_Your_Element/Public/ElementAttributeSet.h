@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "AttributeSet.h"
-#include "AbilitySystemComponent.h"
 #include "ElementAttributeSet.generated.h"
 
 #define ATTRIBUTE_EVENT(PropertyName) \
