@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ElementAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/Character.h"
 
@@ -20,6 +21,13 @@ public:
 	AAI_Main();
 
 	UBehaviorTree* GetBehaviorTree() const;
+
+	// Ability System Component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "C++")
+	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<class UHealthAttributeSet> HealthAttributeSet;
 
 	//UPROPERTY(BlueprintReadWrite)
 	//int32 AIHealth;
@@ -52,10 +60,12 @@ protected:
 	//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAIDeathEvent, AAI_Main*, DeadEnemy);
 	//UPROPERTY(BlueprintAssignable, Category = "Events")
 	//FAIDeathEvent OnEnemyDied;
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
-	
+
+	UFUNCTION()
+	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bIsDead = false;
-	
 };

@@ -8,19 +8,14 @@
 // Sets default values
 AProjectileBase::AProjectileBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Projectile = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile"));
-	if (UStaticMesh* ProjectileMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("/Engine/EditorMeshes/EditorSphere"))))
-	{
-		Projectile->SetStaticMesh(ProjectileMesh);
-		Projectile->SetupAttachment(RootComponent);
-	}
-
-	Projectile->SetRelativeScale3D(ProjectileScale);
-	Projectile->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
-	Projectile->SetCollisionObjectType(ECC_GameTraceChannel1);
+	ProjectileMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(FName("ProjectileMesh"));
+	RootComponent = ProjectileMeshComponent;
+	ProjectileMeshComponent->SetRelativeScale3D(ProjectileScale);
+	ProjectileMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
+	ProjectileMeshComponent->SetCollisionObjectType(ECC_GameTraceChannel1); 
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
@@ -40,6 +35,4 @@ void AProjectileBase::BeginPlay()
 void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-

@@ -9,24 +9,39 @@
 #include "ProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
-void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                const FGameplayAbilityActorInfo* ActorInfo,
+                                const FGameplayAbilityActivationInfo ActivationInfo,
+                                const FGameplayEventData* TriggerEventData)
 {
 	if (AActor* Actor = GetAvatarActorFromActorInfo())
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()->GetComponentLocation();
+			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()
+			                                                 ->GetComponentLocation();
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
-			if (AProjectileBase* Fireball = GetWorld()->SpawnActorDeferred<AProjectileBase>(AProjectileBase::StaticClass(), SpawnProjectileTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
+
+			if (AProjectileBase* Fireball = GetWorld()->SpawnActorDeferred<AProjectileBase>(
+				ProjectileBase,
+				SpawnProjectileTransform,
+				nullptr,
+				nullptr,
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				Fireball->Projectile->IgnoreActorWhenMoving(Actor, true);
-				Fireball->Projectile->SetMaterial(0, FireballMaterial);
-				const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(FireballGameplayEffect, 1);
-				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(ElementGameplayTags::Abilities_Parameters_Damage, 10);
+				Fireball->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
+				Fireball->ProjectileMeshComponent->SetMaterial(0, FireballMaterial);
+
+				const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+					FireballGameplayEffect,
+					1);
+				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+					ElementGameplayTags::Abilities_Parameters_Damage,
+					10);
 				Fireball->GameplayEffectSpecHandle = FireballGameplayEffectSpecHandle;
-				UGameplayStatics::FinishSpawningActor(Fireball,SpawnProjectileTransform);
-			}
+				UGameplayStatics::FinishSpawningActor(Fireball, SpawnProjectileTransform);
+			} 
 		}
 	}
 
