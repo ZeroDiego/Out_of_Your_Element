@@ -9,7 +9,10 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "AbilitySystemInterface.h"
+#include "InputActionValue.h"
 #include "ElementCharacter.generated.h"
+
+class UInputAction;
 
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public ACharacter, public IAbilitySystemInterface
@@ -17,31 +20,19 @@ class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public ACharacter, public IAbi
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
-	AElementCharacter();
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float TargetArmLength = 1000.0f;
 
-	// A float that determines how far away the camera will be from the player
-	UPROPERTY(EditAnywhere, Category = "C++")
-	float TargetArmLength = 500.0f;
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	FRotator CameraRotation = FRotator(-45.0f, 180.0f, 0.0f);
 
-	// Offset from the initial TargetArmLength
-	UPROPERTY(EditAnywhere, Category = "C++")
-	FVector SocketOffset = FVector(0.0f, 0.0f, 500.0f);
-
-	// Rotation of the camera
-	UPROPERTY(EditAnywhere, Category = "C++")
-	FRotator CameraRotation = FRotator(-45.0f, 0.0f, 0.0f);
-
-	// Firing offset
-	UPROPERTY(EditAnywhere, Category = "C++")
+	UPROPERTY(EditAnywhere, Category = "Shooting")
 	FVector FiringOffset = FVector(100.0f, 0.0f, 0.0f);
 
-	// Ability System Component
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "C++")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
-	// Abilities array
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> UsableAbilities;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
@@ -51,31 +42,49 @@ public:
 	TObjectPtr<class UHealthAttributeSet> HealthAttributeSet;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* MoveAction;
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* LookAction;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* MouseLookAction;
 
 	UFUNCTION()
 	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 private:
-	// Camera component ref
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraRef;
 
-	// Spring arm component ref
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoomRef;
 
-	// Firing offset ref
 	UPROPERTY(VisibleAnywhere)
 	UFiringOffset* FiringOffsetRef;
+
+public:
+	AElementCharacter();
+
+protected:
+	virtual void BeginPlay() override;
+
+	virtual void Tick(const float DeltaSeconds) override;
+
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+private:
+	void Move(const FInputActionValue& Value);
+	void MouseLook(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	
+public:
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoMove(const float Right, const float Forward);
+	
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoLook(const float Yaw);
 };

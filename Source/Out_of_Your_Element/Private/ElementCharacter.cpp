@@ -4,48 +4,44 @@
 #include "ElementCharacter.h"
 #include "ElementAbilitySystemComponent.h"
 #include "ProjectileBase.h"
+#include "EnhancedInputComponent.h"
 #include "HealthAttributeSet.h"
+#include "InputActionValue.h"
 #include "GameFramework/PlayerState.h"
+#include "Kismet/KismetMathLibrary.h"
 
-// Sets default values
 AElementCharacter::AElementCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Creates a camera component in BP_ElementCharacter
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
+	CameraBoomRef = CreateDefaultSubobject<USpringArmComponent>(FName("Camera Boom"));
+
+	CameraBoomRef->SetupAttachment(RootComponent);
+	CameraBoomRef->SetUsingAbsoluteRotation(true);
+	CameraBoomRef->TargetArmLength = TargetArmLength;
+	CameraBoomRef->SetRelativeRotation(CameraRotation);
+
 	CameraRef = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
 
-	// Creates a spring arm component in BP_ElementCharacter
-	CameraBoomRef = CreateDefaultSubobject<USpringArmComponent>(FName("SpringArm"));
-
-	// Attach the spring arm component to the root component
-	CameraBoomRef->SetupAttachment(RootComponent);
-
-	// Attach the camera component to the spring arm component
 	CameraRef->SetupAttachment(CameraBoomRef);
-
-	// Assign values from editable unreal properties to the spring arm component
-	CameraBoomRef->TargetArmLength = TargetArmLength;
-	CameraBoomRef->SocketOffset = SocketOffset;
-
-	// Set the rotation of the camera based on editable unreal properties
-	CameraRef->SetRelativeRotation(CameraRotation);
+	CameraRef->bUsePawnControlRotation = false;
 
 	// Creates a custom scene component called firing offset used for projectile spawn location
 	FiringOffsetRef = CreateDefaultSubobject<UFiringOffset>(TEXT("FiringOffset"));
 	FiringOffsetRef->SetupAttachment(RootComponent);
 	FiringOffsetRef->SetRelativeLocation(FiringOffset);
 
-	// Creates an ability system component in BP_ElementCharacter
-	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(
-		TEXT("ElementAbilitySystemComponent"));
+	ElementAbilitySystemComponent =
+		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<UHealthAttributeSet>(TEXT("Health Attribute Set"));
 
 	OnActorBeginOverlap.AddDynamic(this, &AElementCharacter::OnActorOverlap);
 }
 
-// Called when the game starts or when spawned
 void AElementCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -78,15 +74,102 @@ void AElementCharacter::BeginPlay()
 	}
 }
 
-// Called every frame
-void AElementCharacter::Tick(float DeltaTime)
+void AElementCharacter::Tick(const float DeltaSeconds)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaSeconds);
 }
 
 void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(MoveAction,
+		                                   ETriggerEvent::Triggered,
+		                                   this,
+		                                   &AElementCharacter::Move
+		);
+
+		EnhancedInputComponent->BindAction(MouseLookAction,
+		                                   ETriggerEvent::Triggered,
+		                                   this,
+		                                   &AElementCharacter::MouseLook
+		);
+
+		EnhancedInputComponent->BindAction(LookAction,
+		                                   ETriggerEvent::Triggered,
+		                                   this,
+		                                   &AElementCharacter::Look
+		);
+	}
+}
+
+void AElementCharacter::Move(const FInputActionValue& Value)
+{
+	const FVector2D MovementVector = Value.Get<FVector2D>();
+	DoMove(MovementVector.X, MovementVector.Y);
+}
+
+void AElementCharacter::MouseLook(const FInputActionValue& Value)
+{
+	if (const APlayerController* CurrentController = Cast<APlayerController>(GetController()))
+	{
+		if (CurrentController->IsLocalPlayerController())
+		{
+			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
+			{
+				const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(
+					GetActorLocation(), HitResult.Location
+				);
+
+				FRotator CurrentRotation = GetActorRotation();
+				CurrentRotation.Yaw = LookRotation.Yaw;
+				SetActorRotation(CurrentRotation);
+			}
+		}
+	}
+}
+
+void AElementCharacter::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisVector = Value.Get<FVector2D>();
+	DoLook(LookAxisVector.X);
+}
+
+void AElementCharacter::DoMove(const float Right, const float Forward)
+{
+	if (const AController* CurrentController = GetController())
+	{
+		if (CurrentController->IsLocalPlayerController())
+		{
+			const FRotator Rotation = CurrentController->GetControlRotation();
+			const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+			const FRotationMatrix YawMatrix = FRotationMatrix(YawRotation);
+			const FVector ForwardDirection = YawMatrix.GetUnitAxis(EAxis::X);
+			const FVector RightDirection = YawMatrix.GetUnitAxis(EAxis::Y);
+
+			AddMovementInput(ForwardDirection, Forward);
+			AddMovementInput(RightDirection, Right);
+		}
+	}
+}
+
+void AElementCharacter::DoLook(const float Yaw)
+{
+	if (GetController()->IsLocalPlayerController())
+	{
+		const FRotator CurrentRotation = GetActorRotation();
+
+		const FRotator NewRotation = {
+			CurrentRotation.Pitch,
+			FMath::Fmod(CurrentRotation.Yaw + Yaw, 360),
+			CurrentRotation.Roll
+		};
+
+		SetActorRotation(NewRotation);
+	}
 }
 
 UAbilitySystemComponent* AElementCharacter::GetAbilitySystemComponent() const
