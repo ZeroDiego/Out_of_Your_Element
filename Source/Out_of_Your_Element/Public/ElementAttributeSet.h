@@ -1,12 +1,7 @@
 ﻿#pragma once
 
 #include "AttributeSet.h"
-#include "AbilitySystemComponent.h"
 #include "ElementAttributeSet.generated.h"
-
-#define ATTRIBUTE_EVENT(PropertyName) \
-	UPROPERTY(BlueprintAssignable) \
-	FAttributeChangedEvent On##PropertyName##Changed;
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
