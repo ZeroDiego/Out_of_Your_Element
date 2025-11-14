@@ -13,8 +13,6 @@ void AElementPlayerController::SetupInputComponent()
 
 	if (IsLocalPlayerController())
 	{
-		SetShowMouseCursor(true);
-
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		{
