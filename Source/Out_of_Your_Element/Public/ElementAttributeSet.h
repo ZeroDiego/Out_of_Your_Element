@@ -3,10 +3,6 @@
 #include "AttributeSet.h"
 #include "ElementAttributeSet.generated.h"
 
-#define ATTRIBUTE_EVENT(PropertyName) \
-	UPROPERTY(BlueprintAssignable) \
-	FAttributeChangedEvent On##PropertyName##Changed;
-
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \

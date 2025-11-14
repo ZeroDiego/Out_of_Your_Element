@@ -31,9 +31,11 @@ public:
 	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Damage);
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UHealthAttributeSet, DamageResistance);
 
-	ATTRIBUTE_EVENT(Health);
-	ATTRIBUTE_EVENT(MaxHealth);
-	ATTRIBUTE_EVENT(Damage);
+	UPROPERTY(BlueprintAssignable)
+	FAttributeChangedEvent OnHealthChanged;
+	
+	UPROPERTY(BlueprintAssignable)
+	FAttributeChangedEvent OnMaxHealthChanged;
 
 protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
