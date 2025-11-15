@@ -33,15 +33,15 @@ namespace ElementGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Fire,
 	                               "Abilities.Fire",
-	                               "Tag granted when using fire attacks");
+	                               "Tag granted when being hit by fire attacks");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Water,
 	                               "Abilities.Water",
-	                               "Tag granted when using water attacks");
+	                               "Tag granted when being hit by water attacks");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Nature,
 	                               "Abilities.Nature",
-	                               "Tag granted when using nature attacks");
+	                               "Tag granted when being hit by nature attacks");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_Fire,
 	                               "Abilities.Fire",

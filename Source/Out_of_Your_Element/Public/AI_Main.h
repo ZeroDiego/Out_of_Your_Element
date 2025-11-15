@@ -46,6 +46,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* BehaviorTree;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UGameplayEffect> SlowGameplayEffect; 
+	
 	//UPROPERTY(BlueprintReadWrite)
 	//bool bIsAttacking = false;
 

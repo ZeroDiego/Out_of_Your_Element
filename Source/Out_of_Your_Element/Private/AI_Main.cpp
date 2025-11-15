@@ -87,6 +87,25 @@ void AAI_Main::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (ElementAbilitySystemComponent->GetOwnedGameplayTags().IsValid())
+	{
+		for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
+		{
+			if (Tag.IsValid())
+			{
+				if (Tag.GetTagName() == TEXT("Abilities.Water"))
+				{
+					GetCharacterMovement()->MaxWalkSpeed = 150;
+				}
+			}
+		}
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300;
+	}
+	
+	
 	/*
 	for (TSubclassOf<UGameplayEffect>& Effect : ElementAbilitySystemComponent->GetActiveGameplayEffects())
 	{
@@ -97,13 +116,29 @@ void AAI_Main::Tick(float DeltaTime)
 
 void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	UE_LOG(LogTemp, Log, TEXT("AAI_Main::OnActorOverlap"));
-
 	if (OverlappedActor && OtherActor)
 	{
 		if (const AProjectileBase* ProjectileBase = Cast<AProjectileBase>(OtherActor))
 		{
-			ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
+			if (ProjectileBase->GameplayEffectSpecHandle.IsValid())
+			{
+				ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
+			
+				FGameplayTagContainer TagContainer;
+				ProjectileBase->GameplayEffectSpecHandle.Data->GetAllAssetTags(TagContainer);
+				for (FGameplayTag Tag : TagContainer)
+				{
+					if (Tag.IsValid())
+					{
+						if (Tag.GetTagName() == TEXT("Damage.Type.Water"))
+						{
+							const FGameplayEffectContextHandle Context;
+							ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(SlowGameplayEffect, 1, Context);
+						}
+					}
+				}
+			}
+			
 			OtherActor->Destroy();
 		}
 	}
