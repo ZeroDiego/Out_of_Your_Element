@@ -9,6 +9,14 @@ namespace ElementGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Parameters_Damage,
 	                               "Abilities.Parameters.Damage",
 	                               "Raw damage amount from an attack");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Parameters_Resistance_Percent,
+							   "Abilities.Parameters.Resistance.Percent",
+							   "Amount of resistance to an element in (0.0 - 1.0)");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Parameters_Resistance_Fixed,
+						   "Abilities.Parameters.Resistance.Fixed",
+						   "Fixed amount of resistance to an element");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_BaseAttack,
 	                               "Abilities.BaseAttack",
