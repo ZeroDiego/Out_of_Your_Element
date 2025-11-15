@@ -30,4 +30,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectileBase> ProjectileBase;
+
+	UPROPERTY(EditAnywhere)
+	float FireballDamageDuration;
+
+	UPROPERTY(EditAnywhere)
+	float FireballDamagePerSecond;
 };

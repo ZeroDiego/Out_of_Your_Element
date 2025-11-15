@@ -37,11 +37,14 @@ void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 					FireballGameplayEffect,
 					1);
 				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+					ElementGameplayTags::Abilities_Parameters_Duration,
+					FireballDamageDuration);
+				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 					ElementGameplayTags::Abilities_Parameters_Damage,
-					10);
+					FireballDamagePerSecond);
 				Fireball->GameplayEffectSpecHandle = FireballGameplayEffectSpecHandle;
 				UGameplayStatics::FinishSpawningActor(Fireball, SpawnProjectileTransform);
-			} 
+			}
 		}
 	}
 
