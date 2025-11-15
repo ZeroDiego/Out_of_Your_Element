@@ -97,15 +97,28 @@ void AAI_Main::Tick(float DeltaTime)
 				{
 					GetCharacterMovement()->MaxWalkSpeed = 150;
 				}
+				else if (Tag.GetTagName() == TEXT("Abilities.Nature"))
+				{
+					GetController()->StopMovement();
+					if (const AAI_Controller* AIController = Cast<AAI_Controller>(GetController()))
+					{
+						AIController->GetBrainComponent()->StopLogic("HitStun");
+					}
+				}
 			}
 		}
 	}
 	else
 	{
+		if (const AAI_Controller* AIController = Cast<AAI_Controller>(GetController()))
+		{
+			AIController->GetBrainComponent()->StartLogic();
+		}
+
 		GetCharacterMovement()->MaxWalkSpeed = 300;
 	}
-	
-	
+
+
 	/*
 	for (TSubclassOf<UGameplayEffect>& Effect : ElementAbilitySystemComponent->GetActiveGameplayEffects())
 	{
@@ -122,8 +135,9 @@ void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 		{
 			if (ProjectileBase->GameplayEffectSpecHandle.IsValid())
 			{
-				ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
-			
+				ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
+					ProjectileBase->GameplayEffectSpecHandle);
+
 				FGameplayTagContainer TagContainer;
 				ProjectileBase->GameplayEffectSpecHandle.Data->GetAllAssetTags(TagContainer);
 				for (FGameplayTag Tag : TagContainer)
@@ -135,10 +149,25 @@ void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 							const FGameplayEffectContextHandle Context;
 							ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(SlowGameplayEffect, 1, Context);
 						}
+
+						if (Tag.GetTagName() == TEXT("Damage.Type.Nature"))
+						{
+							if (ACharacter* Character = Cast<ACharacter>(OverlappedActor))
+							{
+								FVector OtherActorForwardVector = OtherActor->GetActorForwardVector();
+								OtherActorForwardVector.X *= 2000;
+								OtherActorForwardVector.Y *= 2000;
+								OtherActorForwardVector.Z = 0;
+								const FGameplayEffectContextHandle Context;
+								ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
+									HitStunGameplayEffect, 1, Context);
+								Character->LaunchCharacter(OtherActorForwardVector, true, true);
+							}
+						}
 					}
 				}
 			}
-			
+
 			OtherActor->Destroy();
 		}
 	}
