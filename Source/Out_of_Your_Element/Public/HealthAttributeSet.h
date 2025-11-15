@@ -17,7 +17,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxHealth;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (HideFromModifiers, AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Damage;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
@@ -26,15 +26,15 @@ private:
 public:
 	UHealthAttributeSet();
 
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Health);
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, MaxHealth);
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Damage);
+	ATTRIBUTE_ACCESSORS_BASIC(UHealthAttributeSet, Health);
+	ATTRIBUTE_ACCESSORS_BASIC(UHealthAttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS_BASIC(UHealthAttributeSet, Damage);
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UHealthAttributeSet, DamageResistance);
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Meta = (HideFromModifiers))
 	FAttributeChangedEvent OnHealthChanged;
-	
-	UPROPERTY(BlueprintAssignable)
+
+	UPROPERTY(BlueprintAssignable, Meta = (HideFromModifiers))
 	FAttributeChangedEvent OnMaxHealthChanged;
 
 protected:

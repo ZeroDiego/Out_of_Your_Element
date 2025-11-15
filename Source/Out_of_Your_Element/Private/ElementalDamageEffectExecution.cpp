@@ -2,17 +2,6 @@
 #include "ElementGameplayTags.h"
 #include "HealthAttributeSet.h"
 
-UElementalDamageEffectExecution::UElementalDamageEffectExecution()
-{
-	const FGameplayEffectAttributeCaptureDefinition AttributeCaptureDef(
-		UHealthAttributeSet::GetDamageResistanceAttribute(),
-		EGameplayEffectAttributeCaptureSource::Target,
-		true
-	);
-
-	RelevantAttributesToCapture.Add(AttributeCaptureDef);
-}
-
 bool FindAnyExact(const FGameplayTagContainer& Target, const FGameplayTagContainer& Source, FGameplayTag& Found)
 {
 	for (TArray<FGameplayTag>::TConstIterator TagIterator = Target.CreateConstIterator(); TagIterator; ++TagIterator)
@@ -33,13 +22,21 @@ void UElementalDamageEffectExecution::Execute_Implementation(
 {
 	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 
+
 	const FGameplayEffectSpec& DamageSpec = ExecutionParams.GetOwningSpec();
-	const float DamageTaken = DamageSpec
-		.GetSetByCallerMagnitude(
-			ElementGameplayTags::Abilities_Parameters_Damage,
-			true,
-			0.0f
-		);
+	const FGameplayEffectModifiedAttribute* DamageAttribute =
+		DamageSpec.GetModifiedAttribute(UHealthAttributeSet::GetDamageAttribute());
+
+	if (!DamageAttribute)
+	{
+		UE_LOG(LogAbilitySystemComponent, Error, TEXT(
+			       "An elemental damage was triggered without damage? Make sure the Damage Attribute is set as a modifier!"
+		       ));
+
+		return;
+	}
+
+	const float DamageTaken = DamageAttribute->TotalMagnitude;
 
 	FGameplayTag DamageType;
 	{
@@ -50,43 +47,53 @@ void UElementalDamageEffectExecution::Execute_Implementation(
 			return;
 	}
 
-	float DamageResistance = 0.0f;
+	if (FMath::IsNearlyZero(DamageTaken, .02f))
+		return;
+
+	float DamageResistancePercent = 0.0f;
+	float DamageResistanceFixed = 0.0f;
 
 	{
-		// Get all tags on source and target
-		FAggregatorEvaluateParameters EvalParams;
-		EvalParams.SourceTags = DamageSpec.CapturedSourceTags.GetAggregatedTags();
-		EvalParams.TargetTags = DamageSpec.CapturedTargetTags.GetAggregatedTags();
+		FGameplayTagContainer AssetTags;
+		for (FActiveGameplayEffectIterator<const FActiveGameplayEffect, FActiveGameplayEffectsContainer> It =
+			     ExecutionParams.GetTargetAbilitySystemComponent()->
+			                     GetActiveGameplayEffects().
+			                     CreateConstIterator(); It; ++It
+		)
+		{
+			const FActiveGameplayEffect& ActiveEffect = *It;
+			const FGameplayEffectSpec& Spec = ActiveEffect.Spec;
 
-		// Filter source modifiers by the DamageType tag
-		EvalParams.AppliedSourceTagFilter = FGameplayTagContainer(DamageType);
+			Spec.GetAllAssetTags(AssetTags);
+			if (!AssetTags.HasTagExact(DamageType))
+				continue;
 
-		// Prepare to capture the damage resistance modifiers from the target
-		const FGameplayEffectAttributeCaptureDefinition AttributeCaptureDef(
-			UHealthAttributeSet::GetDamageResistanceAttribute(),
-			EGameplayEffectAttributeCaptureSource::Target,
-			true
-		);
+			DamageResistancePercent += Spec.GetSetByCallerMagnitude(
+				ElementGameplayTags::Abilities_Parameters_Resistance_Percent,
+				false
+			);
 
-		// Capture and calculate damage resistance modifiers from the target with the DamageType tag
-		const bool Evaluated = ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
-			AttributeCaptureDef,
-			EvalParams,
-			DamageResistance
-		);
+			DamageResistanceFixed += Spec.GetSetByCallerMagnitude(
+				ElementGameplayTags::Abilities_Parameters_Resistance_Fixed,
+				false
+			);
+		}
 
-		UE_LOG(LogTemp, Display, TEXT("Damage resistance for '%s': [%d] %.2f"), *DamageType.ToString(), Evaluated, DamageResistance);
+		UE_LOG(LogTemp, Display, TEXT("Damage resistance for '%s': %.2f%% + %.2f"), *DamageType.ToString(),
+		       DamageResistancePercent * 100, DamageResistanceFixed);
 	}
 
-	const float TotalDamage = DamageTaken * (1.0f - FMath::Clamp(DamageResistance, 0.0f, 1.0f));
+	const float TotalDamage =
+		DamageTaken * (1.0f - FMath::Clamp(DamageResistancePercent, 0.0f, 1.0f)) - DamageResistanceFixed;
+
 	UE_LOG(LogTemp, Display, TEXT("Base Damage val: %.2f | Total Damage: %.2f"), DamageTaken, TotalDamage);
 
-	if (TotalDamage > 0.0f)
-	{
-		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(
-			UHealthAttributeSet::GetDamageAttribute(),
-			EGameplayModOp::Additive,
-			TotalDamage
-		));
-	}
+	if (FMath::IsNearlyZero(DamageTaken, .01f))
+		return;
+
+	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(
+		UHealthAttributeSet::GetHealthAttribute(),
+		EGameplayModOp::Additive,
+		-TotalDamage
+	));
 }

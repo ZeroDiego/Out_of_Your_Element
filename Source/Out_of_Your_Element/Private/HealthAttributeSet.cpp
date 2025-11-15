@@ -1,4 +1,6 @@
 ﻿#include "HealthAttributeSet.h"
+
+#include "ElementalDamageEffectExecution.h"
 #include "GameplayEffectExtension.h"
 
 UHealthAttributeSet::UHealthAttributeSet()
@@ -35,20 +37,36 @@ void UHealthAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribut
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 }
 
+bool IsElementalDamageEffectExecution(const FGameplayEffectExecutionDefinition& Def)
+{
+	return Def.CalculationClass->IsChildOf(UElementalDamageEffectExecution::StaticClass());
+}
+
 void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-	
+
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
+		// ElementalEffectExecution will calculate resistances and apply damage
+		if (const TObjectPtr<const UGameplayEffect>& Def = Data.EffectSpec.Def;
+			Def && !Def->Executions.IsEmpty() &&
+			Def->Executions.ContainsByPredicate(IsElementalDamageEffectExecution))
+		{
+			SetDamage(0.0f);
+			return;
+		}
+		
 		const float DamageValue = GetDamage();
 		const float OldHealthValue = GetHealth();
 		const float MaxHealthValue = GetMaxHealth();
 		const float NewHealthValue = FMath::Clamp(OldHealthValue - DamageValue, 0.0f, MaxHealthValue);
-	 
+
 		if (OldHealthValue != NewHealthValue)
 			SetHealth(NewHealthValue);
-	 
+
+		UE_LOG(LogTemp, Display, TEXT("Final Damage val: %.2f"), DamageValue);
+
 		SetDamage(0.0f);
 	}
 }
