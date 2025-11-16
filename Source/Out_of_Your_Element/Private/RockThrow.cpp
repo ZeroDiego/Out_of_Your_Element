@@ -31,7 +31,6 @@ void URockThrow::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
 				RockThrow->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
-				RockThrow->ProjectileMeshComponent->SetMaterial(0, RockThrowMaterial);
 
 				// projectile VFX
 				RockThrow->ElementVfx = RockVfx;

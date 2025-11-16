@@ -23,9 +23,6 @@ public:
 	                             const FGameplayEventData* TriggerEventData) override;
 
 	UPROPERTY(EditAnywhere)
-	UMaterialInstance* FireballMaterial;
-
-	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> FireballGameplayEffect;
 
 	UPROPERTY(EditAnywhere)
@@ -42,7 +39,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="VFX")
 	UNiagaraSystem* FireballPoofVfx;
-	
+
 	UPROPERTY(EditAnywhere, Category="VFX")
 	UNiagaraSystem* FireballDotVfx;
 };

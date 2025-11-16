@@ -23,9 +23,6 @@ public:
 	                             const FGameplayEventData* TriggerEventData) override;
 
 	UPROPERTY(EditAnywhere)
-	UMaterialInstance* WaterGunMaterial;
-
-	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> WaterGunGameplayEffect;
 
 	UPROPERTY(EditAnywhere)
