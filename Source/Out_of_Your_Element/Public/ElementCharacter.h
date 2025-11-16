@@ -119,6 +119,9 @@ private:
 
 public:
 	AElementCharacter();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
 
 protected:
 	virtual void BeginPlay() override;
