@@ -29,6 +29,8 @@ struct FAttackData
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnElementChanged, FElement, OldElement, FElement, NewElement);
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -65,8 +67,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnAttack OnAttackDelegate;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> AnimationDelayBaseAttackGameplayEffect;
+	UPROPERTY(BlueprintAssignable)
+	FOnElementChanged OnElementChangedDelegate;
 
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -117,11 +119,12 @@ private:
 
 public:
 	AElementCharacter();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
 
 protected:
 	virtual void BeginPlay() override;
-
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void Tick(const float DeltaSeconds) override;
 
@@ -147,9 +150,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoBaseAttack();
-
-	UFUNCTION()
-	void DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack) const;
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoHeavyAttack();

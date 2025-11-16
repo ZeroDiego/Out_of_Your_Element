@@ -44,6 +44,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
+	
+	UPROPERTY(EditAnywhere)
+	UGameplayAbility* SourceAbility;
 
 	// Projectile mesh component ref
 	UPROPERTY(VisibleAnywhere)
