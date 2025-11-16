@@ -29,6 +29,9 @@ public:
 	TSubclassOf<UGameplayEffect> FireballGameplayEffect;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> AnimationDelayBaseAttackGameplayEffect;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectileBase> ProjectileBase;
 
 	UPROPERTY(EditAnywhere)

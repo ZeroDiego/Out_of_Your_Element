@@ -29,6 +29,9 @@ public:
 	TSubclassOf<UGameplayEffect> RockThrowGameplayEffect;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> AnimationDelayBaseAttackGameplayEffect;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectileBase> ProjectileBase;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
