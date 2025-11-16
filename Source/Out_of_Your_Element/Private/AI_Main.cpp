@@ -78,8 +78,8 @@ void AAI_Main::BeginPlay()
 		Move->AvoidanceConsiderationRadius = 300.f;
 		Move->AvoidanceWeight              = 0.7f;
 	}	//AI Crowd avoidance försök
-
-	LastKnownLocation = GetActorLocation();*/
+*/
+	//LastKnownLocation = GetActorLocation();
 }
 
 /* ─────────────────────────────────────────────── */

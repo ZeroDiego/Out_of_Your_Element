@@ -56,11 +56,11 @@ EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& Own
         return EBTNodeResult::Failed;   
     }
 
-    const FVector PlayerLocation = BB->GetValueAsVector(GetSelectedBlackboardKey()); //Grabs players location
-    if (!PlayerLocation.IsNearlyZero()) // Zero vector = key not set / invalid. Annars kutar AIn mot world origin
+    const FVector TargetLocation = BB->GetValueAsVector(GetSelectedBlackboardKey()); //Grabs players location
+    if (!TargetLocation.IsNearlyZero()) // Zero vector = key not set / invalid. Annars kutar AIn mot world origin
     {
         // 3) simple move request mot playerlocation
-        UAIBlueprintHelperLibrary::SimpleMoveToLocation(AICont, PlayerLocation);
+        UAIBlueprintHelperLibrary::SimpleMoveToLocation(AICont, TargetLocation);
 
         // 4) Mark the task complete
         FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
