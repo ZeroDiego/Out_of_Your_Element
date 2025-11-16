@@ -55,8 +55,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> UsableAbilities;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameplayEffects")
 	TSubclassOf<UGameplayEffect> FireballEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameplayEffects")
+	TSubclassOf<UGameplayEffect> AnimationDelayBaseAttackGameplayEffect;
 
 	UPROPERTY(EditAnywhere, Category = "Cursor")
 	TSubclassOf<UUserWidget> CursorWidgetClass;
@@ -125,6 +128,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void Tick(const float DeltaSeconds) override;
 
@@ -150,6 +155,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoBaseAttack();
+
+	UFUNCTION()
+	void DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack) const;
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoHeavyAttack();
