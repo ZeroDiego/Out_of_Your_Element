@@ -51,6 +51,9 @@ void AAI_Main::BeginPlay()
 
 	if (ElementAbilitySystemComponent)
 	{
+		if (HealthAttributeSet)
+			HealthAttributeSet->SetMaxHealth(25);
+
 		if (AAIController* AIController = GetController<AAIController>())
 		{
 			ElementAbilitySystemComponent->InitAbilityActorInfo(AIController, this);
