@@ -29,6 +29,8 @@ struct FAttackData
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnElementChanged, FElement, OldElement, FElement, NewElement);
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -64,6 +66,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttack OnAttackDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnElementChanged OnElementChangedDelegate;
 
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
