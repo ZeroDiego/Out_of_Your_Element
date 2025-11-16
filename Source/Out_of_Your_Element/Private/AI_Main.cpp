@@ -15,6 +15,7 @@
 #include "EngineUtils.h"
 
 //#include "PlayerCharacter.h"
+#include "Fireball.h"
 #include "HealthAttributeSet.h"
 #include "ProjectileBase.h"
 #include "Components/CapsuleComponent.h"
@@ -169,6 +170,21 @@ void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 								Character->LaunchCharacter(OtherActorForwardVector, true, true);
 							}
 						}
+					}
+				}
+
+				if (const UFireball* Fireball = Cast<UFireball>(ProjectileBase->SourceAbility))
+				{
+					if (Fireball->FireballDotVfx)
+					{
+						UNiagaraFunctionLibrary::SpawnSystemAttached(
+							Fireball->FireballDotVfx,
+							OverlappedActor->GetRootComponent(), NAME_None,
+							FVector::ZeroVector,
+							FRotator::ZeroRotator,
+							EAttachLocation::Type::KeepRelativeOffset,
+							true
+						);
 					}
 				}
 			}
