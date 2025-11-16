@@ -51,6 +51,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	bool bIsAttacking;
+
 	UFUNCTION()
 	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
