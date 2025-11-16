@@ -33,6 +33,9 @@ void URockThrow::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				RockThrow->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
 				RockThrow->ProjectileMeshComponent->SetMaterial(0, RockThrowMaterial);
 
+				// projectile VFX
+				RockThrow->ElementVFX = RockVFX;
+
 				const FGameplayEffectSpecHandle RockThrowGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
 					RockThrowGameplayEffect,
 					1);

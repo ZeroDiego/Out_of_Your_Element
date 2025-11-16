@@ -30,4 +30,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectileBase> ProjectileBase;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
+	UNiagaraSystem* WaterVFX;
 };
