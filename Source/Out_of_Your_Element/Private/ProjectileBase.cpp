@@ -16,7 +16,7 @@ AProjectileBase::AProjectileBase()
 	RootComponent = ProjectileMeshComponent;
 	ProjectileMeshComponent->SetRelativeScale3D(ProjectileScale);
 	ProjectileMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
-	ProjectileMeshComponent->SetCollisionObjectType(ECC_GameTraceChannel1); 
+	ProjectileMeshComponent->SetCollisionObjectType(ECC_GameTraceChannel1);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
@@ -27,10 +27,6 @@ AProjectileBase::AProjectileBase()
 	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
 	NiagaraComponent->SetupAttachment(RootComponent);
 	NiagaraComponent->bAutoActivate = false; // We activate it in BeginPlay
-
-
-
-	
 }
 
 // Called when the game starts or when spawned
@@ -38,15 +34,13 @@ void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ElementVFX)
+	if (ElementVfx)
 	{
-		NiagaraComponent->SetAsset(ElementVFX);
+		NiagaraComponent->SetAsset(ElementVfx);
 		NiagaraComponent->Activate(true);
 	}
 
 	SetLifeSpan(LifeTime);
-
-	
 }
 
 // Called every frame
@@ -54,5 +48,3 @@ void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-
