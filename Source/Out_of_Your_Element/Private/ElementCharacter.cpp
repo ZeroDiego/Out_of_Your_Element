@@ -3,12 +3,14 @@
 
 #include "ElementCharacter.h"
 #include "ElementAbilitySystemComponent.h"
+#include "ElementAnimInstance.h"
 #include "ProjectileBase.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "HealthAttributeSet.h"
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -92,6 +94,13 @@ void AElementCharacter::BeginPlay()
 	}
 
 	DoCycleElement(0);
+}
+
+void AElementCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 }
 
 void AElementCharacter::Tick(const float DeltaSeconds)
@@ -252,15 +261,49 @@ void AElementCharacter::DoBaseAttack()
 	if (!BaseAttack)
 		return;
 
+	for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
+	{
+		if (Tag.IsValid())
+		{
+			if (Tag.GetTagName() == TEXT("Abilities.BaseAttack") || Tag.GetTagName() == TEXT("Abilities.Water"))
+			{
+				return;
+			}
+		}
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	UElementAnimInstance* ElementAnimInstance = Cast<UElementAnimInstance>(AnimInstance);
+	if (ElementAnimInstance->bIsAttacking)
+	{
+		ElementAnimInstance->bIsAttacking = false;
+	}
+	if (!ElementAnimInstance->bIsAttacking)
+	{
+		ElementAnimInstance->bIsAttacking = true;
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+	FTimerHandle TimerHandle;
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, "DoBaseAttackHelperFunction", BaseAttack);
+	GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.36f, false);
+}
+
+void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack) const
+{
 	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack))
 	{
-		bIsAttacking = true;
+		const FGameplayEffectContextHandle AnimationDelayBaseAttackGameplayEffectContextHandle;
+		ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(AnimationDelayBaseAttackGameplayEffect, 1,
+		                                                            AnimationDelayBaseAttackGameplayEffectContextHandle);
 		OnAttackDelegate.Broadcast(FAttackData{
 			.Element = ActiveElement,
 			.Ability = BaseAttack
 		});
 	}
 }
+
 
 void AElementCharacter::DoHeavyAttack()
 {

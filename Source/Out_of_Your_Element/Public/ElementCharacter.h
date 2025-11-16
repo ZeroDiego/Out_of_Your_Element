@@ -65,6 +65,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnAttack OnAttackDelegate;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> AnimationDelayBaseAttackGameplayEffect;
+
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
@@ -118,6 +121,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	virtual void Tick(const float DeltaSeconds) override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -142,6 +147,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoBaseAttack();
+
+	UFUNCTION()
+	void DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack) const;
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoHeavyAttack();

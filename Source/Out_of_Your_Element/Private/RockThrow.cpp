@@ -49,7 +49,6 @@ void URockThrow::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		}
 	}
 
-	BP_ApplyGameplayEffectToOwner(AnimationDelayBaseAttackGameplayEffect);
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true, nullptr);
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
