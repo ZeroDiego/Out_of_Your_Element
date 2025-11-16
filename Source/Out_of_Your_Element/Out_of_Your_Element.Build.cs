@@ -8,7 +8,7 @@ public class Out_of_Your_Element : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", 	"GameplayTags", "GameplayAbilities", "GameplayTasks", "AIModule",  "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", 	"GameplayTags", "GameplayAbilities", "GameplayTasks", "AIModule",  "Niagara" ,  "NiagaraCore", "NiagaraShader", "NiagaraAnimNotifies"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

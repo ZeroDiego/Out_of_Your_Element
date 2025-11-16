@@ -4,7 +4,6 @@
 #include "ProjectileBase.h"
 #include "Components/SceneComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "NiagaraComponent.h"
 #include "Math/UnitConversion.h"
 
 // Sets default values
@@ -28,6 +27,8 @@ AProjectileBase::AProjectileBase()
 	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
 	NiagaraComponent->SetupAttachment(RootComponent);
 	NiagaraComponent->bAutoActivate = false; // We activate it in BeginPlay
+
+
 
 	
 }
@@ -53,3 +54,5 @@ void AProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+

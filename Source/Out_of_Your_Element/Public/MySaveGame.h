@@ -15,14 +15,14 @@ class OUT_OF_YOUR_ELEMENT_API UMySaveGame : public USaveGame
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, Category = Basic)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
 	FString SaveSlotName;
 	
-	UPROPERTY(VisibleAnywhere, Category = Basic)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
 	FString SaveName;
 
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-	uint32 UserIndex;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
+	int32 UserIndex;
 	
 	UMySaveGame();
 };

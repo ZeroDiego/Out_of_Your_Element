@@ -50,12 +50,14 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ProjectileMeshComponent;
 
-
+	// Projectile VFX
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
 	UNiagaraSystem* ElementVFX;
 
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* NiagaraComponent;
+
+
 
 	
 
@@ -71,5 +73,6 @@ public:
 	// Projectile movement component ref
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
-	
+
+
 };
