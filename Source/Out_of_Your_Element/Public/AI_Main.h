@@ -74,4 +74,6 @@ public:
 
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bIsDead = false;
+
+	//FVector LastKnownLocation;
 };
