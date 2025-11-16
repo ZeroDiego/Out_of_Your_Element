@@ -3,7 +3,8 @@
 
 #include "Components/AudioComponent.h"
 #include "AI_Controller.h"
-
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
@@ -133,6 +134,10 @@ void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 	{
 		if (const AProjectileBase* ProjectileBase = Cast<AProjectileBase>(OtherActor))
 		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				this, ProjectileBase->ElementPoofVfx, OverlappedActor->GetActorLocation(), FRotator(1),
+				FVector(1), true, true, ENCPoolMethod::AutoRelease, true);
+
 			if (ProjectileBase->GameplayEffectSpecHandle.IsValid())
 			{
 				ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(

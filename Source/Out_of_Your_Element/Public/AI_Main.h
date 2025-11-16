@@ -50,8 +50,8 @@ protected:
 	TSubclassOf<UGameplayEffect> SlowGameplayEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UGameplayEffect> HitStunGameplayEffect; 
-	
+	TSubclassOf<UGameplayEffect> HitStunGameplayEffect;
+
 	//UPROPERTY(BlueprintReadWrite)
 	//bool bIsAttacking = false;
 

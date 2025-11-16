@@ -18,7 +18,6 @@ void UWaterGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			
 			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()->
 			                                                   GetComponentLocation();
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
@@ -35,7 +34,8 @@ void UWaterGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				WaterGun->ProjectileMeshComponent->SetMaterial(0, WaterGunMaterial);
 
 				// projectile VFX
-				WaterGun->ElementVFX = WaterVFX;
+				WaterGun->ElementVfx = WaterVfx;
+				WaterGun->ElementPoofVfx = WaterPoofVfx;
 
 				const FGameplayEffectSpecHandle WaterGunGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
 					WaterGunGameplayEffect,

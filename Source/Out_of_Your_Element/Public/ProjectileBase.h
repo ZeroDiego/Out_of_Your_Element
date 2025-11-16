@@ -14,13 +14,12 @@
 #include "ProjectileBase.generated.h"
 
 
-
 UCLASS(Blueprintable)
 class OUT_OF_YOUR_ELEMENT_API AProjectileBase : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AProjectileBase();
 
@@ -45,31 +44,30 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
-	
+
 	// Projectile mesh component ref
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ProjectileMeshComponent;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
-	UNiagaraSystem* ElementVFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
+	UNiagaraSystem* ElementVfx;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
+	UNiagaraSystem* ElementPoofVfx;
 
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* NiagaraComponent;
-
-	
-
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Projectile movement component ref
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
-	
 };

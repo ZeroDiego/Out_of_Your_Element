@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	float FireballDamagePerSecond;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
-	UNiagaraSystem* FireballVFX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
+	UNiagaraSystem* FireballVfx;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
+	UNiagaraSystem* FireballPoofVfx;
 };

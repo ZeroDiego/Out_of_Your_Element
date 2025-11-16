@@ -33,9 +33,10 @@ void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				Fireball->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
 				Fireball->ProjectileMeshComponent->SetMaterial(0, FireballMaterial);
 
-				
+
 				// projectile VFX
-				Fireball->ElementVFX = FireballVFX;
+				Fireball->ElementVfx = FireballVfx;
+				Fireball->ElementPoofVfx = FireballPoofVfx;
 
 				const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
 					FireballGameplayEffect,
