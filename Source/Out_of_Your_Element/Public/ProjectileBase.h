@@ -6,9 +6,16 @@
 #include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
+#include "Components/ActorComponent.h"
 #include "ProjectileBase.generated.h"
 
-UCLASS()
+
+
+UCLASS(Blueprintable)
 class OUT_OF_YOUR_ELEMENT_API AProjectileBase : public AActor
 {
 	GENERATED_BODY()
@@ -42,6 +49,16 @@ public:
 	// Projectile mesh component ref
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* ProjectileMeshComponent;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
+	UNiagaraSystem* ElementVFX;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* NiagaraComponent;
+
+	
+
 
 protected:
 	// Called when the game starts or when spawned
