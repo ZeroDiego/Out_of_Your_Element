@@ -27,6 +27,7 @@ AElementCharacter::AElementCharacter()
 	CameraBoomRef->SetUsingAbsoluteRotation(true);
 	CameraBoomRef->TargetArmLength = TargetArmLength;
 	CameraBoomRef->SetRelativeRotation(CameraRotation);
+	CameraBoomRef->bDoCollisionTest = false;
 
 	CameraRef = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
 
