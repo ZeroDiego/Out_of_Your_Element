@@ -5,8 +5,11 @@
 #include "ElementAbilitySystemComponent.h"
 #include "ProjectileBase.h"
 #include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "HealthAttributeSet.h"
 #include "InputActionValue.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/InputDeviceSubsystem.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -72,11 +75,60 @@ void AElementCharacter::BeginPlay()
 			}
 		}
 	}
+
+	if (CursorWidgetClass)
+	{
+		if (APlayerController* CurrentController = Cast<APlayerController>(GetController()))
+		{
+			if (CurrentController->IsLocalController())
+			{
+				CursorWidgetRef = CreateWidget(CurrentController, CursorWidgetClass, TEXT("Cursor"));
+				FVector2D CursorPosition;
+				CurrentController->GetMousePosition(CursorPosition.X, CursorPosition.Y);
+				CursorWidgetRef->SetPositionInViewport(CursorPosition);
+				CursorWidgetRef->AddToPlayerScreen();
+			}
+		}
+	}
 }
 
 void AElementCharacter::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst -- cannot be const, will break add unique dynamic
+void AElementCharacter::OnInputMethodChange(const FPlatformUserId UserId, const FInputDeviceId DeviceId)
+{
+	if (const UInputDeviceSubsystem* InputDeviceSubsystem = UInputDeviceSubsystem::Get())
+	{
+		const FHardwareDeviceIdentifier InputDevice = InputDeviceSubsystem->GetInputDeviceHardwareIdentifier(DeviceId);
+
+		if (!InputDevice.IsValid())
+			return;
+
+		if (InputDevice.PrimaryDeviceType == EHardwareDevicePrimaryType::KeyboardAndMouse)
+		{
+			if (CursorWidgetRef && !CursorWidgetRef->IsVisible())
+			{
+				if (const APlayerController* CurrentController = Cast<APlayerController>(GetController()))
+				{
+					FVector2D CursorPosition;
+					CurrentController->GetMousePosition(CursorPosition.X, CursorPosition.Y);
+					CursorWidgetRef->SetPositionInViewport(CursorPosition);
+				}
+
+				CursorWidgetRef->AddToPlayerScreen();
+			}
+		}
+		else
+		{
+			if (CursorWidgetRef && CursorWidgetRef->IsVisible())
+			{
+				CursorWidgetRef->RemoveFromParent();
+			}
+		}
+	}
 }
 
 void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -85,22 +137,32 @@ void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(MoveAction,
-		                                   ETriggerEvent::Triggered,
-		                                   this,
-		                                   &AElementCharacter::Move
+		if (UInputDeviceSubsystem* InputDeviceSubsystem = UInputDeviceSubsystem::Get())
+		{
+			InputDeviceSubsystem->OnInputHardwareDeviceChanged.AddUniqueDynamic(
+				this, &AElementCharacter::OnInputMethodChange
+			);
+		}
+
+		EnhancedInputComponent->BindAction(
+			MoveAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::Move
 		);
 
-		EnhancedInputComponent->BindAction(MouseLookAction,
-		                                   ETriggerEvent::Triggered,
-		                                   this,
-		                                   &AElementCharacter::MouseLook
+		EnhancedInputComponent->BindAction(
+			MouseLookAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::MouseLook
 		);
 
-		EnhancedInputComponent->BindAction(LookAction,
-		                                   ETriggerEvent::Triggered,
-		                                   this,
-		                                   &AElementCharacter::Look
+		EnhancedInputComponent->BindAction(
+			LookAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::Look
 		);
 	}
 }
@@ -117,6 +179,13 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 	{
 		if (CurrentController->IsLocalPlayerController())
 		{
+			if (CursorWidgetRef)
+			{
+				FVector2D CursorPosition;
+				CurrentController->GetMousePosition(CursorPosition.X, CursorPosition.Y);
+				CursorWidgetRef->SetPositionInViewport(CursorPosition);
+			}
+
 			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
 			{
 				const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(

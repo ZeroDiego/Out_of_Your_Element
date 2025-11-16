@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "C++")
 	TSubclassOf<UGameplayEffect> FireballEffect;
 
+	UPROPERTY(EditAnywhere, Category = "Cursor")
+	TSubclassOf<UUserWidget> CursorWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<class UHealthAttributeSet> HealthAttributeSet;
 
@@ -58,6 +61,9 @@ protected:
 	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 private:
+	UPROPERTY()
+	UUserWidget* CursorWidgetRef;
+
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraRef;
 
@@ -70,6 +76,9 @@ private:
 public:
 	AElementCharacter();
 
+	UFUNCTION()
+	void OnInputMethodChange(const FPlatformUserId UserId, const FInputDeviceId DeviceId);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -78,16 +87,16 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	
+
 private:
 	void Move(const FInputActionValue& Value);
 	void MouseLook(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	
+
 public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(const float Right, const float Forward);
-	
+
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoLook(const float Yaw);
 };
