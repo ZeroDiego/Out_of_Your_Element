@@ -31,7 +31,6 @@ void UWaterGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
 				WaterGun->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
-				WaterGun->ProjectileMeshComponent->SetMaterial(0, WaterGunMaterial);
 
 				// projectile VFX
 				WaterGun->ElementVfx = WaterVfx;

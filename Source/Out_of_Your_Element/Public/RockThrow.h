@@ -23,9 +23,6 @@ public:
 	                             const FGameplayEventData* TriggerEventData) override;
 
 	UPROPERTY(EditAnywhere)
-	UMaterialInstance* RockThrowMaterial;
-
-	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> RockThrowGameplayEffect;
 
 	UPROPERTY(EditAnywhere)

@@ -31,8 +31,6 @@ void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
 				Fireball->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
-				Fireball->ProjectileMeshComponent->SetMaterial(0, FireballMaterial);
-
 
 				// projectile VFX
 				Fireball->ElementVfx = FireballVfx;
