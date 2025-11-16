@@ -90,6 +90,8 @@ void AElementCharacter::BeginPlay()
 			}
 		}
 	}
+
+	DoCycleElement(0);
 }
 
 void AElementCharacter::Tick(const float DeltaSeconds)
@@ -143,6 +145,34 @@ void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 				this, &AElementCharacter::OnInputMethodChange
 			);
 		}
+
+		EnhancedInputComponent->BindAction(
+			BaseAttackAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::DoBaseAttack
+		);
+
+		EnhancedInputComponent->BindAction(
+			HeavyAttackAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::DoHeavyAttack
+		);
+
+		EnhancedInputComponent->BindAction(
+			SpecialAttackAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::DoSpecialAttack
+		);
+
+		EnhancedInputComponent->BindAction(
+			CycleElementAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::CycleElement
+		);
 
 		EnhancedInputComponent->BindAction(
 			MoveAction,
@@ -204,6 +234,82 @@ void AElementCharacter::Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
 	DoLook(LookAxisVector.X);
+}
+
+void AElementCharacter::CycleElement(const FInputActionValue& Value)
+{
+	const float In = Value.Get<float>();
+	DoCycleElement(In > 0 ? FMath::CeilToInt(In) : FMath::FloorToInt(In));
+}
+
+void AElementCharacter::DoBaseAttack()
+{
+	if (!ElementAbilitySystemComponent)
+		return;
+
+	const TSubclassOf<UGameplayAbility>& BaseAttack = ActiveElement.BaseAttackAbility;
+
+	if (!BaseAttack)
+		return;
+
+	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack))
+	{
+		bIsAttacking = true;
+		OnAttackDelegate.Broadcast(FAttackData{
+			.Element = ActiveElement,
+			.Ability = BaseAttack
+		});
+	}
+}
+
+void AElementCharacter::DoHeavyAttack()
+{
+	if (!ElementAbilitySystemComponent)
+		return;
+
+	const TSubclassOf<UGameplayAbility>& HeavyAttack = ActiveElement.HeavyAttackAbility;
+
+	if (!HeavyAttack)
+		return;
+
+	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(HeavyAttack))
+	{
+		bIsAttacking = true;
+		OnAttackDelegate.Broadcast(FAttackData{
+			.Element = ActiveElement,
+			.Ability = HeavyAttack
+		});
+	}
+}
+
+void AElementCharacter::DoSpecialAttack()
+{
+	if (!ElementAbilitySystemComponent)
+		return;
+
+	const TSubclassOf<UGameplayAbility>& SpecialAttack = ActiveElement.SpecialAttackAbility;
+
+	if (!SpecialAttack)
+		return;
+
+	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(SpecialAttack))
+	{
+		bIsAttacking = true;
+		OnAttackDelegate.Broadcast(FAttackData{
+			.Element = ActiveElement,
+			.Ability = SpecialAttack
+		});
+	}
+}
+
+void AElementCharacter::DoCycleElement(const int Amount)
+{
+	if (Elements.IsEmpty())
+		return;
+
+	ActiveElementIndex = (ActiveElementIndex + Amount) % Elements.Num();
+	if (ActiveElementIndex < 0) ActiveElementIndex = Elements.Num() - 1; // TODO Improve this :sweat_smile:
+	ActiveElement = Elements[ActiveElementIndex];
 }
 
 void AElementCharacter::DoMove(const float Right, const float Forward)
