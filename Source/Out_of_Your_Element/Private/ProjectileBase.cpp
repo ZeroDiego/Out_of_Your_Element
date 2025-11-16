@@ -2,7 +2,9 @@
 
 
 #include "ProjectileBase.h"
-
+#include "Components/SceneComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Math/UnitConversion.h"
 
 // Sets default values
@@ -21,6 +23,13 @@ AProjectileBase::AProjectileBase()
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
 	ProjectileMovement->MaxSpeed = ProjectileMaxSpeed;
 	ProjectileMovement->ProjectileGravityScale = GravityScale;
+
+	// Create the Niagara component
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
+	NiagaraComponent->SetupAttachment(RootComponent);
+	NiagaraComponent->bAutoActivate = false; // We activate it in BeginPlay
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -28,7 +37,15 @@ void AProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (ElementVFX)
+	{
+		NiagaraComponent->SetAsset(ElementVFX);
+		NiagaraComponent->Activate(true);
+	}
+
 	SetLifeSpan(LifeTime);
+
+	
 }
 
 // Called every frame

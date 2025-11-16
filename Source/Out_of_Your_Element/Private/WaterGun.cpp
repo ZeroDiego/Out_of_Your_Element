@@ -34,6 +34,9 @@ void UWaterGun::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				WaterGun->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
 				WaterGun->ProjectileMeshComponent->SetMaterial(0, WaterGunMaterial);
 
+				// projectile VFX
+				WaterGun->ElementVFX = WaterVFX;
+
 				const FGameplayEffectSpecHandle WaterGunGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
 					WaterGunGameplayEffect,
 					1);
