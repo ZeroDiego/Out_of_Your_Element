@@ -3,10 +3,9 @@
 
 #include "Fireball.h"
 #include "GameFramework/Character.h"
-#include "ElementAbilitySystemComponent.h"
-#include "ElementGameplayTags.h"
-#include "FiringOffset.h"
-#include "ProjectileBase.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/Character/FiringOffset.h"
+#include "Out_of_Your_Element/Projectile/ProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
 void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

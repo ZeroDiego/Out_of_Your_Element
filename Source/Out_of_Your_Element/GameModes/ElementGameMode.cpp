@@ -2,8 +2,6 @@
 
 
 #include "ElementGameMode.h"
-#include "ElementCharacter.h"
-#include "ElementPlayerController.h"
 
 AElementGameMode::AElementGameMode()
 {

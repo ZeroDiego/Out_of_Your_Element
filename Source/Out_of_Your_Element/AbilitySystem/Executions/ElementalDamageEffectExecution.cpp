@@ -1,6 +1,6 @@
 ﻿#include "ElementalDamageEffectExecution.h"
-#include "ElementGameplayTags.h"
-#include "HealthAttributeSet.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/HealthAttributeSet.h"
 
 bool FindAnyExact(const FGameplayTagContainer& Target, const FGameplayTagContainer& Source, FGameplayTag& Found)
 {

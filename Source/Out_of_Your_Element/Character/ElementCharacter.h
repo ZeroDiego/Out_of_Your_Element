@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ElementAbilitySystemComponent.h"
+#include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "FiringOffset.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "AbilitySystemInterface.h"
-#include "Element.h"
+#include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "InputActionValue.h"
 #include "ElementCharacter.generated.h"
 

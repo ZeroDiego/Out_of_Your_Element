@@ -2,14 +2,12 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "ProjectileBase.h"
 #include "Abilities/GameplayAbility.h"
 #include "WaterGun.generated.h"
 
-/**
- * 
- */
+class AProjectileBase;
+class UNiagaraSystem;
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UWaterGun : public UGameplayAbility
 {

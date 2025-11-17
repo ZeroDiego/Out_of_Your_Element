@@ -1,6 +1,6 @@
 #include "BTTask_StopMovement.h"
-#include "AI_Controller.h"
-#include "AI_Main.h"
+#include "Out_of_Your_Element/AI/AI_Controller.h"
+#include "Out_of_Your_Element/AI/AI_Main.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Navigation/PathFollowingComponent.h"

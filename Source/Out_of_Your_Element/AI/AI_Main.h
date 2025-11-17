@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ElementAbilitySystemComponent.h"
+#include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/Character.h"
 

@@ -2,16 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "ProjectileBase.h"
 #include "Abilities/GameplayAbility.h"
-#include "RockThrow.generated.h"
+#include "Fireball.generated.h"
 
-/**
- * 
- */
+class AProjectileBase;
+class UNiagaraSystem;
+
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API URockThrow : public UGameplayAbility
+class OUT_OF_YOUR_ELEMENT_API UFireball : public UGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -23,14 +21,23 @@ public:
 	                             const FGameplayEventData* TriggerEventData) override;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> RockThrowGameplayEffect;
+	TSubclassOf<UGameplayEffect> FireballGameplayEffect;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectileBase> ProjectileBase;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
-	UNiagaraSystem* RockVfx;
+	UPROPERTY(EditAnywhere)
+	float FireballDamageDuration;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
-	UNiagaraSystem* RockPoofVfx;
+	UPROPERTY(EditAnywhere)
+	float FireballDamagePerSecond;
+
+	UPROPERTY(EditAnywhere, Category="VFX")
+	UNiagaraSystem* FireballVfx;
+
+	UPROPERTY(EditAnywhere, Category="VFX")
+	UNiagaraSystem* FireballPoofVfx;
+
+	UPROPERTY(EditAnywhere, Category="VFX")
+	UNiagaraSystem* FireballDotVfx;
 };

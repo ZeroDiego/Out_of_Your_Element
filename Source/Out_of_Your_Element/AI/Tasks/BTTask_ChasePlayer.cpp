@@ -24,7 +24,7 @@
 #include "BTTask_ChasePlayer.h"
 
 // Project headers -------------------------------------------------------------
-#include "AI_Controller.h"                    // Custom AI controller class.
+#include "Out_of_Your_Element/AI/AI_Controller.h"                    // Custom AI controller class.
 
 // Unreal headers --------------------------------------------------------------
 #include "BehaviorTree/BlackboardComponent.h" // Access Blackboard values.

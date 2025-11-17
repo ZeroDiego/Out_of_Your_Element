@@ -15,9 +15,9 @@
 #include "EngineUtils.h"
 
 //#include "PlayerCharacter.h"
-#include "Fireball.h"
-#include "HealthAttributeSet.h"
-#include "ProjectileBase.h"
+#include "Out_of_Your_Element/AbilitySystem/Abilities/Fireball.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/HealthAttributeSet.h"
+#include "Out_of_Your_Element/Projectile/ProjectileBase.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 

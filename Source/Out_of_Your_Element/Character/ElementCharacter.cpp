@@ -2,12 +2,12 @@
 
 
 #include "ElementCharacter.h"
-#include "ElementAbilitySystemComponent.h"
-#include "ElementAnimInstance.h"
-#include "ProjectileBase.h"
+#include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
+#include "Out_of_Your_Element/Animation/ElementAnimInstance.h"
+#include "Out_of_Your_Element/Projectile/ProjectileBase.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "HealthAttributeSet.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/HealthAttributeSet.h"
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
