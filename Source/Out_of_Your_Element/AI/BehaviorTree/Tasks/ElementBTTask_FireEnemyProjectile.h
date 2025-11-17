@@ -3,7 +3,7 @@
 //  In production keep .h and .cpp separate.  The header is included above, so
 //  *this* copy is purely illustrative.
 // ───────────────────────────────────────────────────────────────────────────── //
-   // <–––– REMOVE THIS BLOCK IN REAL HEADER FILE >
+// <–––– REMOVE THIS BLOCK IN REAL HEADER FILE >
 #pragma once
 
 #include "CoreMinimal.h"
@@ -20,16 +20,16 @@ class OUT_OF_YOUR_ELEMENT_API UElementBTTask_FireEnemyProjectile : public UBTTas
 
 public:
 	UElementBTTask_FireEnemyProjectile();
-	
+
 	UPROPERTY(EditAnywhere, Category="Firing")
 	float FiringCooldown = 5.f;
-	
+
 	UPROPERTY(EditAnywhere, Category="Firing")
 	float MuzzleForwardOffset = 100.f;
 
 	UPROPERTY(EditAnywhere, Category="Firing")
 	float MuzzleUpOffset = 50.f;
-	
+
 	UPROPERTY(EditAnywhere, Category="Firing")
 	TSubclassOf<class AElementProjectileBase> ProjectileClass;
 
@@ -38,6 +38,5 @@ protected:
 	FTimerHandle ResetFireHandle;
 
 private:
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp,
-											uint8* NodeMemory) override;
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

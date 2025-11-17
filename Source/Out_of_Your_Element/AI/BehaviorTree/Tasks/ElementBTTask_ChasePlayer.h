@@ -1,5 +1,3 @@
-
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -13,6 +11,6 @@ class OUT_OF_YOUR_ELEMENT_API UElementBTTask_ChasePlayer : public UBTTask_Blackb
 	GENERATED_BODY()
 
 public:
-	explicit UElementBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer);
+	explicit UElementBTTask_ChasePlayer(const FObjectInitializer& ObjectInitializer);
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

@@ -8,10 +8,12 @@
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
-void UElementGameplayAbility_Fireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                const FGameplayAbilityActorInfo* ActorInfo,
-                                const FGameplayAbilityActivationInfo ActivationInfo,
-                                const FGameplayEventData* TriggerEventData)
+void UElementGameplayAbility_Fireball::ActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData
+)
 {
 	if (AActor* Actor = GetAvatarActorFromActorInfo())
 	{

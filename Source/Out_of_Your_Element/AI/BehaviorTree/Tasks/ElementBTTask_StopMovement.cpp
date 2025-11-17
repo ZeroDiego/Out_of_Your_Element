@@ -22,7 +22,6 @@ EBTNodeResult::Type UElementBTTask_StopMovement::ExecuteTask(UBehaviorTreeCompon
 			Cont->StopMovement();
 			//Move to playerlocation från chase blir cancelled om man clearar playerlocation
 			OwnerComp.GetBlackboardComponent()->ClearValue(FName("TargetLocation"));
-
 		}
 
 		return EBTNodeResult::Succeeded;

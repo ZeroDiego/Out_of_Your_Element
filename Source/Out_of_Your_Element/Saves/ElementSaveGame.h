@@ -17,12 +17,12 @@ class OUT_OF_YOUR_ELEMENT_API UElementSaveGame : public USaveGame
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
 	FString SaveSlotName;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
 	FString SaveName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
 	int32 UserIndex;
-	
+
 	UElementSaveGame();
 };

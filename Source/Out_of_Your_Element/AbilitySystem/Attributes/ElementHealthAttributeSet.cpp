@@ -30,7 +30,11 @@ void UElementHealthAttributeSet::PreAttributeBaseChange(const FGameplayAttribute
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 }
 
-void UElementHealthAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+void UElementHealthAttributeSet::PostAttributeChange(
+	const FGameplayAttribute& Attribute,
+	const float OldValue,
+	const float NewValue
+)
 {
 	CHECK_AND_NOTIFY_UPDATE(Health, MaxHealth);
 
@@ -56,7 +60,7 @@ void UElementHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffect
 			SetDamage(0.0f);
 			return;
 		}
-		
+
 		const float DamageValue = GetDamage();
 		const float OldHealthValue = GetHealth();
 		const float MaxHealthValue = GetMaxHealth();

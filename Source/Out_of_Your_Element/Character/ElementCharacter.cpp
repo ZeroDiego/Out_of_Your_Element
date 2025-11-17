@@ -352,7 +352,9 @@ void AElementCharacter::DoCycleElement(const int Amount)
 		return;
 
 	ActiveElementIndex = (ActiveElementIndex + Amount) % Elements.Num();
-	if (ActiveElementIndex < 0) ActiveElementIndex = Elements.Num() - 1; // TODO Improve this :sweat_smile:
+	if (ActiveElementIndex < 0)
+		ActiveElementIndex = Elements.Num() - 1; // TODO Improve this :sweat_smile:
+
 	const FElement OldElement = ActiveElement;
 	ActiveElement = Elements[ActiveElementIndex];
 	OnElementChangedDelegate.Broadcast(OldElement, ActiveElement);

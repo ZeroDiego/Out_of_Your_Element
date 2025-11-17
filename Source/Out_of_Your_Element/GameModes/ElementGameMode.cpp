@@ -5,7 +5,6 @@
 
 AElementGameMode::AElementGameMode()
 {
-
 }
 
 void AElementGameMode::BeginPlay()

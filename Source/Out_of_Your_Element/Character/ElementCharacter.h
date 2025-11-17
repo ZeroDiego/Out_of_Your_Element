@@ -122,13 +122,13 @@ private:
 
 public:
 	AElementCharacter();
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void Tick(const float DeltaSeconds) override;

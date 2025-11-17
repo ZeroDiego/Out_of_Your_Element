@@ -23,9 +23,9 @@ protected:
 
 private:
 	//UAISenseConfig_Sight* SightConfig = nullptr;
-    
+
 	//void SetupPerceptionSystem();
-    
+
 	//UFUNCTION()
 	//void OnTargetDetected(AActor* Actor, FAIStimulus Stimulus);
 };

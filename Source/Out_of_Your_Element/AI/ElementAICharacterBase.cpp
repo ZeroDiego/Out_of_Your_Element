@@ -176,7 +176,8 @@ void AElementAICharacterBase::OnActorOverlap(AActor* OverlappedActor, AActor* Ot
 					}
 				}
 
-				if (const UElementGameplayAbility_Fireball* Fireball = Cast<UElementGameplayAbility_Fireball>(ProjectileBase->SourceAbility))
+				if (const UElementGameplayAbility_Fireball* Fireball
+					= Cast<UElementGameplayAbility_Fireball>(ProjectileBase->SourceAbility))
 				{
 					if (Fireball->FireballDotVfx)
 					{

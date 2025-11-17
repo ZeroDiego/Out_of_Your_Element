@@ -24,7 +24,8 @@ void UElementFiringOffset::BeginPlay()
 
 
 // Called every frame
-void UElementFiringOffset::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UElementFiringOffset::TickComponent(float DeltaTime, ELevelTick TickType,
+                                         FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 

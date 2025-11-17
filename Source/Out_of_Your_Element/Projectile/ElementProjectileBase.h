@@ -44,7 +44,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
-	
+
 	UPROPERTY(EditAnywhere)
 	UGameplayAbility* SourceAbility;
 

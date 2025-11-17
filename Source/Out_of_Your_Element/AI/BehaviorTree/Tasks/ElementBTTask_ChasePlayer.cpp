@@ -34,38 +34,38 @@
 //  Constructor
 // ───────────────────────────────────────────────────────────────────────────── //
 UElementBTTask_ChasePlayer::UElementBTTask_ChasePlayer(const FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer)
+	: Super(ObjectInitializer)
 {
-    // Name shown on the BT node in the editor.
-    NodeName = TEXT("Chase Player");
+	// Name shown on the BT node in the editor.
+	NodeName = TEXT("Chase Player");
 }
 
-EBTNodeResult::Type UElementBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp,uint8* )
+EBTNodeResult::Type UElementBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8*)
 {
-    // 1) grab and Validate AI controller
-    AElementalAIController* const AICont = Cast<AElementalAIController>(OwnerComp.GetAIOwner());
-    if (!AICont)
-    {
-        return EBTNodeResult::Failed;   // Controller saknas
-    }
+	// 1) grab and Validate AI controller
+	AElementalAIController* const AICont = Cast<AElementalAIController>(OwnerComp.GetAIOwner());
+	if (!AICont)
+	{
+		return EBTNodeResult::Failed; // Controller saknas
+	}
 
-    // 2) grab the blackboard component and checks if retrieved
-    UBlackboardComponent* const BB = OwnerComp.GetBlackboardComponent();
-    if (!BB)
-    {
-        return EBTNodeResult::Failed;   
-    }
+	// 2) grab the blackboard component and checks if retrieved
+	UBlackboardComponent* const BB = OwnerComp.GetBlackboardComponent();
+	if (!BB)
+	{
+		return EBTNodeResult::Failed;
+	}
 
-    const FVector TargetLocation = BB->GetValueAsVector(GetSelectedBlackboardKey()); //Grabs players location
-    if (!TargetLocation.IsNearlyZero()) // Zero vector = key not set / invalid. Annars kutar AIn mot world origin
-    {
-        // 3) simple move request mot playerlocation
-        UAIBlueprintHelperLibrary::SimpleMoveToLocation(AICont, TargetLocation);
+	const FVector TargetLocation = BB->GetValueAsVector(GetSelectedBlackboardKey()); //Grabs players location
+	if (!TargetLocation.IsNearlyZero()) // Zero vector = key not set / invalid. Annars kutar AIn mot world origin
+	{
+		// 3) simple move request mot playerlocation
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(AICont, TargetLocation);
 
-        // 4) Mark the task complete
-        FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-        return EBTNodeResult::Succeeded;
-    }
-    
-    return EBTNodeResult::Failed;
+		// 4) Mark the task complete
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return EBTNodeResult::Succeeded;
+	}
+
+	return EBTNodeResult::Failed;
 }

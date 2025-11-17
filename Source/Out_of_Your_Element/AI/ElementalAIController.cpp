@@ -1,4 +1,3 @@
-
 #include "ElementalAIController.h"
 //#include "PlayerCharacter.h"                    // For Cast< APlayerCharacter >
 #include "BehaviorTree/BlackboardComponent.h"   // Blackboard access from code
@@ -8,37 +7,36 @@
 
 // ───────────────────────────────────────────────────────────── Constructor ─── //
 AElementalAIController::AElementalAIController(const FObjectInitializer& FObjectInitializer)
-	: Super(FObjectInitializer)            
+	: Super(FObjectInitializer)
 {
 	// bygger perception tidigt så den finns innan possession.
 	//SetupPerceptionSystem();
 }
+
 // ───────────────────────────────────────────────────────────── OnPossess ──── //
 void AElementalAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
 	//SetMoveBlockDetection(true);
-    
+
 	if (AElementAICharacterBase* AI = Cast<AElementAICharacterBase>(InPawn))
 	{
-        
-		 //-------------------------------------------------- Behaviour Tree 
-		if (UBehaviorTree*  BT = AI->GetBehaviorTree())
+		//-------------------------------------------------- Behaviour Tree 
+		if (UBehaviorTree* BT = AI->GetBehaviorTree())
 		{
 			UBlackboardComponent* NewBB = nullptr;
 			UseBlackboard(BT->BlackboardAsset, NewBB);
-			Blackboard = NewBB;               
-			RunBehaviorTree(BT);              
+			Blackboard = NewBB;
+			RunBehaviorTree(BT);
 		}
-        
+
 		if (UCrowdFollowingComponent* Crowd =
-				Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
+			Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
 		{
-			Crowd->SuspendCrowdSteering(false);   // false = aktiv
+			Crowd->SuspendCrowdSteering(false); // false = aktiv
 		}
 	}
-	
 }
 
 // ───────────────────────────────────────────────────── SetupPerceptionSystem ─── //

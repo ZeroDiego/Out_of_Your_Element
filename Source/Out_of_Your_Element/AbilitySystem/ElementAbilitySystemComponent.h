@@ -9,5 +9,4 @@ UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UElementAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
-	
 };
