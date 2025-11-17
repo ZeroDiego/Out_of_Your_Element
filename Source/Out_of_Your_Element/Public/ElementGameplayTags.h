@@ -24,6 +24,4 @@ namespace ElementGameplayTags
 	OUT_OF_YOUR_ELEMENT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Abilities_Cooldowns_Fire)
 	OUT_OF_YOUR_ELEMENT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Abilities_Cooldowns_Water)
 	OUT_OF_YOUR_ELEMENT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Abilities_Cooldowns_Nature)
-
-	OUT_OF_YOUR_ELEMENT_API extern const FGameplayTagContainer DamageTypes;
 };
