@@ -3,13 +3,13 @@
 #pragma once
 
 #include "Abilities/GameplayAbility.h"
-#include "Fireball.generated.h"
+#include "ElementGameplayAbility_WaterGun.generated.h"
 
-class AProjectileBase;
+class AElementProjectileBase;
 class UNiagaraSystem;
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UFireball : public UGameplayAbility
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_WaterGun : public UGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -21,23 +21,14 @@ public:
 	                             const FGameplayEventData* TriggerEventData) override;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> FireballGameplayEffect;
+	TSubclassOf<UGameplayEffect> WaterGunGameplayEffect;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AProjectileBase> ProjectileBase;
+	TSubclassOf<AElementProjectileBase> ProjectileBase;
 
-	UPROPERTY(EditAnywhere)
-	float FireballDamageDuration;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
+	UNiagaraSystem* WaterVfx;
 
-	UPROPERTY(EditAnywhere)
-	float FireballDamagePerSecond;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireballVfx;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireballPoofVfx;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireballDotVfx;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
+	UNiagaraSystem* WaterPoofVfx;
 };

@@ -7,18 +7,18 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/Character.h"
 
-#include "AI_Main.generated.h"
+#include "ElementAICharacterBase.generated.h"
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAIDeathEvent);
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API AAI_Main : public ACharacter
+class OUT_OF_YOUR_ELEMENT_API AElementAICharacterBase : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	AAI_Main();
+	AElementAICharacterBase();
 
 	UBehaviorTree* GetBehaviorTree() const;
 
@@ -27,7 +27,7 @@ public:
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
 	UPROPERTY()
-	TObjectPtr<class UHealthAttributeSet> HealthAttributeSet;
+	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
 
 	//UPROPERTY(BlueprintReadWrite)
 	//int32 AIHealth;

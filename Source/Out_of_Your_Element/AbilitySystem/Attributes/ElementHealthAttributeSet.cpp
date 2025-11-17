@@ -1,15 +1,15 @@
-﻿#include "HealthAttributeSet.h"
+﻿#include "ElementHealthAttributeSet.h"
 
-#include "Out_of_Your_Element/AbilitySystem/Executions/ElementalDamageEffectExecution.h"
+#include "Out_of_Your_Element/AbilitySystem/Executions/ElementDamageExecution.h"
 #include "GameplayEffectExtension.h"
 
-UHealthAttributeSet::UHealthAttributeSet()
+UElementHealthAttributeSet::UElementHealthAttributeSet()
 {
 	InitHealth(100.0f);
 	InitMaxHealth(100.0f);
 }
 
-void UHealthAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
+void UElementHealthAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	if (Attribute == GetHealthAttribute())
 	{
@@ -30,7 +30,7 @@ void UHealthAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attri
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 }
 
-void UHealthAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+void UElementHealthAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	CHECK_AND_NOTIFY_UPDATE(Health, MaxHealth);
 
@@ -39,10 +39,10 @@ void UHealthAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribut
 
 bool IsElementalDamageEffectExecution(const FGameplayEffectExecutionDefinition& Def)
 {
-	return Def.CalculationClass->IsChildOf(UElementalDamageEffectExecution::StaticClass());
+	return Def.CalculationClass->IsChildOf(UElementDamageExecution::StaticClass());
 }
 
-void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void UElementHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 

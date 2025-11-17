@@ -1,17 +1,17 @@
-#include "BTTask_StopMovement.h"
-#include "Out_of_Your_Element/AI/AI_Controller.h"
-#include "Out_of_Your_Element/AI/AI_Main.h"
+#include "ElementBTTask_StopMovement.h"
+#include "Out_of_Your_Element/AI/ElementalAIController.h"
+#include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-UBTTask_StopMovement::UBTTask_StopMovement()
+UElementBTTask_StopMovement::UElementBTTask_StopMovement()
 {
 	NodeName = TEXT("Stop Movement");
 }
 
-EBTNodeResult::Type UBTTask_StopMovement::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UElementBTTask_StopMovement::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	if (AAIController* Cont = Cast<AAIController>(OwnerComp.GetAIOwner()))
 	{

@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
-#include "BTTask_ChasePlayer.generated.h"
+#include "ElementBTTask_ChasePlayer.generated.h"
 
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UBTTask_ChasePlayer : public UBTTask_BlackboardBase
+class OUT_OF_YOUR_ELEMENT_API UElementBTTask_ChasePlayer : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 
 public:
-	explicit UBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer);
+	explicit UElementBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer);
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

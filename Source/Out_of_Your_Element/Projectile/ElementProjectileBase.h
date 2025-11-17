@@ -11,17 +11,17 @@
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
 #include "Components/ActorComponent.h"
-#include "ProjectileBase.generated.h"
+#include "ElementProjectileBase.generated.h"
 
 
 UCLASS(Blueprintable)
-class OUT_OF_YOUR_ELEMENT_API AProjectileBase : public AActor
+class OUT_OF_YOUR_ELEMENT_API AElementProjectileBase : public AActor
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AProjectileBase();
+	AElementProjectileBase();
 
 	// Projectile scale
 	UPROPERTY(EditAnywhere)

@@ -3,13 +3,13 @@
 #pragma once
 
 #include "Abilities/GameplayAbility.h"
-#include "WaterGun.generated.h"
+#include "ElementGameplayAbility_RockThrow.generated.h"
 
-class AProjectileBase;
+class AElementProjectileBase;
 class UNiagaraSystem;
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UWaterGun : public UGameplayAbility
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_RockThrow : public UGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -21,14 +21,14 @@ public:
 	                             const FGameplayEventData* TriggerEventData) override;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> WaterGunGameplayEffect;
+	TSubclassOf<UGameplayEffect> RockThrowGameplayEffect;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AProjectileBase> ProjectileBase;
+	TSubclassOf<AElementProjectileBase> ProjectileBase;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
-	UNiagaraSystem* WaterVfx;
+	UNiagaraSystem* RockVfx;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
-	UNiagaraSystem* WaterPoofVfx;
+	UNiagaraSystem* RockPoofVfx;
 };

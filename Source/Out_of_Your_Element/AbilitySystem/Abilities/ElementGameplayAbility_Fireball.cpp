@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Fireball.h"
+#include "ElementGameplayAbility_Fireball.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Out_of_Your_Element/Character/FiringOffset.h"
-#include "Out_of_Your_Element/Projectile/ProjectileBase.h"
+#include "Out_of_Your_Element/Character/ElementFiringOffset.h"
+#include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
-void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UElementGameplayAbility_Fireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                 const FGameplayAbilityActorInfo* ActorInfo,
                                 const FGameplayAbilityActivationInfo ActivationInfo,
                                 const FGameplayEventData* TriggerEventData)
@@ -17,12 +17,12 @@ void UFireball::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UFiringOffset>()
+			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UElementFiringOffset>()
 			                                                 ->GetComponentLocation();
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
 
-			if (AProjectileBase* Fireball = GetWorld()->SpawnActorDeferred<AProjectileBase>(
+			if (AElementProjectileBase* Fireball = GetWorld()->SpawnActorDeferred<AElementProjectileBase>(
 				ProjectileBase,
 				SpawnProjectileTransform,
 				nullptr,

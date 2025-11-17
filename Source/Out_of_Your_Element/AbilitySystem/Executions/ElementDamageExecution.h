@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 #include "GameplayEffectExecutionCalculation.h"
-#include "ElementalDamageEffectExecution.generated.h"
+#include "ElementDamageExecution.generated.h"
 
 UCLASS()
-class UElementalDamageEffectExecution : public UGameplayEffectExecutionCalculation
+class UElementDamageExecution : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
 

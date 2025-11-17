@@ -1,8 +1,8 @@
-#include "AI_Main.h"
+#include "ElementAICharacterBase.h"
 
 
 #include "Components/AudioComponent.h"
-#include "AI_Controller.h"
+#include "ElementalAIController.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
@@ -15,16 +15,16 @@
 #include "EngineUtils.h"
 
 //#include "PlayerCharacter.h"
-#include "Out_of_Your_Element/AbilitySystem/Abilities/Fireball.h"
-#include "Out_of_Your_Element/AbilitySystem/Attributes/HealthAttributeSet.h"
-#include "Out_of_Your_Element/Projectile/ProjectileBase.h"
+#include "Out_of_Your_Element/AbilitySystem/Abilities/ElementGameplayAbility_Fireball.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
+#include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 
 /* ─────────────────────────────────────────────── */
 /*                   CONSTRUCTOR                   */
 /* ─────────────────────────────────────────────── */
-AAI_Main::AAI_Main()
+AElementAICharacterBase::AElementAICharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AISoundComponent"));
@@ -35,17 +35,17 @@ AAI_Main::AAI_Main()
 		TEXT("ElementAbilitySystemComponent"));
 
 	// Creates an attribute set for health points
-	HealthAttributeSet = CreateDefaultSubobject<UHealthAttributeSet>(TEXT("Health Attribute Set"));
+	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
 
 	// Adds functionality for overlapping with other actors
-	OnActorBeginOverlap.AddDynamic(this, &AAI_Main::OnActorOverlap);
+	OnActorBeginOverlap.AddDynamic(this, &AElementAICharacterBase::OnActorOverlap);
 }
 
 /* ─────────────────────────────────────────────── */
-UBehaviorTree* AAI_Main::GetBehaviorTree() const { return BehaviorTree; }
+UBehaviorTree* AElementAICharacterBase::GetBehaviorTree() const { return BehaviorTree; }
 
 /* ─────────────────────────────────────────────── */
-void AAI_Main::BeginPlay()
+void AElementAICharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -88,7 +88,7 @@ void AAI_Main::BeginPlay()
 }
 
 /* ─────────────────────────────────────────────── */
-void AAI_Main::Tick(float DeltaTime)
+void AElementAICharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -105,7 +105,7 @@ void AAI_Main::Tick(float DeltaTime)
 				else if (Tag.GetTagName() == TEXT("Abilities.Nature"))
 				{
 					GetController()->StopMovement();
-					if (const AAI_Controller* AIController = Cast<AAI_Controller>(GetController()))
+					if (const AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
 					{
 						AIController->GetBrainComponent()->StopLogic("HitStun");
 					}
@@ -115,7 +115,7 @@ void AAI_Main::Tick(float DeltaTime)
 	}
 	else
 	{
-		if (const AAI_Controller* AIController = Cast<AAI_Controller>(GetController()))
+		if (const AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
 		{
 			AIController->GetBrainComponent()->StartLogic();
 		}
@@ -132,11 +132,11 @@ void AAI_Main::Tick(float DeltaTime)
 	*/
 }
 
-void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
+void AElementAICharacterBase::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	if (OverlappedActor && OtherActor)
 	{
-		if (const AProjectileBase* ProjectileBase = Cast<AProjectileBase>(OtherActor))
+		if (const AElementProjectileBase* ProjectileBase = Cast<AElementProjectileBase>(OtherActor))
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				this, ProjectileBase->ElementPoofVfx, OverlappedActor->GetActorLocation(), FRotator(1),
@@ -176,7 +176,7 @@ void AAI_Main::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 					}
 				}
 
-				if (const UFireball* Fireball = Cast<UFireball>(ProjectileBase->SourceAbility))
+				if (const UElementGameplayAbility_Fireball* Fireball = Cast<UElementGameplayAbility_Fireball>(ProjectileBase->SourceAbility))
 				{
 					if (Fireball->FireballDotVfx)
 					{

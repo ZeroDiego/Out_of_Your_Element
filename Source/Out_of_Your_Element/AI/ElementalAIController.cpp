@@ -1,5 +1,5 @@
 
-#include "AI_Controller.h"
+#include "ElementalAIController.h"
 //#include "PlayerCharacter.h"                    // For Cast< APlayerCharacter >
 #include "BehaviorTree/BlackboardComponent.h"   // Blackboard access from code
 #include "Perception/AIPerceptionComponent.h"   // UAIPerceptionComponent class
@@ -7,20 +7,20 @@
 #include "Navigation/PathFollowingComponent.h"  // Base path following
 
 // ───────────────────────────────────────────────────────────── Constructor ─── //
-AAI_Controller::AAI_Controller(const FObjectInitializer& FObjectInitializer)
+AElementalAIController::AElementalAIController(const FObjectInitializer& FObjectInitializer)
 	: Super(FObjectInitializer)            
 {
 	// bygger perception tidigt så den finns innan possession.
 	//SetupPerceptionSystem();
 }
 // ───────────────────────────────────────────────────────────── OnPossess ──── //
-void AAI_Controller::OnPossess(APawn* InPawn)
+void AElementalAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
 	//SetMoveBlockDetection(true);
     
-	if (AAI_Main* AI = Cast<AAI_Main>(InPawn))
+	if (AElementAICharacterBase* AI = Cast<AElementAICharacterBase>(InPawn))
 	{
         
 		 //-------------------------------------------------- Behaviour Tree 

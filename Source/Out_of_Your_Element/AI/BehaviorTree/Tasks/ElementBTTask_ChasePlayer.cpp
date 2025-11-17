@@ -21,10 +21,10 @@
 //    handles path‑finding once the destination is set.
 // ───────────────────────────────────────────────────────────────────────────── //
 
-#include "BTTask_ChasePlayer.h"
+#include "ElementBTTask_ChasePlayer.h"
 
 // Project headers -------------------------------------------------------------
-#include "Out_of_Your_Element/AI/AI_Controller.h"                    // Custom AI controller class.
+#include "Out_of_Your_Element/AI/ElementalAIController.h"                    // Custom AI controller class.
 
 // Unreal headers --------------------------------------------------------------
 #include "BehaviorTree/BlackboardComponent.h" // Access Blackboard values.
@@ -33,17 +33,17 @@
 // ───────────────────────────────────────────────────────────────────────────── //
 //  Constructor
 // ───────────────────────────────────────────────────────────────────────────── //
-UBTTask_ChasePlayer::UBTTask_ChasePlayer(const FObjectInitializer& ObjectInitializer)
+UElementBTTask_ChasePlayer::UElementBTTask_ChasePlayer(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
     // Name shown on the BT node in the editor.
     NodeName = TEXT("Chase Player");
 }
 
-EBTNodeResult::Type UBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp,uint8* )
+EBTNodeResult::Type UElementBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp,uint8* )
 {
     // 1) grab and Validate AI controller
-    AAI_Controller* const AICont = Cast<AAI_Controller>(OwnerComp.GetAIOwner());
+    AElementalAIController* const AICont = Cast<AElementalAIController>(OwnerComp.GetAIOwner());
     if (!AICont)
     {
         return EBTNodeResult::Failed;   // Controller saknas

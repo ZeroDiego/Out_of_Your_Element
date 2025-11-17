@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectileBase.h"
+#include "ElementProjectileBase.h"
 #include "Components/SceneComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Math/UnitConversion.h"
 
 // Sets default values
-AProjectileBase::AProjectileBase()
+AElementProjectileBase::AElementProjectileBase()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,7 +30,7 @@ AProjectileBase::AProjectileBase()
 }
 
 // Called when the game starts or when spawned
-void AProjectileBase::BeginPlay()
+void AElementProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -44,7 +44,7 @@ void AProjectileBase::BeginPlay()
 }
 
 // Called every frame
-void AProjectileBase::Tick(float DeltaTime)
+void AElementProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }

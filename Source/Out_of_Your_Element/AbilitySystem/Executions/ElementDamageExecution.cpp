@@ -1,6 +1,6 @@
-﻿#include "ElementalDamageEffectExecution.h"
+﻿#include "ElementDamageExecution.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Out_of_Your_Element/AbilitySystem/Attributes/HealthAttributeSet.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 
 bool FindAnyExact(const FGameplayTagContainer& Target, const FGameplayTagContainer& Source, FGameplayTag& Found)
 {
@@ -16,7 +16,7 @@ bool FindAnyExact(const FGameplayTagContainer& Target, const FGameplayTagContain
 	return false;
 }
 
-void UElementalDamageEffectExecution::Execute_Implementation(
+void UElementDamageExecution::Execute_Implementation(
 	const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
@@ -25,7 +25,7 @@ void UElementalDamageEffectExecution::Execute_Implementation(
 
 	const FGameplayEffectSpec& DamageSpec = ExecutionParams.GetOwningSpec();
 	const FGameplayEffectModifiedAttribute* DamageAttribute =
-		DamageSpec.GetModifiedAttribute(UHealthAttributeSet::GetDamageAttribute());
+		DamageSpec.GetModifiedAttribute(UElementHealthAttributeSet::GetDamageAttribute());
 
 	if (!DamageAttribute)
 	{
@@ -98,7 +98,7 @@ void UElementalDamageEffectExecution::Execute_Implementation(
 		return;
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(
-		UHealthAttributeSet::GetHealthAttribute(),
+		UElementHealthAttributeSet::GetHealthAttribute(),
 		EGameplayModOp::Additive,
 		-TotalDamage
 	));

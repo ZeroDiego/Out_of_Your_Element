@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "FiringOffset.h"
+#include "ElementFiringOffset.h"
 
 // Sets default values for this component's properties
-UFiringOffset::UFiringOffset()
+UElementFiringOffset::UElementFiringOffset()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -15,7 +15,7 @@ UFiringOffset::UFiringOffset()
 
 
 // Called when the game starts
-void UFiringOffset::BeginPlay()
+void UElementFiringOffset::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -24,7 +24,7 @@ void UFiringOffset::BeginPlay()
 
 
 // Called every frame
-void UFiringOffset::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UElementFiringOffset::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 

@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "ElementAttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "HealthAttributeSet.generated.h"
+#include "ElementHealthAttributeSet.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UHealthAttributeSet : public UElementAttributeSet
+class OUT_OF_YOUR_ELEMENT_API UElementHealthAttributeSet : public UElementAttributeSet
 {
 	GENERATED_BODY()
 
@@ -24,12 +24,12 @@ private:
 	FGameplayAttributeData DamageResistance;
 
 public:
-	UHealthAttributeSet();
+	UElementHealthAttributeSet();
 
-	ATTRIBUTE_ACCESSORS_BASIC(UHealthAttributeSet, Health);
-	ATTRIBUTE_ACCESSORS_BASIC(UHealthAttributeSet, MaxHealth);
-	ATTRIBUTE_ACCESSORS_BASIC(UHealthAttributeSet, Damage);
-	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UHealthAttributeSet, DamageResistance);
+	ATTRIBUTE_ACCESSORS_BASIC(UElementHealthAttributeSet, Health);
+	ATTRIBUTE_ACCESSORS_BASIC(UElementHealthAttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS_BASIC(UElementHealthAttributeSet, Damage);
+	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(UElementHealthAttributeSet, DamageResistance);
 
 	UPROPERTY(BlueprintAssignable, Meta = (HideFromModifiers))
 	FAttributeChangedEvent OnHealthChanged;

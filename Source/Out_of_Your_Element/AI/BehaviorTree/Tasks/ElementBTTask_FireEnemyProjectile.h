@@ -8,18 +8,18 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTask_FireEnemyProjectile.generated.h"
+#include "ElementBTTask_FireEnemyProjectile.generated.h"
 
 /**
  * Face player, fire a projectile, and manage the IsFiring blackboard flag.
  */
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UBTTask_FireEnemyProjectile : public UBTTaskNode
+class OUT_OF_YOUR_ELEMENT_API UElementBTTask_FireEnemyProjectile : public UBTTaskNode
 {
 	GENERATED_BODY()
 
 public:
-	UBTTask_FireEnemyProjectile();
+	UElementBTTask_FireEnemyProjectile();
 	
 	UPROPERTY(EditAnywhere, Category="Firing")
 	float FiringCooldown = 5.f;
@@ -31,7 +31,7 @@ public:
 	float MuzzleUpOffset = 50.f;
 	
 	UPROPERTY(EditAnywhere, Category="Firing")
-	TSubclassOf<class AProjectileBase> ProjectileClass;
+	TSubclassOf<class AElementProjectileBase> ProjectileClass;
 
 protected:
 	UPROPERTY()

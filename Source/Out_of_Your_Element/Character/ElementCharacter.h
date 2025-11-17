@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
-#include "FiringOffset.h"
+#include "ElementFiringOffset.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -65,7 +65,7 @@ public:
 	TSubclassOf<UUserWidget> CursorWidgetClass;
 
 	UPROPERTY()
-	TObjectPtr<class UHealthAttributeSet> HealthAttributeSet;
+	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttack OnAttackDelegate;
@@ -112,7 +112,7 @@ private:
 	USpringArmComponent* CameraBoomRef;
 
 	UPROPERTY(VisibleAnywhere)
-	UFiringOffset* FiringOffsetRef;
+	UElementFiringOffset* FiringOffsetRef;
 
 	UPROPERTY(VisibleAnywhere)
 	int ActiveElementIndex;

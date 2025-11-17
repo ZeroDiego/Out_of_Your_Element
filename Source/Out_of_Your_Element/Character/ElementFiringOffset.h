@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "FiringOffset.generated.h"
+#include "ElementFiringOffset.generated.h"
 
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class OUT_OF_YOUR_ELEMENT_API UFiringOffset : public USceneComponent
+class OUT_OF_YOUR_ELEMENT_API UElementFiringOffset : public USceneComponent
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this component's properties
-	UFiringOffset();
+	UElementFiringOffset();
 
 protected:
 	// Called when the game starts

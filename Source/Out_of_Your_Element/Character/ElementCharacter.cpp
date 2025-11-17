@@ -4,10 +4,10 @@
 #include "ElementCharacter.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "Out_of_Your_Element/Animation/ElementAnimInstance.h"
-#include "Out_of_Your_Element/Projectile/ProjectileBase.h"
+#include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Out_of_Your_Element/AbilitySystem/Attributes/HealthAttributeSet.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -37,13 +37,13 @@ AElementCharacter::AElementCharacter()
 	CameraRef->bUsePawnControlRotation = false;
 
 	// Creates a custom scene component called firing offset used for projectile spawn location
-	FiringOffsetRef = CreateDefaultSubobject<UFiringOffset>(TEXT("FiringOffset"));
+	FiringOffsetRef = CreateDefaultSubobject<UElementFiringOffset>(TEXT("FiringOffset"));
 	FiringOffsetRef->SetupAttachment(RootComponent);
 	FiringOffsetRef->SetRelativeLocation(FiringOffset);
 
 	ElementAbilitySystemComponent =
 		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
-	HealthAttributeSet = CreateDefaultSubobject<UHealthAttributeSet>(TEXT("Health Attribute Set"));
+	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
 
 	OnActorBeginOverlap.AddDynamic(this, &AElementCharacter::OnActorOverlap);
 }
@@ -404,7 +404,7 @@ void AElementCharacter::OnActorOverlap(AActor* OverlappedActor, AActor* OtherAct
 
 	if (OverlappedActor && OtherActor)
 	{
-		if (const AProjectileBase* ProjectileBase = Cast<AProjectileBase>(OtherActor))
+		if (const AElementProjectileBase* ProjectileBase = Cast<AElementProjectileBase>(OtherActor))
 		{
 			ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
 			OtherActor->Destroy();

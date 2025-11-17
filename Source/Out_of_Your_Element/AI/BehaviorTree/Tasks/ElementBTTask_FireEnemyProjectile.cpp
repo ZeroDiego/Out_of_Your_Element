@@ -1,8 +1,8 @@
-#include "BTTask_FireEnemyProjectile.h"
+#include "ElementBTTask_FireEnemyProjectile.h"
 
-#include "Out_of_Your_Element/AI/AI_Controller.h"
-#include "Out_of_Your_Element/AI/AI_Main.h"
-#include "Out_of_Your_Element/Projectile/ProjectileBase.h"
+#include "Out_of_Your_Element/AI/ElementalAIController.h"
+#include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
+#include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "Out_of_Your_Element/Character/ElementCharacter.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
@@ -11,22 +11,22 @@
 #include "TimerManager.h"   
 
 /* ─────────────────────────────────────────────── */
-UBTTask_FireEnemyProjectile::UBTTask_FireEnemyProjectile()
+UElementBTTask_FireEnemyProjectile::UElementBTTask_FireEnemyProjectile()
 {
 	NodeName = TEXT("Fire Enemy Projectile (Turn & Shoot)");
 }
 
 /* ─────────────────────────────────────────────── */
-EBTNodeResult::Type UBTTask_FireEnemyProjectile::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* )
+EBTNodeResult::Type UElementBTTask_FireEnemyProjectile::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* )
 {
 	//Get the AI controller
-	AAI_Controller* Controller = Cast<AAI_Controller>(OwnerComp.GetAIOwner());
+	AElementalAIController* Controller = Cast<AElementalAIController>(OwnerComp.GetAIOwner());
 	if (!Controller) return EBTNodeResult::Failed;
 
 	//Get the blackboard
 	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
 	//Get the AI character
-	AAI_Main* AI = Cast<AAI_Main>(Controller->GetPawn());
+	AElementAICharacterBase* AI = Cast<AElementAICharacterBase>(Controller->GetPawn());
 	//Validate
 	if (!AI || !ProjectileClass || !BB) return EBTNodeResult::Failed;
 
@@ -84,7 +84,7 @@ EBTNodeResult::Type UBTTask_FireEnemyProjectile::ExecuteTask(UBehaviorTreeCompon
 	Params.Instigator = AI;//Vilken pawn som spawnar den(AI)
 
 	//Spawna projektilen
-	AProjectileBase* Proj = AI->GetWorld()->SpawnActor<AProjectileBase>(
+	AElementProjectileBase* Proj = AI->GetWorld()->SpawnActor<AElementProjectileBase>(
 	    ProjectileClass, MuzzleLoc, ShotRot, Params);
 
 	//velocity
