@@ -273,35 +273,21 @@ void AElementCharacter::DoBaseAttack()
 		}
 	}
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	UElementAnimInstance* ElementAnimInstance = Cast<UElementAnimInstance>(AnimInstance);
-	if (ElementAnimInstance->bIsAttacking)
-	{
-		ElementAnimInstance->bIsAttacking = false;
-	}
-	if (!ElementAnimInstance->bIsAttacking)
-	{
-		ElementAnimInstance->bIsAttacking = true;
-	}
-
 	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
-	FTimerHandle TimerHandle;
-	FTimerDelegate TimerDelegate;
-	TimerDelegate.BindUFunction(this, "DoBaseAttackHelperFunction", BaseAttack);
-	GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.36f, false);
+
+	OnAttackDelegate.Broadcast(FAttackData{
+			.Element = ActiveElement,
+			.Ability = BaseAttack
+		});
 }
 
-void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack) const
+void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack)
 {
 	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack))
 	{
 		const FGameplayEffectContextHandle AnimationDelayBaseAttackGameplayEffectContextHandle;
 		ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(AnimationDelayBaseAttackGameplayEffect, 1,
-		                                                            AnimationDelayBaseAttackGameplayEffectContextHandle);
-		OnAttackDelegate.Broadcast(FAttackData{
-			.Element = ActiveElement,
-			.Ability = BaseAttack
-		});
+																	AnimationDelayBaseAttackGameplayEffectContextHandle);
 	}
 }
 
