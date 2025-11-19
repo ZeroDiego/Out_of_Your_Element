@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "Out_of_Your_Element/System/VariableSupport/FGenericVariableStore.h"
 #include "ElementSaveGame.generated.h"
 
 /**
@@ -24,5 +25,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
 	int32 UserIndex;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Save Data")
+    FGenericVariableStore SavedVariables;
+	
 	UElementSaveGame();
 };
