@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "VariableSupport/FGenericVariableStore.h"
 #include "ElementGameInstance.generated.h"
 
 /**
@@ -15,6 +16,7 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
-	TMap<FString, FGenericVariable> Variables;
+	// Global variable storage. Persists while the GameInstance lives.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Global Variables")
+	FGenericVariableStore GlobalVariables;
 };
