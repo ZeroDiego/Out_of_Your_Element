@@ -3,7 +3,6 @@
 
 #include "ElementCharacter.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
-#include "Out_of_Your_Element/Animation/ElementAnimInstance.h"
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -14,6 +13,8 @@
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameplayAbilitiesModule.h"
+#include "AbilitySystemGlobals.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -48,34 +49,36 @@ AElementCharacter::AElementCharacter()
 	OnActorBeginOverlap.AddDynamic(this, &AElementCharacter::OnActorOverlap);
 }
 
+void AElementCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AActor* Owner = this;
+	if (const APlayerState* CurrentPlayerState = GetPlayerState())
+		if (APlayerController* PlayerController = CurrentPlayerState->GetPlayerController())
+			Owner = PlayerController;
+
+	ElementAbilitySystemComponent->InitAbilityActorInfo(Owner, this);
+
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(
+		GetAbilitySystemComponent(),
+		*GetClass()->GetName(),
+		1,
+		true
+	);
+
+	HealthAttributeSet->InitHealth(HealthAttributeSet->GetMaxHealth());
+}
+
 void AElementCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ElementAbilitySystemComponent)
+	for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 	{
-		if (const APlayerState* CurrentPlayerState = GetPlayerState())
+		if (Ability)
 		{
-			if (APlayerController* PlayerController = CurrentPlayerState->GetPlayerController())
-			{
-				ElementAbilitySystemComponent->InitAbilityActorInfo(PlayerController, this);
-			}
-			else
-			{
-				ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
-			}
-		}
-		else
-		{
-			ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
-		}
-
-		for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
-		{
-			if (Ability)
-			{
-				ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
-			}
+			ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
 		}
 	}
 
@@ -276,9 +279,9 @@ void AElementCharacter::DoBaseAttack()
 	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
 
 	OnAttackDelegate.Broadcast(FAttackData{
-			.Element = ActiveElement,
-			.Ability = BaseAttack
-		});
+		.Element = ActiveElement,
+		.Ability = BaseAttack
+	});
 }
 
 void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack)
@@ -287,7 +290,7 @@ void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAb
 	{
 		const FGameplayEffectContextHandle AnimationDelayBaseAttackGameplayEffectContextHandle;
 		ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(AnimationDelayBaseAttackGameplayEffect, 1,
-																	AnimationDelayBaseAttackGameplayEffectContextHandle);
+		                                                            AnimationDelayBaseAttackGameplayEffectContextHandle);
 	}
 }
 
@@ -379,11 +382,6 @@ void AElementCharacter::DoLook(const float Yaw)
 
 		SetActorRotation(NewRotation);
 	}
-}
-
-UAbilitySystemComponent* AElementCharacter::GetAbilitySystemComponent() const
-{
-	return ElementAbilitySystemComponent;
 }
 
 void AElementCharacter::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)

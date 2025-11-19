@@ -64,9 +64,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Cursor")
 	TSubclassOf<UUserWidget> CursorWidgetClass;
 
-	UPROPERTY()
-	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnAttack OnAttackDelegate;
 
@@ -74,6 +71,9 @@ public:
 	FOnElementChanged OnElementChangedDelegate;
 
 protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
+
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
 
@@ -126,7 +126,11 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
 
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ElementAbilitySystemComponent; }
+	
 protected:
+	virtual void PostInitializeComponents() override;
+	
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
@@ -134,8 +138,6 @@ protected:
 	virtual void Tick(const float DeltaSeconds) override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 private:
 	UFUNCTION()
