@@ -56,7 +56,7 @@ void AElementCharacter::PostInitializeComponents()
 	AActor* OwnerActor = this;
 	if (const APlayerState* CurrentPlayerState = GetPlayerState())
 		if (APlayerController* PlayerController = CurrentPlayerState->GetPlayerController())
-			Owner = PlayerController;
+			OwnerActor = PlayerController;
 
 	ElementAbilitySystemComponent->InitAbilityActorInfo(OwnerActor, this);
 
