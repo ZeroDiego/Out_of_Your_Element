@@ -53,12 +53,12 @@ void AElementCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AActor* Owner = this;
+	AActor* OwnerActor = this;
 	if (const APlayerState* CurrentPlayerState = GetPlayerState())
 		if (APlayerController* PlayerController = CurrentPlayerState->GetPlayerController())
 			Owner = PlayerController;
 
-	ElementAbilitySystemComponent->InitAbilityActorInfo(Owner, this);
+	ElementAbilitySystemComponent->InitAbilityActorInfo(OwnerActor, this);
 
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(
 		GetAbilitySystemComponent(),
@@ -229,7 +229,12 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 				CursorWidgetRef->SetPositionInViewport(CursorPosition);
 			}
 
-			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
+			static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
+				UEngineTypes::ConvertToObjectType(ECC_WorldStatic),
+			};
+
+			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursorForObjects(
+				GroundTypes, false, HitResult))
 			{
 				const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(
 					GetActorLocation(), HitResult.Location
@@ -372,15 +377,9 @@ void AElementCharacter::DoLook(const float Yaw)
 {
 	if (GetController()->IsLocalPlayerController())
 	{
-		const FRotator CurrentRotation = GetActorRotation();
-
-		const FRotator NewRotation = {
-			CurrentRotation.Pitch,
-			FMath::Fmod(CurrentRotation.Yaw + Yaw, 360),
-			CurrentRotation.Roll
-		};
-
-		SetActorRotation(NewRotation);
+		FRotator Rotation = GetActorRotation();
+		Rotation.Yaw = FMath::Fmod(Rotation.Yaw + Yaw, 360);
+		SetActorRotation(Rotation);
 	}
 }
 
