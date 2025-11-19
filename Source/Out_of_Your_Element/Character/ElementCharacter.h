@@ -156,8 +156,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoBaseAttack();
 
-	UFUNCTION()
-	void DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack) const;
+	UFUNCTION(BlueprintCallable)
+	void DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack);
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoHeavyAttack();
