@@ -53,8 +53,7 @@
  *  - Type safety is handled by FGenericVariable::GetX(...) returning false
  *    when the stored type does not match the requested one.
  *  - In Blueprints, expose an FGenericVariableStore as a UPROPERTY and
- *    call these methods from C++ or wrap them in BlueprintCallable functions
- *    on your GameInstance/SaveGame as needed.
+ *    call these methods from C++ or via a wrapper (UGenericVariableStoreBPLibrary)
  */
 USTRUCT(BlueprintType)
 struct FGenericVariableStore

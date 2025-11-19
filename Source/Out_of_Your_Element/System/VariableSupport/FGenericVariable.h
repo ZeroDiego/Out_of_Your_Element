@@ -57,8 +57,8 @@ enum class EVariableType : uint8
  * Notes:
  *  - The Set(...) helpers automatically update 'Type' and reset other fields
  *    to neutral defaults, so callers don't need to manipulate the fields directly.
- *  - In Blueprints you typically use this via a wrapper (e.g. a variable store)
- *    or by reading/writing Type + the corresponding *_Value field manually.
+ *  - In Blueprints you typically use this via a map wrapper (UGenericVariableStoreBPLibrary)
+ *    or by manually reading/writing Type + the corresponding *_Value field.
  */
 USTRUCT(BlueprintType)
 struct FGenericVariable
