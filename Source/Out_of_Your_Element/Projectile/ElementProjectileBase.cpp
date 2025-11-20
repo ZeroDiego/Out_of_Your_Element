@@ -4,7 +4,11 @@
 #include "ElementProjectileBase.h"
 #include "Components/SceneComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Math/UnitConversion.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
+#include "Out_of_Your_Element/AbilitySystem/Abilities/ElementGameplayAbility_Fireball.h"
+#include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
+#include "Out_of_Your_Element/Character/ElementCharacter.h"
 
 // Sets default values
 AElementProjectileBase::AElementProjectileBase()
@@ -27,6 +31,9 @@ AElementProjectileBase::AElementProjectileBase()
 	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
 	NiagaraComponent->SetupAttachment(RootComponent);
 	NiagaraComponent->bAutoActivate = false; // We activate it in BeginPlay
+
+	// Adds functionality for overlapping with other actors
+	OnActorBeginOverlap.AddDynamic(this, &AElementProjectileBase::OnActorOverlap);
 }
 
 // Called when the game starts or when spawned
@@ -47,4 +54,87 @@ void AElementProjectileBase::BeginPlay()
 void AElementProjectileBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (OverlappedActor && OtherActor)
+	{
+		if (const AElementProjectileBase* ProjectileBase = Cast<AElementProjectileBase>(OverlappedActor))
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				this, ProjectileBase->ElementPoofVfx, OtherActor->GetActorLocation(), FRotator(1),
+				FVector(1), true, true, ENCPoolMethod::AutoRelease, true);
+
+			if (ProjectileBase->GameplayEffectSpecHandle.IsValid())
+			{
+				if (const AElementCharacter* ElementCharacter = Cast<AElementCharacter>(OtherActor))
+					ElementCharacter->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
+						ProjectileBase->GameplayEffectSpecHandle);
+				else if (const AElementAICharacterBase* ElementAICharacter = Cast<AElementAICharacterBase>(OtherActor))
+					ElementAICharacter->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
+						ProjectileBase->GameplayEffectSpecHandle);
+
+				FGameplayTagContainer TagContainer;
+				ProjectileBase->GameplayEffectSpecHandle.Data->GetAllAssetTags(TagContainer);
+				for (FGameplayTag Tag : TagContainer)
+				{
+					if (Tag.IsValid())
+					{
+						if (Tag.GetTagName() == TEXT("Damage.Type.Water"))
+						{
+							const FGameplayEffectContextHandle Context;
+							if (const AElementCharacter* ElementCharacter = Cast<AElementCharacter>(OtherActor))
+								ElementCharacter->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
+									SlowGameplayEffect, 1, Context);
+							else if (const AElementAICharacterBase* ElementAICharacter = Cast<AElementAICharacterBase>(
+								OtherActor))
+								ElementAICharacter->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
+									SlowGameplayEffect, 1, Context);
+						}
+
+						if (Tag.GetTagName() == TEXT("Damage.Type.Nature"))
+						{
+							FVector OverlappedActorForwardVector = OverlappedActor->GetActorForwardVector();
+							OverlappedActorForwardVector.X *= 2000;
+							OverlappedActorForwardVector.Y *= 2000;
+							OverlappedActorForwardVector.Z = 0;
+							const FGameplayEffectContextHandle Context;
+							if (AElementCharacter* ElementCharacter = Cast<AElementCharacter>(OtherActor))
+							{
+								ElementCharacter->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
+									HitStunGameplayEffect, 1, Context);
+								ElementCharacter->LaunchCharacter(OverlappedActorForwardVector, true, true);
+							}
+							else if (AElementAICharacterBase* ElementAICharacter = Cast<AElementAICharacterBase>(
+								OtherActor))
+							{
+								ElementAICharacter->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
+									HitStunGameplayEffect, 1, Context);
+								ElementAICharacter->LaunchCharacter(OverlappedActorForwardVector, true, true);
+							}
+						}
+					}
+				}
+
+				if (const UElementGameplayAbility_Fireball* Fireball
+					= Cast<UElementGameplayAbility_Fireball>(ProjectileBase->SourceAbility))
+				{
+					if (Fireball->FireballDotVfx)
+					{
+						UNiagaraFunctionLibrary::SpawnSystemAttached(
+							Fireball->FireballDotVfx,
+							OtherActor->GetRootComponent(), NAME_None,
+							FVector::ZeroVector,
+							FRotator::ZeroRotator,
+							EAttachLocation::Type::KeepRelativeOffset,
+							true
+						);
+					}
+				}
+			}
+
+			OverlappedActor->Destroy();
+		}
+	}
 }

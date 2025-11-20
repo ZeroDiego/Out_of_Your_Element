@@ -3,13 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffect.h"
 #include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "NiagaraComponent.h"
-#include "NiagaraSystem.h"
-#include "NiagaraComponent.h"
 #include "Components/ActorComponent.h"
 #include "ElementProjectileBase.generated.h"
 
@@ -53,15 +51,25 @@ public:
 	UStaticMeshComponent* ProjectileMeshComponent;
 
 	// Projectile VFX
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
 	UNiagaraSystem* ElementVfx;
 
 	// Projectile VFX
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="FX")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
 	UNiagaraSystem* ElementPoofVfx;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GE")
+	TSubclassOf<UGameplayEffect> SlowGameplayEffect;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GE")
+	TSubclassOf<UGameplayEffect> HitStunGameplayEffect;
 
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* NiagaraComponent;
+
+	// Projectile movement component ref
+	UPROPERTY(VisibleAnywhere)
+	UProjectileMovementComponent* ProjectileMovement;
 
 protected:
 	// Called when the game starts or when spawned
@@ -71,7 +79,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Projectile movement component ref
-	UPROPERTY(VisibleAnywhere)
-	UProjectileMovementComponent* ProjectileMovement;
+	UFUNCTION()
+	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
 };
