@@ -3,7 +3,6 @@
 
 #include "ElementCharacter.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
-#include "Out_of_Your_Element/Animation/ElementAnimInstance.h"
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -14,6 +13,8 @@
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "GameplayAbilitiesModule.h"
+#include "AbilitySystemGlobals.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -48,34 +49,36 @@ AElementCharacter::AElementCharacter()
 	OnActorBeginOverlap.AddDynamic(this, &AElementCharacter::OnActorOverlap);
 }
 
+void AElementCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AActor* OwnerActor = this;
+	if (const APlayerState* CurrentPlayerState = GetPlayerState())
+		if (APlayerController* PlayerController = CurrentPlayerState->GetPlayerController())
+			OwnerActor = PlayerController;
+
+	ElementAbilitySystemComponent->InitAbilityActorInfo(OwnerActor, this);
+
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(
+		GetAbilitySystemComponent(),
+		*GetClass()->GetName(),
+		1,
+		true
+	);
+
+	HealthAttributeSet->InitHealth(HealthAttributeSet->GetMaxHealth());
+}
+
 void AElementCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ElementAbilitySystemComponent)
+	for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 	{
-		if (const APlayerState* CurrentPlayerState = GetPlayerState())
+		if (Ability)
 		{
-			if (APlayerController* PlayerController = CurrentPlayerState->GetPlayerController())
-			{
-				ElementAbilitySystemComponent->InitAbilityActorInfo(PlayerController, this);
-			}
-			else
-			{
-				ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
-			}
-		}
-		else
-		{
-			ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
-		}
-
-		for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
-		{
-			if (Ability)
-			{
-				ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
-			}
+			ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
 		}
 	}
 
@@ -226,7 +229,12 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 				CursorWidgetRef->SetPositionInViewport(CursorPosition);
 			}
 
-			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
+			static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
+				UEngineTypes::ConvertToObjectType(ECC_WorldStatic),
+			};
+
+			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursorForObjects(
+				GroundTypes, false, HitResult))
 			{
 				const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(
 					GetActorLocation(), HitResult.Location
@@ -273,35 +281,21 @@ void AElementCharacter::DoBaseAttack()
 		}
 	}
 
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	UElementAnimInstance* ElementAnimInstance = Cast<UElementAnimInstance>(AnimInstance);
-	if (ElementAnimInstance->bIsAttacking)
-	{
-		ElementAnimInstance->bIsAttacking = false;
-	}
-	if (!ElementAnimInstance->bIsAttacking)
-	{
-		ElementAnimInstance->bIsAttacking = true;
-	}
-
 	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
-	FTimerHandle TimerHandle;
-	FTimerDelegate TimerDelegate;
-	TimerDelegate.BindUFunction(this, "DoBaseAttackHelperFunction", BaseAttack);
-	GetWorldTimerManager().SetTimer(TimerHandle, TimerDelegate, 1.36f, false);
+
+	OnAttackDelegate.Broadcast(FAttackData{
+		.Element = ActiveElement,
+		.Ability = BaseAttack
+	});
 }
 
-void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack) const
+void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack)
 {
 	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack))
 	{
 		const FGameplayEffectContextHandle AnimationDelayBaseAttackGameplayEffectContextHandle;
 		ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(AnimationDelayBaseAttackGameplayEffect, 1,
 		                                                            AnimationDelayBaseAttackGameplayEffectContextHandle);
-		OnAttackDelegate.Broadcast(FAttackData{
-			.Element = ActiveElement,
-			.Ability = BaseAttack
-		});
 	}
 }
 
@@ -383,21 +377,10 @@ void AElementCharacter::DoLook(const float Yaw)
 {
 	if (GetController()->IsLocalPlayerController())
 	{
-		const FRotator CurrentRotation = GetActorRotation();
-
-		const FRotator NewRotation = {
-			CurrentRotation.Pitch,
-			FMath::Fmod(CurrentRotation.Yaw + Yaw, 360),
-			CurrentRotation.Roll
-		};
-
-		SetActorRotation(NewRotation);
+		FRotator Rotation = GetActorRotation();
+		Rotation.Yaw = FMath::Fmod(Rotation.Yaw + Yaw, 360);
+		SetActorRotation(Rotation);
 	}
-}
-
-UAbilitySystemComponent* AElementCharacter::GetAbilitySystemComponent() const
-{
-	return ElementAbilitySystemComponent;
 }
 
 void AElementCharacter::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)

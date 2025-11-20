@@ -15,6 +15,8 @@
 #include "EngineUtils.h"
 
 //#include "PlayerCharacter.h"
+#include "AbilitySystemGlobals.h"
+#include "GameplayAbilitiesModule.h"
 #include "Out_of_Your_Element/AbilitySystem/Abilities/ElementGameplayAbility_Fireball.h"
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
@@ -42,37 +44,48 @@ AElementAICharacterBase::AElementAICharacterBase()
 }
 
 /* ─────────────────────────────────────────────── */
-UBehaviorTree* AElementAICharacterBase::GetBehaviorTree() const { return BehaviorTree; }
+UBehaviorTree* AElementAICharacterBase::GetBehaviorTree() const
+{
+	return BehaviorTree;
+}
+
+void AElementAICharacterBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(
+		GetAbilitySystemComponent(),
+		*GetClass()->GetName(),
+		1,
+		true
+	);
+
+	HealthAttributeSet->InitHealth(HealthAttributeSet->GetMaxHealth());
+
+	if (AAIController* AIController = GetController<AAIController>())
+	{
+		ElementAbilitySystemComponent->InitAbilityActorInfo(AIController, this);
+	}
+	else
+	{
+		ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+}
 
 /* ─────────────────────────────────────────────── */
 void AElementAICharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ElementAbilitySystemComponent)
+	/*
+	for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 	{
-		if (HealthAttributeSet)
-			HealthAttributeSet->SetMaxHealth(25);
-
-		if (AAIController* AIController = GetController<AAIController>())
+		if (Ability)
 		{
-			ElementAbilitySystemComponent->InitAbilityActorInfo(AIController, this);
+			ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
 		}
-		else
-		{
-			ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
-		}
-
-		/*
-		for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
-		{
-			if (Ability)
-			{
-				ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
-			}
-		}
-		*/
 	}
+	*/
 
 	/*AIHealth = MaxAIHealth;
 	

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "GameFramework/Character.h"
@@ -13,7 +14,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAIDeathEvent);
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API AElementAICharacterBase : public ACharacter
+class OUT_OF_YOUR_ELEMENT_API AElementAICharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -26,9 +27,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "C++")
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
-	UPROPERTY()
-	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
-
 	//UPROPERTY(BlueprintReadWrite)
 	//int32 AIHealth;
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -39,9 +37,16 @@ public:
 	//TArray<TSubclassOf<class ACollectableBox>>AIDrop;
 
 	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ElementAbilitySystemComponent; }
 
 protected:
+	virtual void PostInitializeComponents() override;
+	
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* BehaviorTree;
