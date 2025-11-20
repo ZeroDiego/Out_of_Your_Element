@@ -54,4 +54,8 @@ namespace ElementGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_Nature,
 	                               "Abilities.Nature",
 	                               "Cooldown for nature element attacks");
+
+	const FGameplayTagContainer DamageTypes = FGameplayTagContainer::CreateFromArray(TArray<FGameplayTag>{
+		Damage_Type_Fire, Damage_Type_Water, Damage_Type_Nature
+	});
 }
