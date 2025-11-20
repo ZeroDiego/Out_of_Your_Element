@@ -43,7 +43,13 @@ void UElementalDamageEffectExecution::Execute_Implementation(
 		FGameplayTagContainer AssetTags;
 		DamageSpec.GetAllAssetTags(AssetTags);
 
-		if (!FindAnyExact(ElementGameplayTags::DamageTypes, AssetTags, DamageType))
+		const FGameplayTagContainer DamageTypes = FGameplayTagContainer::CreateFromArray(TArray<FGameplayTag>{
+			ElementGameplayTags::Damage_Type_Fire,
+			ElementGameplayTags::Damage_Type_Water,
+			ElementGameplayTags::Damage_Type_Nature
+		});
+
+		if (!FindAnyExact(DamageTypes, AssetTags, DamageType))
 			return;
 	}
 
