@@ -6,7 +6,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Out_of_Your_Element/Character/ElementFiringOffset.h"
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 

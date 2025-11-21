@@ -4,7 +4,7 @@
 #include "ElementGameplayAbility_WaterGun.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Out_of_Your_Element/Character/ElementFiringOffset.h"
+#include "Components/CapsuleComponent.h"
 #include "Out_of_Your_Element/Projectile//ElementProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -31,6 +31,7 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 				nullptr,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
+				Character->GetCapsuleComponent()->IgnoreActorWhenMoving(WaterGun, true);
 				WaterGun->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
 
 				// projectile VFX
