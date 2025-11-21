@@ -51,12 +51,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* BehaviorTree;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UGameplayEffect> SlowGameplayEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UGameplayEffect> HitStunGameplayEffect;
-
 	//UPROPERTY(BlueprintReadWrite)
 	//bool bIsAttacking = false;
 
@@ -73,9 +67,6 @@ protected:
 	//FAIDeathEvent OnEnemyDied;
 public:
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION()
-	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 	//UPROPERTY(BlueprintReadOnly)
 	//bool bIsDead = false;
