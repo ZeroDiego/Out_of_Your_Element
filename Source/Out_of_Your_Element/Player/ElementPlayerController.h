@@ -18,5 +18,6 @@ protected:
 	TArray<UInputMappingContext*> DefaultMappingContexts;
 
 protected:
+	UFUNCTION(BlueprintCallable)
 	virtual void SetupInputComponent() override;
 };

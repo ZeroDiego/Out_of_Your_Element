@@ -18,7 +18,9 @@ void AElementPlayerController::SetupInputComponent()
 		{
 			for (const UInputMappingContext* CurrentContext : DefaultMappingContexts)
 			{
-				Subsystem->AddMappingContext(CurrentContext, 0);
+				FModifyContextOptions Opts = {};
+				Opts.bNotifyUserSettings = true;
+				Subsystem->AddMappingContext(CurrentContext, 0, Opts);
 			}
 		}
 	}
