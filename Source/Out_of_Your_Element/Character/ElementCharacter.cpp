@@ -45,8 +45,6 @@ AElementCharacter::AElementCharacter()
 	ElementAbilitySystemComponent =
 		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
-
-	OnActorBeginOverlap.AddDynamic(this, &AElementCharacter::OnActorOverlap);
 }
 
 void AElementCharacter::PostInitializeComponents()
@@ -380,19 +378,5 @@ void AElementCharacter::DoLook(const float Yaw)
 		FRotator Rotation = GetActorRotation();
 		Rotation.Yaw = FMath::Fmod(Rotation.Yaw + Yaw, 360);
 		SetActorRotation(Rotation);
-	}
-}
-
-void AElementCharacter::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
-{
-	UE_LOG(LogTemp, Log, TEXT("AElementCharacter::OnActorOverlap"));
-
-	if (OverlappedActor && OtherActor)
-	{
-		if (const AElementProjectileBase* ProjectileBase = Cast<AElementProjectileBase>(OtherActor))
-		{
-			ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
-			OtherActor->Destroy();
-		}
 	}
 }

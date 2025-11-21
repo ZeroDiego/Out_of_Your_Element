@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AElementProjectileBase> ProjectileBase;
 
+	UPROPERTY(EditAnywhere, Category="Floats")
+	float SpawningOffset;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
 	UNiagaraSystem* WaterVfx;
 

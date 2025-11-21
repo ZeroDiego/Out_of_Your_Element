@@ -38,9 +38,6 @@ AElementAICharacterBase::AElementAICharacterBase()
 
 	// Creates an attribute set for health points
 	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
-
-	// Adds functionality for overlapping with other actors
-	OnActorBeginOverlap.AddDynamic(this, &AElementAICharacterBase::OnActorOverlap);
 }
 
 /* ─────────────────────────────────────────────── */
@@ -77,7 +74,6 @@ void AElementAICharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*
 	for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 	{
 		if (Ability)
@@ -85,7 +81,6 @@ void AElementAICharacterBase::BeginPlay()
 			ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
 		}
 	}
-	*/
 
 	/*AIHealth = MaxAIHealth;
 	
@@ -134,79 +129,5 @@ void AElementAICharacterBase::Tick(float DeltaTime)
 		}
 
 		GetCharacterMovement()->MaxWalkSpeed = 300;
-	}
-
-
-	/*
-	for (TSubclassOf<UGameplayEffect>& Effect : ElementAbilitySystemComponent->GetActiveGameplayEffects())
-	{
-
-	}
-	*/
-}
-
-void AElementAICharacterBase::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
-{
-	if (OverlappedActor && OtherActor)
-	{
-		if (const AElementProjectileBase* ProjectileBase = Cast<AElementProjectileBase>(OtherActor))
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				this, ProjectileBase->ElementPoofVfx, OverlappedActor->GetActorLocation(), FRotator(1),
-				FVector(1), true, true, ENCPoolMethod::AutoRelease, true);
-
-			if (ProjectileBase->GameplayEffectSpecHandle.IsValid())
-			{
-				ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
-					ProjectileBase->GameplayEffectSpecHandle);
-
-				FGameplayTagContainer TagContainer;
-				ProjectileBase->GameplayEffectSpecHandle.Data->GetAllAssetTags(TagContainer);
-				for (FGameplayTag Tag : TagContainer)
-				{
-					if (Tag.IsValid())
-					{
-						if (Tag.GetTagName() == TEXT("Damage.Type.Water"))
-						{
-							const FGameplayEffectContextHandle Context;
-							ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(SlowGameplayEffect, 1, Context);
-						}
-
-						if (Tag.GetTagName() == TEXT("Damage.Type.Nature"))
-						{
-							if (ACharacter* Character = Cast<ACharacter>(OverlappedActor))
-							{
-								FVector OtherActorForwardVector = OtherActor->GetActorForwardVector();
-								OtherActorForwardVector.X *= 2000;
-								OtherActorForwardVector.Y *= 2000;
-								OtherActorForwardVector.Z = 0;
-								const FGameplayEffectContextHandle Context;
-								ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
-									HitStunGameplayEffect, 1, Context);
-								Character->LaunchCharacter(OtherActorForwardVector, true, true);
-							}
-						}
-					}
-				}
-
-				if (const UElementGameplayAbility_Fireball* Fireball
-					= Cast<UElementGameplayAbility_Fireball>(ProjectileBase->SourceAbility))
-				{
-					if (Fireball->FireballDotVfx)
-					{
-						UNiagaraFunctionLibrary::SpawnSystemAttached(
-							Fireball->FireballDotVfx,
-							OverlappedActor->GetRootComponent(), NAME_None,
-							FVector::ZeroVector,
-							FRotator::ZeroRotator,
-							EAttachLocation::Type::KeepRelativeOffset,
-							true
-						);
-					}
-				}
-			}
-
-			OtherActor->Destroy();
-		}
 	}
 }

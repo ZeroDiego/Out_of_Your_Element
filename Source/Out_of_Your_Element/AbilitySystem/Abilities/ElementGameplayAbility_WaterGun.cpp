@@ -4,7 +4,7 @@
 #include "ElementGameplayAbility_WaterGun.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Out_of_Your_Element/Character/ElementFiringOffset.h"
+#include "Components/CapsuleComponent.h"
 #include "Out_of_Your_Element/Projectile//ElementProjectileBase.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -19,8 +19,8 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UElementFiringOffset>()->
-			                                                   GetComponentLocation();
+			const FVector SpawnProjectileOffset = Character->GetActorForwardVector() * SpawningOffset;
+			const FVector SpawnProjectileLocation = Character->GetActorLocation() + SpawnProjectileOffset;
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
 
@@ -31,7 +31,8 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 				nullptr,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				WaterGun->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
+				Character->GetCapsuleComponent()->IgnoreActorWhenMoving(WaterGun, true);
+				WaterGun->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
 
 				// projectile VFX
 				WaterGun->ElementVfx = WaterVfx;
