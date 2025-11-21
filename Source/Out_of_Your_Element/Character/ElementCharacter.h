@@ -6,9 +6,8 @@
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "ElementFiringOffset.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "AbilitySystemInterface.h"
+#include "ElementCharacterBase.h"
 #include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "InputActionValue.h"
 #include "ElementCharacter.generated.h"
@@ -32,7 +31,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnElementChanged, FElement, OldElement, FElement, NewElement);
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public ACharacter, public IAbilitySystemInterface
+class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public AElementCharacterBase
 {
 	GENERATED_BODY()
 
@@ -48,9 +47,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
 	TArray<FElement> Elements;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
-	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> UsableAbilities;
@@ -98,9 +94,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	bool bIsAttacking;
 
-	UFUNCTION()
-	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
-
 private:
 	UPROPERTY()
 	UUserWidget* CursorWidgetRef;
@@ -126,11 +119,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ElementAbilitySystemComponent; }
-	
 protected:
 	virtual void PostInitializeComponents() override;
-	
+
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;

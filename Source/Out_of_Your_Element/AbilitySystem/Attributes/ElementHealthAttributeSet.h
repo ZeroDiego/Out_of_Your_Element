@@ -11,7 +11,7 @@ class OUT_OF_YOUR_ELEMENT_API UElementHealthAttributeSet : public UElementAttrib
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (HideFromModifiers, AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Health;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))

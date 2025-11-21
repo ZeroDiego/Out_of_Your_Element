@@ -26,11 +26,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AElementProjectileBase> ProjectileBase;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Floats")
 	float FireballDamageDuration;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Floats")
 	float FireballDamagePerSecond;
+
+	UPROPERTY(EditAnywhere, Category="Floats")
+	float SpawningOffset;
 
 	UPROPERTY(EditAnywhere, Category="VFX")
 	UNiagaraSystem* FireballVfx;
