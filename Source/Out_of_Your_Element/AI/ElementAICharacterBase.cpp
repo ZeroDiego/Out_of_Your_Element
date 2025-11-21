@@ -74,7 +74,6 @@ void AElementAICharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*
 	for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 	{
 		if (Ability)
@@ -82,7 +81,6 @@ void AElementAICharacterBase::BeginPlay()
 			ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
 		}
 	}
-	*/
 
 	/*AIHealth = MaxAIHealth;
 	
@@ -132,12 +130,4 @@ void AElementAICharacterBase::Tick(float DeltaTime)
 
 		GetCharacterMovement()->MaxWalkSpeed = 300;
 	}
-
-
-	/*
-	for (TSubclassOf<UGameplayEffect>& Effect : ElementAbilitySystemComponent->GetActiveGameplayEffects())
-	{
-
-	}
-	*/
 }

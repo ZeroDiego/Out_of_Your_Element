@@ -19,8 +19,8 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UElementFiringOffset>()->
-			                                                   GetComponentLocation();
+			const FVector SpawnProjectileOffset = Character->GetActorForwardVector() * SpawningOffset;
+			const FVector SpawnProjectileLocation = Character->GetActorLocation() + SpawnProjectileOffset;
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
 
@@ -31,7 +31,7 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 				nullptr,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				WaterGun->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
+				WaterGun->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
 
 				// projectile VFX
 				WaterGun->ElementVfx = WaterVfx;

@@ -1,0 +1,36 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
+#include "GameFramework/Character.h"
+#include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
+#include "ElementCharacterBase.generated.h"
+
+UCLASS()
+class OUT_OF_YOUR_ELEMENT_API AElementCharacterBase : public ACharacter, public IAbilitySystemInterface
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
+	
+	// Sets default values for this character's properties
+	AElementCharacterBase();
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ElementAbilitySystemComponent; }
+	
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+};

@@ -2,6 +2,8 @@
 
 
 #include "ElementGameplayAbility_Fireball.h"
+
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Character/ElementFiringOffset.h"
@@ -19,8 +21,8 @@ void UElementGameplayAbility_Fireball::ActivateAbility(
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UElementFiringOffset>()
-			                                                 ->GetComponentLocation();
+			const FVector SpawnProjectileOffset = Character->GetActorForwardVector() * SpawningOffset;
+			const FVector SpawnProjectileLocation = Character->GetActorLocation() + SpawnProjectileOffset;
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
 
@@ -31,7 +33,8 @@ void UElementGameplayAbility_Fireball::ActivateAbility(
 				nullptr,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				Fireball->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
+				Character->GetCapsuleComponent()->IgnoreActorWhenMoving(Fireball, true);
+				Fireball->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
 
 				// projectile VFX
 				Fireball->ElementVfx = FireballVfx;

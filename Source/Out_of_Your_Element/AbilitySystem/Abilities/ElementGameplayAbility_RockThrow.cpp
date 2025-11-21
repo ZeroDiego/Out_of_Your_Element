@@ -19,8 +19,8 @@ void UElementGameplayAbility_RockThrow::ActivateAbility(
 	{
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileLocation = Character->GetComponentByClass<UElementFiringOffset>()
-			                                                 ->GetComponentLocation();
+			const FVector SpawnProjectileOffset = Character->GetActorForwardVector() * SpawningOffset;
+			const FVector SpawnProjectileLocation = Character->GetActorLocation() + SpawnProjectileOffset;
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
 
@@ -31,7 +31,7 @@ void UElementGameplayAbility_RockThrow::ActivateAbility(
 				nullptr,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				RockThrow->ProjectileMeshComponent->IgnoreActorWhenMoving(Actor, true);
+				RockThrow->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
 
 				// projectile VFX
 				RockThrow->ElementVfx = RockVfx;
