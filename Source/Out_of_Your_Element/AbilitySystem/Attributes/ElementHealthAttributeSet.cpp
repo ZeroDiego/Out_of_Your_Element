@@ -2,6 +2,7 @@
 
 #include "Out_of_Your_Element/AbilitySystem/Executions/ElementDamageExecution.h"
 #include "GameplayEffectExtension.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 
 UElementHealthAttributeSet::UElementHealthAttributeSet()
 {
@@ -67,8 +68,7 @@ void UElementHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffect
 		if (OldHealthValue != NewHealthValue)
 			SetHealth(NewHealthValue);
 
-		UE_LOG(LogTemp, Display, TEXT("Final Damage val: %.2f"), DamageValue);
-
+		OnDamageTaken.Broadcast(DamageValue, false, FGameplayTag::EmptyTag);
 		SetDamage(0.0f);
 	}
 }

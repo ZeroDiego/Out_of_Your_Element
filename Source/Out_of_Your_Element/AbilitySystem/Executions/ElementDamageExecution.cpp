@@ -1,5 +1,6 @@
 ﻿#include "ElementDamageExecution.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 
 bool FindAnyExact(const FGameplayTagContainer& Target, const FGameplayTagContainer& Source, FGameplayTag& Found)
@@ -21,7 +22,6 @@ void UElementDamageExecution::Execute_Implementation(
 	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
 	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
-
 
 	const FGameplayEffectSpec& DamageSpec = ExecutionParams.GetOwningSpec();
 	const FGameplayEffectModifiedAttribute* DamageAttribute =
@@ -84,18 +84,25 @@ void UElementDamageExecution::Execute_Implementation(
 				false
 			);
 		}
-
-		UE_LOG(LogTemp, Display, TEXT("Damage resistance for '%s': %.2f%% + %.2f"), *DamageType.ToString(),
-		       DamageResistancePercent * 100, DamageResistanceFixed);
 	}
 
 	const float TotalDamage =
 		DamageTaken * (1.0f - FMath::Clamp(DamageResistancePercent, 0.0f, 1.0f)) - DamageResistanceFixed;
 
-	UE_LOG(LogTemp, Display, TEXT("Base Damage val: %.2f | Total Damage: %.2f"), DamageTaken, TotalDamage);
-
 	if (FMath::IsNearlyZero(DamageTaken, .01f))
 		return;
+
+	if (const UElementAbilitySystemComponent* ElementAbilitySystemComponent =
+		Cast<UElementAbilitySystemComponent>(ExecutionParams.GetTargetAbilitySystemComponent()))
+	{
+		if (const UElementHealthAttributeSet* HealthAttributeSet =
+			Cast<const UElementHealthAttributeSet>(
+				ElementAbilitySystemComponent->GetAttributeSet(UElementHealthAttributeSet::StaticClass())
+			))
+		{
+			HealthAttributeSet->OnDamageTaken.Broadcast(TotalDamage, true, DamageType);
+		}
+	}
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(
 		UElementHealthAttributeSet::GetHealthAttribute(),

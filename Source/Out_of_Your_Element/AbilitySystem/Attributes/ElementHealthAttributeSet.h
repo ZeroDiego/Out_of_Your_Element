@@ -5,6 +5,9 @@
 #include "AbilitySystemComponent.h"
 #include "ElementHealthAttributeSet.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDamageTakenEvent, float, Damage, bool, HasElement, const FGameplayTag&,
+                                               Element);
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UElementHealthAttributeSet : public UElementAttributeSet
 {
@@ -36,6 +39,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Meta = (HideFromModifiers))
 	FAttributeChangedEvent OnMaxHealthChanged;
+
+	UPROPERTY(BlueprintAssignable, Meta = (HideFromModifiers))
+	FDamageTakenEvent OnDamageTaken;
 
 protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
