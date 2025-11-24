@@ -98,13 +98,6 @@ void AElementCharacter::BeginPlay()
 	DoCycleElement(0);
 }
 
-void AElementCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
-}
-
 void AElementCharacter::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);

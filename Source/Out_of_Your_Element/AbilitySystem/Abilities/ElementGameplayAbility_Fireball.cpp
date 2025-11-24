@@ -40,14 +40,11 @@ void UElementGameplayAbility_Fireball::ActivateAbility(
 				Fireball->ElementPoofVfx = FireballPoofVfx;
 
 				const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-					FireballGameplayEffect,
+					FireDamageGameplayEffect,
 					1);
 				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-					ElementGameplayTags::Abilities_Parameters_Duration,
-					FireballDamageDuration);
-				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 					ElementGameplayTags::Abilities_Parameters_Damage,
-					FireballDamagePerSecond);
+					FireballDamage);
 				Fireball->GameplayEffectSpecHandle = FireballGameplayEffectSpecHandle;
 				Fireball->SourceAbility = this;
 				UGameplayStatics::FinishSpawningActor(Fireball, SpawnProjectileTransform);

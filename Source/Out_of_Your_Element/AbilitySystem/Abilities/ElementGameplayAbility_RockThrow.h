@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AElementProjectileBase> ProjectileBase;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
+	float RockThrowDamage;
+	
 	UPROPERTY(EditAnywhere, Category="Floats")
 	float SpawningOffset;
 	
