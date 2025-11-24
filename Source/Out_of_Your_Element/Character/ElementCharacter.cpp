@@ -228,7 +228,7 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 			}
 
 			static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
-				UEngineTypes::ConvertToObjectType(ECC_WorldStatic),
+				UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
 			};
 
 			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursorForObjects(
