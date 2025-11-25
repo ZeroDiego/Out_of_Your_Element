@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "NiagaraComponent.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "ElementCharacterBase.generated.h"
@@ -16,6 +17,9 @@ class OUT_OF_YOUR_ELEMENT_API AElementCharacterBase : public ACharacter, public 
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	UNiagaraComponent* NiagaraComponent;
 	
 	// Sets default values for this character's properties
 	AElementCharacterBase();
@@ -25,6 +29,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame

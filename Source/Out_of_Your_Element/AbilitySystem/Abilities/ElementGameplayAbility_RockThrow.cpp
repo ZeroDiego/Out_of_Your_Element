@@ -43,7 +43,7 @@ void UElementGameplayAbility_RockThrow::ActivateAbility(
 					1);
 				RockThrowGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 					ElementGameplayTags::Abilities_Parameters_Damage,
-					10);
+					RockThrowDamage);
 				RockThrow->GameplayEffectSpecHandle = RockThrowGameplayEffectSpecHandle;
 				UGameplayStatics::FinishSpawningActor(RockThrow, SpawnProjectileTransform);
 			}

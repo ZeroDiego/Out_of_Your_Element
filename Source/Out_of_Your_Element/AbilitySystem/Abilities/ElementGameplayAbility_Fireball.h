@@ -20,19 +20,25 @@ public:
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> FireballGameplayEffect;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> FireDamageGameplayEffect;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> FireDotDamageGameplayEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AElementProjectileBase> ProjectileBase;
 
-	UPROPERTY(EditAnywhere, Category="Floats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
+	float FireballDamage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
 	float FireballDamageDuration;
 
-	UPROPERTY(EditAnywhere, Category="Floats")
-	float FireballDamagePerSecond;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
+	float FireballDotDamagePerSecond;
 
-	UPROPERTY(EditAnywhere, Category="Floats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
 	float SpawningOffset;
 
 	UPROPERTY(EditAnywhere, Category="VFX")
