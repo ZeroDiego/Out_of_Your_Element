@@ -46,7 +46,4 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="VFX")
 	UNiagaraSystem* FireballPoofVfx;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireballDotVfx;
 };

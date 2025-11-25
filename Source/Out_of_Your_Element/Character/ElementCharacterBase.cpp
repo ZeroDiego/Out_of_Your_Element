@@ -3,20 +3,25 @@
 
 #include "ElementCharacterBase.h"
 
+#include "NiagaraFunctionLibrary.h"
+
 // Sets default values
 AElementCharacterBase::AElementCharacterBase()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("NiagaraComponent"));
-	NiagaraComponent->SetupAttachment(GetRootComponent());
+	FireDotNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("NiagaraComponent"));
+	FireDotNiagaraComponent->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
 void AElementCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FireDotNiagaraComponent->SetVisibility(false);
+	FireDotNiagaraComponent->SetAsset(FireDotVfx);
 }
 
 void AElementCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -28,6 +33,20 @@ void AElementCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AElementCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	for (FGameplayTag Tag : GetAbilitySystemComponent()->GetOwnedGameplayTags())
+	{
+		if (Tag.IsValid())
+		{
+			if (Tag.GetTagName() == TEXT("Abilities.Fire"))
+			{
+				FireDotNiagaraComponent->SetVisibility(true);
+				return;
+			}
+		}
+	}
+
+	FireDotNiagaraComponent->SetVisibility(false);
 }
 
 // Called to bind functionality to input

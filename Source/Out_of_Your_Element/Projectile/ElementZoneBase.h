@@ -31,32 +31,16 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* ZoneSphereComponent;
 
-	UPROPERTY(VisibleAnywhere)
-	FTimerHandle ZoneTickTimerHandle;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	float ZoneTickRate;
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UFUNCTION()
-	void OnZoneBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-	                        const FHitResult& Sweep);
-
-	UFUNCTION()
-	void OnZoneEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UFUNCTION()
-	void OnZoneTick(AElementCharacterBase* ElementCharacterBase);
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
-	                    UGameplayAbility* NewSourceAbility, const float NewZoneTickRate, const float Radius,
+	                    UGameplayAbility* NewSourceAbility, const float Radius,
 	                    const float LifeSpan);
 };

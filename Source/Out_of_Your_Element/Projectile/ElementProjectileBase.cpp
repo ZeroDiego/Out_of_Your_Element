@@ -70,8 +70,6 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 
 				if (ProjectileBase->GameplayEffectSpecHandle.IsValid())
 				{
-					const FGameplayEffectContextHandle Context;
-
 					ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
 						ProjectileBase->GameplayEffectSpecHandle);
 
@@ -81,6 +79,7 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 					{
 						if (Tag.IsValid())
 						{
+							const FGameplayEffectContextHandle Context;
 							if (Tag.GetTagName() == TEXT("Damage.Type.Water"))
 							{
 								ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
@@ -97,23 +96,6 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 									HitStunGameplayEffect, 1, Context);
 								ElementCharacterBase->LaunchCharacter(ProjectileBaseForwardVector, true, true);
 							}
-						}
-					}
-
-					if (const UElementGameplayAbility_Fireball* Fireball
-						= Cast<UElementGameplayAbility_Fireball>(ProjectileBase->SourceAbility))
-					{
-						if (Fireball->FireballDotVfx)
-						{
-							ElementCharacterBase->NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
-								Fireball->FireballDotVfx,
-								ElementCharacterBase->GetRootComponent(), NAME_None,
-								FVector::ZeroVector,
-								FRotator::ZeroRotator,
-								EAttachLocation::Type::KeepRelativeOffset,
-								true,
-								true
-							);
 						}
 					}
 

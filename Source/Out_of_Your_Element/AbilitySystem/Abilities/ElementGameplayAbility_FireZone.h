@@ -34,9 +34,6 @@ public:
 	float FireZoneDotDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
-	float FireZoneTickRate;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
 	float FireZoneDotDamageDuration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
@@ -46,5 +43,5 @@ public:
 	float FireZoneLifeSpan;
 
 	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireZoneDotVfx;
+	UNiagaraSystem* FireballDotVfx;
 };

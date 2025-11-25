@@ -52,7 +52,7 @@ void UElementGameplayAbility_FireZone::ActivateAbility(
 								ElementGameplayTags::Abilities_Parameters_Damage,
 								FireZoneDotDamage);
 
-							FireZone->InitializeZone(FireZoneGameplayEffectSpecHandle, this, FireZoneTickRate, FireZoneRadius, FireZoneLifeSpan);
+							FireZone->InitializeZone(FireZoneGameplayEffectSpecHandle, this, FireZoneRadius, FireZoneLifeSpan);
 							UGameplayStatics::FinishSpawningActor(FireZone, MouseCursorTransform);
 						}
 					}

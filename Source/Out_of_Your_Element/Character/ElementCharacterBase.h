@@ -19,7 +19,10 @@ public:
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
-	UNiagaraComponent* NiagaraComponent;
+	UNiagaraComponent* FireDotNiagaraComponent;
+	
+	UPROPERTY(EditAnywhere, Category="VFX")
+	UNiagaraSystem* FireDotVfx;
 	
 	// Sets default values for this character's properties
 	AElementCharacterBase();
