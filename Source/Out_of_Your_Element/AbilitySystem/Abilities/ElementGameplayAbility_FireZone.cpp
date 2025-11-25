@@ -1,14 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ElementGameplayAbility_WaterGun.h"
-#include "GameFramework/Character.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Components/CapsuleComponent.h"
-#include "Out_of_Your_Element/Projectile//ElementProjectileBase.h"
-#include "Kismet/GameplayStatics.h"
+#include "ElementGameplayAbility_FireZone.h"
 
-void UElementGameplayAbility_WaterGun::ActivateAbility(
+void UElementGameplayAbility_FireZone::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -17,6 +12,7 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 {
 	if (AActor* Actor = GetAvatarActorFromActorInfo())
 	{
+		/*
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
 			const FVector SpawnProjectileOffset = Character->GetActorForwardVector() * SpawningOffset;
@@ -24,30 +20,35 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
 			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
 
-			if (AElementProjectileBase* WaterGun = GetWorld()->SpawnActorDeferred<AElementProjectileBase>(
+			if (AElementProjectileBase* Fireball = GetWorld()->SpawnActorDeferred<AElementProjectileBase>(
 				ProjectileBase,
 				SpawnProjectileTransform,
 				nullptr,
 				nullptr,
 				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 			{
-				Character->GetCapsuleComponent()->IgnoreActorWhenMoving(WaterGun, true);
-				WaterGun->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
+				Character->GetCapsuleComponent()->IgnoreActorWhenMoving(Fireball, true);
+				Fireball->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
 
 				// projectile VFX
-				WaterGun->ElementVfx = WaterVfx;
-				WaterGun->ElementPoofVfx = WaterPoofVfx;
+				Fireball->ElementVfx = FireballVfx;
+				Fireball->ElementPoofVfx = FireballPoofVfx;
 
-				const FGameplayEffectSpecHandle WaterGunGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-					WaterGunGameplayEffect,
+				const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+					FireballGameplayEffect,
 					1);
-				WaterGunGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+					ElementGameplayTags::Abilities_Parameters_Duration,
+					FireballDamageDuration);
+				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 					ElementGameplayTags::Abilities_Parameters_Damage,
-					WaterGunDamage);
-				WaterGun->GameplayEffectSpecHandle = WaterGunGameplayEffectSpecHandle;
-				UGameplayStatics::FinishSpawningActor(WaterGun, SpawnProjectileTransform);
+					FireballDamagePerSecond);
+				Fireball->GameplayEffectSpecHandle = FireballGameplayEffectSpecHandle;
+				Fireball->SourceAbility = this;
+				UGameplayStatics::FinishSpawningActor(Fireball, SpawnProjectileTransform);
 			}
 		}
+		*/
 	}
 
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true, nullptr);

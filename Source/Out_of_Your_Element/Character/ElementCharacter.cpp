@@ -45,8 +45,6 @@ AElementCharacter::AElementCharacter()
 	ElementAbilitySystemComponent =
 		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
-
-	OnActorBeginOverlap.AddDynamic(this, &AElementCharacter::OnActorOverlap);
 }
 
 void AElementCharacter::PostInitializeComponents()
@@ -98,13 +96,6 @@ void AElementCharacter::BeginPlay()
 	}
 
 	DoCycleElement(0);
-}
-
-void AElementCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 }
 
 void AElementCharacter::Tick(const float DeltaSeconds)
@@ -230,7 +221,7 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 			}
 
 			static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
-				UEngineTypes::ConvertToObjectType(ECC_WorldStatic),
+				UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
 			};
 
 			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursorForObjects(
@@ -380,19 +371,5 @@ void AElementCharacter::DoLook(const float Yaw)
 		FRotator Rotation = GetActorRotation();
 		Rotation.Yaw = FMath::Fmod(Rotation.Yaw + Yaw, 360);
 		SetActorRotation(Rotation);
-	}
-}
-
-void AElementCharacter::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
-{
-	UE_LOG(LogTemp, Log, TEXT("AElementCharacter::OnActorOverlap"));
-
-	if (OverlappedActor && OtherActor)
-	{
-		if (const AElementProjectileBase* ProjectileBase = Cast<AElementProjectileBase>(OtherActor))
-		{
-			ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(ProjectileBase->GameplayEffectSpecHandle);
-			OtherActor->Destroy();
-		}
 	}
 }
