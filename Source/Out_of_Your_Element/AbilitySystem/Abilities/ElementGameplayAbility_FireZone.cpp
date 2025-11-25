@@ -3,6 +3,13 @@
 
 #include "ElementGameplayAbility_FireZone.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "Engine/OverlapResult.h"
+#include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/Character/ElementCharacterBase.h"
+
 void UElementGameplayAbility_FireZone::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
@@ -12,43 +19,46 @@ void UElementGameplayAbility_FireZone::ActivateAbility(
 {
 	if (AActor* Actor = GetAvatarActorFromActorInfo())
 	{
-		/*
 		if (const ACharacter* Character = Cast<ACharacter>(Actor))
 		{
-			const FVector SpawnProjectileOffset = Character->GetActorForwardVector() * SpawningOffset;
-			const FVector SpawnProjectileLocation = Character->GetActorLocation() + SpawnProjectileOffset;
-			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
-			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
-
-			if (AElementProjectileBase* Fireball = GetWorld()->SpawnActorDeferred<AElementProjectileBase>(
-				ProjectileBase,
-				SpawnProjectileTransform,
-				nullptr,
-				nullptr,
-				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
+			if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
 			{
-				Character->GetCapsuleComponent()->IgnoreActorWhenMoving(Fireball, true);
-				Fireball->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
+				if (PlayerController->IsLocalPlayerController())
+				{
+					static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
+						UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
+					};
 
-				// projectile VFX
-				Fireball->ElementVfx = FireballVfx;
-				Fireball->ElementPoofVfx = FireballPoofVfx;
+					if (FHitResult MouseCursorHitResult; PlayerController->GetHitResultUnderCursorForObjects(
+						GroundTypes, false, MouseCursorHitResult))
+					{
+						const FTransform MouseCursorTransform(FRotator(0, 0, 0), MouseCursorHitResult.Location);
 
-				const FGameplayEffectSpecHandle FireballGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-					FireballGameplayEffect,
-					1);
-				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-					ElementGameplayTags::Abilities_Parameters_Duration,
-					FireballDamageDuration);
-				FireballGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-					ElementGameplayTags::Abilities_Parameters_Damage,
-					FireballDamagePerSecond);
-				Fireball->GameplayEffectSpecHandle = FireballGameplayEffectSpecHandle;
-				Fireball->SourceAbility = this;
-				UGameplayStatics::FinishSpawningActor(Fireball, SpawnProjectileTransform);
+						if (AElementZoneBase* FireZone = GetWorld()->SpawnActorDeferred<AElementZoneBase>(
+							ElementZoneBase,
+							MouseCursorTransform,
+							nullptr,
+							nullptr,
+							ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
+						{
+							const FGameplayEffectSpecHandle FireZoneGameplayEffectSpecHandle =
+							MakeOutgoingGameplayEffectSpec(
+								FireDotDamageGameplayEffect,
+								1);
+							FireZoneGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+								ElementGameplayTags::Abilities_Parameters_Duration,
+								FireZoneDotDamageDuration);
+							FireZoneGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+								ElementGameplayTags::Abilities_Parameters_Damage,
+								FireZoneDotDamage);
+
+							FireZone->InitializeZone(FireZoneGameplayEffectSpecHandle, this, FireZoneTickRate, FireZoneRadius, FireZoneLifeSpan);
+							UGameplayStatics::FinishSpawningActor(FireZone, MouseCursorTransform);
+						}
+					}
+				}
 			}
 		}
-		*/
 	}
 
 	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true, nullptr);
