@@ -52,9 +52,6 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> UsableAbilities;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameplayEffects")
-	TSubclassOf<UGameplayEffect> FireballEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameplayEffects")
 	TSubclassOf<UGameplayEffect> AnimationDelayBaseAttackGameplayEffect;
 
 	UPROPERTY(EditAnywhere, Category = "Cursor")
@@ -123,8 +120,6 @@ protected:
 	virtual void PostInitializeComponents() override;
 
 	virtual void BeginPlay() override;
-
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void Tick(const float DeltaSeconds) override;
 

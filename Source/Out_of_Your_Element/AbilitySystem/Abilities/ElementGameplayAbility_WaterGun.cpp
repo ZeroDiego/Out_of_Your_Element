@@ -43,7 +43,7 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 					1);
 				WaterGunGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 					ElementGameplayTags::Abilities_Parameters_Damage,
-					10);
+					WaterGunDamage);
 				WaterGun->GameplayEffectSpecHandle = WaterGunGameplayEffectSpecHandle;
 				UGameplayStatics::FinishSpawningActor(WaterGun, SpawnProjectileTransform);
 			}

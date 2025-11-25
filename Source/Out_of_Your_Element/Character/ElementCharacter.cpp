@@ -98,13 +98,6 @@ void AElementCharacter::BeginPlay()
 	DoCycleElement(0);
 }
 
-void AElementCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
-}
-
 void AElementCharacter::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -228,7 +221,7 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 			}
 
 			static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
-				UEngineTypes::ConvertToObjectType(ECC_WorldStatic),
+				UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
 			};
 
 			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursorForObjects(

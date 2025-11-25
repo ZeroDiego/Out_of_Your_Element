@@ -70,6 +70,8 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 
 				if (ProjectileBase->GameplayEffectSpecHandle.IsValid())
 				{
+					const FGameplayEffectContextHandle Context;
+
 					ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
 						ProjectileBase->GameplayEffectSpecHandle);
 
@@ -81,8 +83,6 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 						{
 							if (Tag.GetTagName() == TEXT("Damage.Type.Water"))
 							{
-								const FGameplayEffectContextHandle Context;
-
 								ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
 									SlowGameplayEffect, 1, Context);
 							}
@@ -93,7 +93,6 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 								ProjectileBaseForwardVector.X *= 2000;
 								ProjectileBaseForwardVector.Y *= 2000;
 								ProjectileBaseForwardVector.Z = 0;
-								const FGameplayEffectContextHandle Context;
 								ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
 									HitStunGameplayEffect, 1, Context);
 								ElementCharacterBase->LaunchCharacter(ProjectileBaseForwardVector, true, true);
@@ -106,22 +105,21 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 					{
 						if (Fireball->FireballDotVfx)
 						{
-							UNiagaraFunctionLibrary::SpawnSystemAttached(
+							ElementCharacterBase->NiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 								Fireball->FireballDotVfx,
 								ElementCharacterBase->GetRootComponent(), NAME_None,
 								FVector::ZeroVector,
 								FRotator::ZeroRotator,
 								EAttachLocation::Type::KeepRelativeOffset,
+								true,
 								true
 							);
 						}
 					}
 
-					OnProjectileHitDelegate.Broadcast(ElementCharacterBase);
+					OnProjectileHitDelegate.Broadcast(ElementCharacterBase, ProjectileBase->SourceAbility);
 				}
 			}
 		}
-
-		OverlappedActor->Destroy();
 	}
 }
