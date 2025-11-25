@@ -25,3 +25,29 @@ void AElementPlayerController::SetupInputComponent()
 		}
 	}
 }
+
+bool AElementPlayerController::InputKey(const FInputKeyEventArgs& Params)
+{
+	const bool bHandledBySuper = Super::InputKey(Params);
+
+	const EInputEvent EventType = Params.Event;
+	if (EventType == IE_Pressed ||
+		EventType == IE_Repeat ||
+		EventType == IE_Released)
+	{
+		const bool bIsGamepad = Params.IsGamepad();
+
+		if (bIsGamepad)
+		{
+			CurrentInputDevice = EInputDeviceType::Gamepad;
+			bUsingGamepad      = true;
+		}
+		else
+		{
+			CurrentInputDevice = EInputDeviceType::KeyboardMouse;
+			bUsingGamepad      = false;
+		}
+	}
+
+	return bHandledBySuper;
+}
