@@ -41,6 +41,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
-	                    UGameplayAbility* NewSourceAbility, const float Radius,
+	                    UGameplayAbility* NewSourceAbility, UNiagaraSystem* ZoneVfx, const float Radius,
 	                    const float LifeSpan);
 };
