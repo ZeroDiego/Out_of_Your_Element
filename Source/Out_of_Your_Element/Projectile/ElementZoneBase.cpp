@@ -28,10 +28,6 @@ AElementZoneBase::AElementZoneBase()
 void AElementZoneBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	DrawDebugSphere(GetWorld(), GetActorLocation(), ZoneSphereComponent->GetScaledSphereRadius(), 24, FColor::Blue,
-	                false, 10.0f,
-	                0, 2.0f);
 }
 
 void AElementZoneBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -69,11 +65,22 @@ void AElementZoneBase::Tick(float DeltaTime)
 }
 
 void AElementZoneBase::InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
-                                      UGameplayAbility* NewSourceAbility,
+                                      UGameplayAbility* NewSourceAbility, UNiagaraSystem* ZoneVfx,
                                       const float Radius, const float LifeSpan)
 {
 	GameplayEffectSpecHandle = NewGameplayEffectSpecHandle;
 	SourceAbility = NewSourceAbility;
 	ZoneSphereComponent->SetSphereRadius(Radius);
 	SetLifeSpan(LifeSpan);
+
+	ZoneNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+		ZoneVfx,
+		GetRootComponent(),
+		NAME_None,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		EAttachLocation::KeepRelativeOffset,
+		true,
+		true
+	);
 }
