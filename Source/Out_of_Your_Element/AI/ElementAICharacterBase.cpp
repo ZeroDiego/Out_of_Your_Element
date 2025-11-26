@@ -99,35 +99,4 @@ void AElementAICharacterBase::BeginPlay()
 void AElementAICharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (ElementAbilitySystemComponent->GetOwnedGameplayTags().IsValid())
-	{
-		for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
-		{
-			if (Tag.IsValid())
-			{
-				if (Tag.GetTagName() == TEXT("Abilities.Water"))
-				{
-					GetCharacterMovement()->MaxWalkSpeed = 150;
-				}
-				else if (Tag.GetTagName() == TEXT("Abilities.Nature"))
-				{
-					if (AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
-					{
-						AIController->StopMovement();
-						AIController->GetBrainComponent()->StopLogic("HitStun");
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		if (const AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
-		{
-			AIController->GetBrainComponent()->StartLogic();
-		}
-
-		GetCharacterMovement()->MaxWalkSpeed = 300;
-	}
 }

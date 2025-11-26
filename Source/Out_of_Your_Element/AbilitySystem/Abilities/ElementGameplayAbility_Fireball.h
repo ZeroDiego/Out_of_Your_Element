@@ -24,9 +24,6 @@ public:
 	TSubclassOf<UGameplayEffect> FireDamageGameplayEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> FireDotDamageGameplayEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AElementProjectileBase> ProjectileBase;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
@@ -34,9 +31,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
 	float FireballDamageDuration;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
-	float FireballDotDamagePerSecond;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
 	float SpawningOffset;

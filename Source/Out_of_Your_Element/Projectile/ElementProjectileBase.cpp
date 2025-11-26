@@ -6,6 +6,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AbilitySystem/Abilities/ElementGameplayAbility_Fireball.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
 #include "Out_of_Your_Element/Character/ElementCharacter.h"
@@ -80,13 +81,13 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 						if (Tag.IsValid())
 						{
 							const FGameplayEffectContextHandle Context;
-							if (Tag.GetTagName() == TEXT("Damage.Type.Water"))
+							if (Tag == ElementGameplayTags::Damage_Type_Water)
 							{
 								ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
 									SlowGameplayEffect, 1, Context);
 							}
 
-							if (Tag.GetTagName() == TEXT("Damage.Type.Nature"))
+							if (Tag == ElementGameplayTags::Damage_Type_Nature)
 							{
 								FVector ProjectileBaseForwardVector = ProjectileBase->GetActorForwardVector();
 								ProjectileBaseForwardVector.X *= 2000;
