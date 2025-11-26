@@ -3,7 +3,9 @@
 
 #include "ElementCharacterBase.h"
 
-#include "NiagaraFunctionLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/AI/ElementalAIController.h"
 
 // Sets default values
 AElementCharacterBase::AElementCharacterBase()
@@ -20,8 +22,17 @@ void AElementCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FireDotNiagaraComponent->SetVisibility(false);
-	FireDotNiagaraComponent->SetAsset(FireDotVfx);
+	ElementAbilitySystemComponent->RegisterGameplayTagEvent(ElementGameplayTags::Abilities_Fire,
+	                                                        EGameplayTagEventType::NewOrRemoved).AddUObject(
+		this, &AElementCharacterBase::FireDamageHandler);
+
+	ElementAbilitySystemComponent->RegisterGameplayTagEvent(ElementGameplayTags::Abilities_Water,
+	                                                        EGameplayTagEventType::NewOrRemoved).AddUObject(
+		this, &AElementCharacterBase::WaterDamageHandler);
+
+	ElementAbilitySystemComponent->RegisterGameplayTagEvent(ElementGameplayTags::Abilities_Nature,
+	                                                        EGameplayTagEventType::NewOrRemoved).AddUObject(
+		this, &AElementCharacterBase::NatureDamageHandler);
 }
 
 void AElementCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -29,24 +40,57 @@ void AElementCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+void AElementCharacterBase::FireDamageHandler(FGameplayTag Tag, const int32 NewCount) const
+{
+	if (NewCount > 0)
+	{
+		FireDotNiagaraComponent->SetAsset(FireDotVfx);
+	}
+	else
+	{
+		FireDotNiagaraComponent->SetAsset(nullptr);
+	}
+}
+
+void AElementCharacterBase::WaterDamageHandler(FGameplayTag Tag, const int32 NewCount) const
+{
+	if (NewCount > 0)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 150;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300;
+	}
+}
+
+void AElementCharacterBase::NatureDamageHandler(FGameplayTag Tag, const int32 NewCount) const
+{
+	if (NewCount > 0)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 0;
+
+		if (AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
+		{
+			AIController->StopMovement();
+			AIController->GetBrainComponent()->StopLogic("HitStun");
+		}
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 300;
+
+		if (const AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
+		{
+			AIController->GetBrainComponent()->StartLogic();
+		}
+	}
+}
+
 // Called every frame
 void AElementCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	for (FGameplayTag Tag : GetAbilitySystemComponent()->GetOwnedGameplayTags())
-	{
-		if (Tag.IsValid())
-		{
-			if (Tag.GetTagName() == TEXT("Abilities.Fire"))
-			{
-				FireDotNiagaraComponent->SetVisibility(true);
-				return;
-			}
-		}
-	}
-
-	FireDotNiagaraComponent->SetVisibility(false);
 }
 
 // Called to bind functionality to input

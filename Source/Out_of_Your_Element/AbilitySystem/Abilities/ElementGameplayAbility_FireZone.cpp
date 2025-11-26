@@ -43,7 +43,7 @@ void UElementGameplayAbility_FireZone::ActivateAbility(
 						{
 							const FGameplayEffectSpecHandle FireZoneGameplayEffectSpecHandle =
 							MakeOutgoingGameplayEffectSpec(
-								FireDotDamageGameplayEffect,
+								FireZoneDotDamageGameplayEffect,
 								1);
 							FireZoneGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 								ElementGameplayTags::Abilities_Parameters_Duration,
