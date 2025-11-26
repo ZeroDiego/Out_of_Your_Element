@@ -321,14 +321,24 @@ void AElementCharacter::DoSpecialAttack()
 	if (!SpecialAttack)
 		return;
 
-	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(SpecialAttack))
+	for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
 	{
-		bIsAttacking = true;
-		OnAttackDelegate.Broadcast(FAttackData{
-			.Element = ActiveElement,
-			.Ability = SpecialAttack
-		});
+		if (Tag.IsValid())
+		{
+			if (Tag.GetTagName() == TEXT("Abilities.BaseAttack") || Tag.GetTagName() == TEXT("Abilities.Water"))
+			{
+				return;
+			}
+		}
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
+
+	bIsAttacking = true;
+	OnAttackDelegate.Broadcast(FAttackData{
+		.Element = ActiveElement,
+		.Ability = SpecialAttack
+	});
 }
 
 void AElementCharacter::DoCycleElement(const int Amount)
