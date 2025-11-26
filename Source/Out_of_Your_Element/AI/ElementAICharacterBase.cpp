@@ -112,9 +112,9 @@ void AElementAICharacterBase::Tick(float DeltaTime)
 				}
 				else if (Tag.GetTagName() == TEXT("Abilities.Nature"))
 				{
-					GetController()->StopMovement();
-					if (const AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
+					if (AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
 					{
+						AIController->StopMovement();
 						AIController->GetBrainComponent()->StopLogic("HitStun");
 					}
 				}
