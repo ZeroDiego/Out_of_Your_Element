@@ -58,36 +58,50 @@ void UElementDamageExecution::Execute_Implementation(
 
 	float DamageResistancePercent = 0.0f;
 	float DamageResistanceFixed = 0.0f;
+	float HealPercent = 0.0f;
+	float HealFixed = 0.0f;
 
+
+	for (FActiveGameplayEffectIterator<const FActiveGameplayEffect, FActiveGameplayEffectsContainer> It =
+		     ExecutionParams.GetTargetAbilitySystemComponent()->
+		                     GetActiveGameplayEffects().
+		                     CreateConstIterator(); It; ++It
+	)
 	{
-		FGameplayTagContainer AssetTags;
-		for (FActiveGameplayEffectIterator<const FActiveGameplayEffect, FActiveGameplayEffectsContainer> It =
-			     ExecutionParams.GetTargetAbilitySystemComponent()->
-			                     GetActiveGameplayEffects().
-			                     CreateConstIterator(); It; ++It
-		)
+		const FActiveGameplayEffect& ActiveEffect = *It;
+		const FGameplayEffectSpec& Spec = ActiveEffect.Spec;
+
+		if (!Spec.Def || !Spec.Def->GetAssetTags().HasTagExact(DamageType))
+			continue;
+
+		if (DamageResistancePercent <= 1.0)
 		{
-			const FActiveGameplayEffect& ActiveEffect = *It;
-			const FGameplayEffectSpec& Spec = ActiveEffect.Spec;
-
-			Spec.GetAllAssetTags(AssetTags);
-			if (!AssetTags.HasTagExact(DamageType))
-				continue;
-
-			DamageResistancePercent += Spec.GetSetByCallerMagnitude(
+			const float Mod = Spec.GetSetByCallerMagnitude(
 				ElementGameplayTags::Abilities_Parameters_Resistance_Percent,
 				false
 			);
 
-			DamageResistanceFixed += Spec.GetSetByCallerMagnitude(
-				ElementGameplayTags::Abilities_Parameters_Resistance_Fixed,
-				false
-			);
+			DamageResistancePercent = FMath::Clamp(DamageResistancePercent + Mod, 0.0f, 1.0f);
 		}
+
+		DamageResistanceFixed += Spec.GetSetByCallerMagnitude(
+			ElementGameplayTags::Abilities_Parameters_Resistance_Fixed,
+			false
+		);
+
+		HealPercent += Spec.GetSetByCallerMagnitude(
+			ElementGameplayTags::Abilities_Parameters_Heal_Percent,
+			false
+		);
+
+		HealFixed += Spec.GetSetByCallerMagnitude(
+			ElementGameplayTags::Abilities_Parameters_Heal_Fixed,
+			false
+		);
 	}
 
-	const float TotalDamage =
-		DamageTaken * (1.0f - FMath::Clamp(DamageResistancePercent, 0.0f, 1.0f)) - DamageResistanceFixed;
+	const float TotalDamage = DamageTaken * (1.0f - DamageResistancePercent) - DamageResistanceFixed
+		- (DamageTaken * HealPercent + HealFixed);
 
 	if (FMath::IsNearlyZero(DamageTaken, .01f))
 		return;
