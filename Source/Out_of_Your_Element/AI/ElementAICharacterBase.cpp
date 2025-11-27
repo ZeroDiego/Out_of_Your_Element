@@ -74,6 +74,16 @@ void AElementAICharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FGameplayEffectContext* Context = new FGameplayEffectContext(this, this);
+	const FGameplayEffectContextHandle ContextHandle = FGameplayEffectContextHandle(Context);
+	for (const auto& DefaultGameplayEffect : DefaultGameplayEffects)
+	{
+		const UGameplayEffect* Effect = DefaultGameplayEffect.Key->GetDefaultObject<UGameplayEffect>();
+		FGameplayEffectSpec NewSpec = FGameplayEffectSpec(Effect, ContextHandle);
+		NewSpec.SetByCallerTagMagnitudes = DefaultGameplayEffect.Value.Tags;
+		ElementAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(NewSpec);
+	}
+
 	for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 	{
 		if (Ability)
