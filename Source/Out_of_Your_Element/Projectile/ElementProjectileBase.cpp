@@ -81,6 +81,7 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 						if (Tag.IsValid())
 						{
 							const FGameplayEffectContextHandle Context;
+							
 							if (Tag == ElementGameplayTags::Damage_Type_Water)
 							{
 								ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(
@@ -100,7 +101,7 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 						}
 					}
 
-					OnProjectileHitDelegate.Broadcast(ElementCharacterBase, ProjectileBase->SourceAbility);
+					OnProjectileHitDelegate.Broadcast(ElementCharacterBase);
 				}
 			}
 		}

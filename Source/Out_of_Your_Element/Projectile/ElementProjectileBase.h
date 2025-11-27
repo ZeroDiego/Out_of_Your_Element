@@ -13,7 +13,7 @@
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 #include "ElementProjectileBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnProjectileHit, AElementCharacterBase*, HitCharacter, UGameplayAbility*, SourceAbility);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnProjectileHit, AElementCharacterBase*, HitCharacter);
 
 UCLASS(Blueprintable)
 class OUT_OF_YOUR_ELEMENT_API AElementProjectileBase : public AActor
