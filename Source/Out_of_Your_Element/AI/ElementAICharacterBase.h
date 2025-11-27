@@ -14,11 +14,24 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAIDeathEvent);
 
+USTRUCT(Blueprintable)
+struct FDefaultGameplayEffectTags
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FGameplayTag, float> Tags;
+};
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementAICharacterBase : public AElementCharacterBase
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn), Category = "Effects")
+	TMap<TSubclassOf<UGameplayEffect>, FDefaultGameplayEffectTags> DefaultGameplayEffects;
+	
 public:
 	AElementAICharacterBase();
 
