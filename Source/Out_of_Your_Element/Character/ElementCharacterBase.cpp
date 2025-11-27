@@ -54,14 +54,7 @@ void AElementCharacterBase::FireDamageHandler(FGameplayTag Tag, const int32 NewC
 
 void AElementCharacterBase::WaterDamageHandler(FGameplayTag Tag, const int32 NewCount) const
 {
-	if (NewCount > 0)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 150;
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 300;
-	}
+	OnWaterDamageTakenDelegate.Broadcast(NewCount);
 }
 
 void AElementCharacterBase::NatureDamageHandler(FGameplayTag Tag, const int32 NewCount) const
