@@ -14,7 +14,6 @@ namespace ElementGameplayTags
 	                               "Abilities.Parameters.Duration",
 	                               "Duration of applied Gameplay Effect");
 
-
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Parameters_Resistance_Percent,
 	                               "Abilities.Parameters.Resistance.Percent",
 	                               "Amount of resistance to an element in (0.0 - 1.0)");
@@ -22,6 +21,14 @@ namespace ElementGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Parameters_Resistance_Fixed,
 	                               "Abilities.Parameters.Resistance.Fixed",
 	                               "Fixed amount of resistance to an element");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Parameters_Heal_Percent,
+	                               "Abilities.Parameters.Heal.Percent",
+	                               "Healing from an element relative to the damage received (1.0 = 100%)");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Parameters_Heal_Fixed,
+	                               "Abilities.Parameters.Heal.Fixed",
+	                               "Healing received when hit by an element");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_BaseAttack,
 	                               "Abilities.BaseAttack",

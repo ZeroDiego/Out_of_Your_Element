@@ -20,26 +20,34 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
 	UNiagaraComponent* FireDotNiagaraComponent;
-	
+
 	UPROPERTY(EditAnywhere, Category="VFX")
 	UNiagaraSystem* FireDotVfx;
-	
+
 	// Sets default values for this character's properties
 	AElementCharacterBase();
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return ElementAbilitySystemComponent; }
-	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override
+	{
+		return ElementAbilitySystemComponent;
+	}
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-public:	
+	void FireDamageHandler(FGameplayTag Tag, const int32 NewCount) const;
+
+	void WaterDamageHandler(FGameplayTag Tag, const int32 NewCount) const;
+
+	void NatureDamageHandler(FGameplayTag Tag, const int32 NewCount) const;
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 };

@@ -28,7 +28,7 @@ public:
 	TSubclassOf<AElementZoneBase> ElementZoneBase;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> FireDotDamageGameplayEffect;
+	TSubclassOf<UGameplayEffect> FireZoneDotDamageGameplayEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
 	float FireZoneDotDamage;

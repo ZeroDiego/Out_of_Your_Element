@@ -4,6 +4,7 @@
 #include "ElementZoneBase.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AbilitySystem/Abilities/ElementGameplayAbility_FireZone.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
@@ -47,16 +48,17 @@ void AElementZoneBase::Tick(float DeltaTime)
 	{
 		if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(OverlappedActor))
 		{
+			/*
 			for (FGameplayTag Tag : ElementCharacterBase->GetAbilitySystemComponent()->GetOwnedGameplayTags())
 			{
 				if (Tag.IsValid())
 				{
-					if (Tag.GetTagName() == TEXT("Abilities.Fire"))
+					if (Tag == ElementGameplayTags::Abilities_Fire)
 					{
 						return;
 					}
 				}
-			}
+			}*/
 
 			ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
 				GameplayEffectSpecHandle);

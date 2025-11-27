@@ -74,6 +74,16 @@ void AElementAICharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FGameplayEffectContext* Context = new FGameplayEffectContext(this, this);
+	const FGameplayEffectContextHandle ContextHandle = FGameplayEffectContextHandle(Context);
+	for (const auto& DefaultGameplayEffect : DefaultGameplayEffects)
+	{
+		const UGameplayEffect* Effect = DefaultGameplayEffect.Key->GetDefaultObject<UGameplayEffect>();
+		FGameplayEffectSpec NewSpec = FGameplayEffectSpec(Effect, ContextHandle);
+		NewSpec.SetByCallerTagMagnitudes = DefaultGameplayEffect.Value.Tags;
+		ElementAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(NewSpec);
+	}
+
 	for (TSubclassOf<UGameplayAbility>& Ability : UsableAbilities)
 	{
 		if (Ability)
@@ -99,35 +109,4 @@ void AElementAICharacterBase::BeginPlay()
 void AElementAICharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (ElementAbilitySystemComponent->GetOwnedGameplayTags().IsValid())
-	{
-		for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
-		{
-			if (Tag.IsValid())
-			{
-				if (Tag.GetTagName() == TEXT("Abilities.Water"))
-				{
-					GetCharacterMovement()->MaxWalkSpeed = 150;
-				}
-				else if (Tag.GetTagName() == TEXT("Abilities.Nature"))
-				{
-					if (AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
-					{
-						AIController->StopMovement();
-						AIController->GetBrainComponent()->StopLogic("HitStun");
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		if (const AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
-		{
-			AIController->GetBrainComponent()->StartLogic();
-		}
-
-		GetCharacterMovement()->MaxWalkSpeed = 300;
-	}
 }
