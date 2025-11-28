@@ -1,43 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+
 #pragma once
 
-#include "Abilities/GameplayAbility.h"
+#include "ElementGameplayAbilityProjectileBase.h"
 #include "ElementGameplayAbility_Fireball.generated.h"
 
-class AElementProjectileBase;
-class UNiagaraSystem;
-
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Fireball : public UGameplayAbility
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Fireball : public UElementGameplayAbilityProjectileBase
 {
 	GENERATED_BODY()
 
 public:
-	//Override ActiveAbility
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	                             const FGameplayAbilityActorInfo* ActorInfo,
-	                             const FGameplayAbilityActivationInfo ActivationInfo,
-	                             const FGameplayEventData* TriggerEventData) override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> FireDamageGameplayEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AElementProjectileBase> ProjectileBase;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
-	float FireballDamage;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Seconds"), Category="Fireball")
 	float FireballDamageDuration;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
-	float SpawningOffset;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireballVfx;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireballPoofVfx;
 };

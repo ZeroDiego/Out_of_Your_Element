@@ -2,11 +2,7 @@
 
 
 #include "ElementGameplayAbility_WaterGun.h"
-#include "GameFramework/Character.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Components/CapsuleComponent.h"
-#include "Out_of_Your_Element/Projectile//ElementProjectileBase.h"
-#include "Kismet/GameplayStatics.h"
+#include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 
 void UElementGameplayAbility_WaterGun::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
@@ -15,41 +11,32 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 	const FGameplayEventData* TriggerEventData
 )
 {
-	if (AActor* Actor = GetAvatarActorFromActorInfo())
+	if (const AActor* Caster = GetAvatarActorFromActorInfo())
 	{
-		if (const ACharacter* Character = Cast<ACharacter>(Actor))
+		const float StepAngle = Spread / ProjectileCount;
+		const int LeftSteps = ProjectileCount / 2;
+		FVector Forward = Caster->GetActorForwardVector();
+
+		// Move vector to far left of arc
+		Forward = Forward.RotateAngleAxis(
+			-1 * StepAngle * LeftSteps,
+			FVector::ZAxisVector
+		);
+
+		for (int i = 0; i < ProjectileCount; ++i)
 		{
-			const FVector SpawnProjectileOffset = Character->GetActorForwardVector() * SpawningOffset;
-			const FVector SpawnProjectileLocation = Character->GetActorLocation() + SpawnProjectileOffset;
-			const FRotator SpawnProjectileRotation = Character->GetActorRotation();
-			const FTransform SpawnProjectileTransform(SpawnProjectileRotation, SpawnProjectileLocation);
+			const FVector Offset = Forward * ProjectileSpawnOffset;
+			const FVector Location = Caster->GetActorLocation() + Offset;
+			const FRotator Rotation = Forward.Rotation();
+			ShootProjectile(Location, Rotation);
 
-			if (AElementProjectileBase* WaterGun = GetWorld()->SpawnActorDeferred<AElementProjectileBase>(
-				ProjectileBase,
-				SpawnProjectileTransform,
-				nullptr,
-				nullptr,
-				ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
-			{
-				Character->GetCapsuleComponent()->IgnoreActorWhenMoving(WaterGun, true);
-				WaterGun->ProjectileSphereComponent->IgnoreActorWhenMoving(Actor, true);
-
-				// projectile VFX
-				WaterGun->ElementVfx = WaterVfx;
-				WaterGun->ElementPoofVfx = WaterPoofVfx;
-
-				const FGameplayEffectSpecHandle WaterGunGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-					WaterGunGameplayEffect,
-					1);
-				WaterGunGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-					ElementGameplayTags::Abilities_Parameters_Damage,
-					WaterGunDamage);
-				WaterGun->GameplayEffectSpecHandle = WaterGunGameplayEffectSpecHandle;
-				UGameplayStatics::FinishSpawningActor(WaterGun, SpawnProjectileTransform);
-			}
+			Forward = Forward.RotateAngleAxis(
+				StepAngle,
+				FVector::ZAxisVector
+			);
 		}
 	}
 
-	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true, nullptr);
+	CommitAbility(Handle, ActorInfo, ActivationInfo);
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
