@@ -9,7 +9,9 @@
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "ElementCharacterBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFireDamageTaken, const int32, NewTagCount);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaterDamageTaken, const int32, NewTagCount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNatureDamageTaken, const int32, NewTagCount);
 
 UCLASS(Blueprintable)
 class OUT_OF_YOUR_ELEMENT_API AElementCharacterBase : public ACharacter, public IAbilitySystemInterface
@@ -27,7 +29,13 @@ public:
 	UNiagaraSystem* FireDotVfx;
 
 	UPROPERTY(BlueprintAssignable)
+	FOnFireDamageTaken OnFireDamageTakenDelegate;
+	
+	UPROPERTY(BlueprintAssignable)
 	FOnWaterDamageTaken OnWaterDamageTakenDelegate;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnNatureDamageTaken OnNatureDamageTakenDelegate;
 
 	// Sets default values for this character's properties
 	AElementCharacterBase();

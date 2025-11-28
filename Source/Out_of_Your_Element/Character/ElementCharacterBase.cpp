@@ -59,6 +59,9 @@ void AElementCharacterBase::WaterDamageHandler(FGameplayTag Tag, const int32 New
 
 void AElementCharacterBase::NatureDamageHandler(FGameplayTag Tag, const int32 NewCount) const
 {
+	OnNatureDamageTakenDelegate.Broadcast(NewCount);
+	
+	/*
 	if (NewCount > 0)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 0;
@@ -78,6 +81,7 @@ void AElementCharacterBase::NatureDamageHandler(FGameplayTag Tag, const int32 Ne
 			AIController->GetBrainComponent()->StartLogic();
 		}
 	}
+	*/
 }
 
 // Called every frame
