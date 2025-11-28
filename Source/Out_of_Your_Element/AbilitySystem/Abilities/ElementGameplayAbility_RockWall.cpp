@@ -28,7 +28,7 @@ void UElementGameplayAbility_RockWall::ActivateAbility(
 					if (FHitResult MouseCursorHitResult; PlayerController->GetHitResultUnderCursorForObjects(
 						GroundTypes, false, MouseCursorHitResult))
 					{
-						const FTransform MouseCursorTransform(FRotator(0, 0, 0), MouseCursorHitResult.Location);
+						const FTransform MouseCursorTransform(Character->GetActorRotation() + FRotator(0, 90, 0), MouseCursorHitResult.Location);
 
 						if (AElementWallBase* RockWall = GetWorld()->SpawnActorDeferred<AElementWallBase>(
 							ElementWallBase,
