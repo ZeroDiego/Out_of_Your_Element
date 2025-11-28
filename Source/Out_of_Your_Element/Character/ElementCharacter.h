@@ -37,10 +37,10 @@ class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public AElementCharacterBase
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Camera")
-	float TargetArmLength = 1000.0f;
+	float TargetArmLength = 1250.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Camera")
-	FRotator CameraRotation = FRotator(-45.0f, 180.0f, 0.0f);
+	FRotator CameraRotation = FRotator(-52.5f, 180.0f, 0.0f);
 
 	UPROPERTY(EditAnywhere, Category = "Shooting")
 	FVector FiringOffset = FVector(100.0f, 0.0f, 0.0f);
