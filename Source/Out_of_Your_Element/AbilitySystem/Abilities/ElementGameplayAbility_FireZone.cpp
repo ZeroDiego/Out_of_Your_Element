@@ -3,8 +3,6 @@
 
 #include "ElementGameplayAbility_FireZone.h"
 
-#include "NiagaraFunctionLibrary.h"
-#include "Engine/OverlapResult.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
@@ -17,50 +15,56 @@ void UElementGameplayAbility_FireZone::ActivateAbility(
 	const FGameplayEventData* TriggerEventData
 )
 {
-	if (AActor* Actor = GetAvatarActorFromActorInfo())
+	if (const ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
 	{
-		if (const ACharacter* Character = Cast<ACharacter>(Actor))
+		if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
 		{
-			if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+			if (PlayerController->IsLocalPlayerController())
 			{
-				if (PlayerController->IsLocalPlayerController())
+				static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
+					UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
+				};
+
+				if (FHitResult MouseCursorHitResult; PlayerController->GetHitResultUnderCursorForObjects(
+					GroundTypes, false, MouseCursorHitResult))
 				{
-					static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
-						UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
-					};
+					const FTransform MouseCursorTransform(FRotator::ZeroRotator, MouseCursorHitResult.Location);
 
-					if (FHitResult MouseCursorHitResult; PlayerController->GetHitResultUnderCursorForObjects(
-						GroundTypes, false, MouseCursorHitResult))
+					if (AElementZoneBase* FireZone = GetWorld()->SpawnActorDeferred<AElementZoneBase>(
+						FireZoneClass,
+						MouseCursorTransform,
+						nullptr,
+						nullptr,
+						ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 					{
-						const FTransform MouseCursorTransform(FRotator(0, 0, 0), MouseCursorHitResult.Location);
+						const FGameplayEffectSpecHandle FireZoneGameplayEffectSpecHandle =
+							MakeOutgoingGameplayEffectSpec(DamageGameplayEffect);
 
-						if (AElementZoneBase* FireZone = GetWorld()->SpawnActorDeferred<AElementZoneBase>(
-							ElementZoneBase,
-							MouseCursorTransform,
-							nullptr,
-							nullptr,
-							ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
-						{
-							const FGameplayEffectSpecHandle FireZoneGameplayEffectSpecHandle =
-							MakeOutgoingGameplayEffectSpec(
-								FireZoneDotDamageGameplayEffect,
-								1);
-							FireZoneGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-								ElementGameplayTags::Abilities_Parameters_Duration,
-								FireZoneDotDamageDuration);
-							FireZoneGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-								ElementGameplayTags::Abilities_Parameters_Damage,
-								FireZoneDotDamage);
+						FireZoneGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+							ElementGameplayTags::Abilities_Parameters_Duration,
+							FireZoneDamageDuration
+						);
 
-							FireZone->InitializeZone(FireZoneGameplayEffectSpecHandle, this, FireZoneVfx, FireZoneRadius, FireZoneLifeSpan);
-							UGameplayStatics::FinishSpawningActor(FireZone, MouseCursorTransform);
-						}
+						FireZoneGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+							ElementGameplayTags::Abilities_Parameters_Damage,
+							BaseDamage
+						);
+
+						FireZone->InitializeZone(
+							FireZoneGameplayEffectSpecHandle,
+							this,
+							FireZoneVfx,
+							FireZoneRadius,
+							FireZoneLifeSpan
+						);
+
+						UGameplayStatics::FinishSpawningActor(FireZone, MouseCursorTransform);
 					}
 				}
 			}
 		}
 	}
 
-	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true, nullptr);
+	CommitAbility(Handle, ActorInfo, ActivationInfo);
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
