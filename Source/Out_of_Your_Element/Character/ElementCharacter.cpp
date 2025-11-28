@@ -262,17 +262,6 @@ void AElementCharacter::DoBaseAttack()
 	if (!BaseAttack)
 		return;
 
-	for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
-	{
-		if (Tag.IsValid())
-		{
-			if (Tag == ElementGameplayTags::Abilities_Water)
-			{
-				return;
-			}
-		}
-	}
-
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
 		.Ability = BaseAttack
@@ -314,17 +303,6 @@ void AElementCharacter::DoSpecialAttack()
 
 	if (!SpecialAttack)
 		return;
-
-	for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
-	{
-		if (Tag.IsValid())
-		{
-			if (Tag == ElementGameplayTags::Abilities_Water)
-			{
-				return;
-			}
-		}
-	}
 
 	bIsAttacking = true;
 	OnAttackDelegate.Broadcast(FAttackData{
