@@ -15,6 +15,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameplayAbilitiesModule.h"
 #include "AbilitySystemGlobals.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -261,19 +262,6 @@ void AElementCharacter::DoBaseAttack()
 	if (!BaseAttack)
 		return;
 
-	for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
-	{
-		if (Tag.IsValid())
-		{
-			if (Tag.GetTagName() == TEXT("Abilities.BaseAttack") || Tag.GetTagName() == TEXT("Abilities.Water"))
-			{
-				return;
-			}
-		}
-	}
-
-	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
-
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
 		.Ability = BaseAttack
@@ -282,12 +270,7 @@ void AElementCharacter::DoBaseAttack()
 
 void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack)
 {
-	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack))
-	{
-		const FGameplayEffectContextHandle AnimationDelayBaseAttackGameplayEffectContextHandle;
-		ElementAbilitySystemComponent->BP_ApplyGameplayEffectToSelf(AnimationDelayBaseAttackGameplayEffect, 1,
-		                                                            AnimationDelayBaseAttackGameplayEffectContextHandle);
-	}
+	ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack);
 }
 
 
@@ -321,24 +304,16 @@ void AElementCharacter::DoSpecialAttack()
 	if (!SpecialAttack)
 		return;
 
-	for (FGameplayTag Tag : ElementAbilitySystemComponent->GetOwnedGameplayTags())
-	{
-		if (Tag.IsValid())
-		{
-			if (Tag.GetTagName() == TEXT("Abilities.BaseAttack") || Tag.GetTagName() == TEXT("Abilities.Water"))
-			{
-				return;
-			}
-		}
-	}
-
-	GetCharacterMovement()->MaxWalkSpeed = 150.0f;
-
 	bIsAttacking = true;
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
 		.Ability = SpecialAttack
 	});
+}
+
+void AElementCharacter::DoSpecialAttackHelperFunction(const TSubclassOf<UGameplayAbility>& SpecialAttack)
+{
+	ElementAbilitySystemComponent->TryActivateAbilityByClass(SpecialAttack);
 }
 
 void AElementCharacter::DoCycleElement(const int Amount)

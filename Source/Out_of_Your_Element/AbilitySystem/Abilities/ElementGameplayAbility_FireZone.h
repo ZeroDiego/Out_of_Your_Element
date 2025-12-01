@@ -1,50 +1,37 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+
 #pragma once
 
-#include "CoreMinimal.h"
-#include "NiagaraSystem.h"
-#include "Abilities/GameplayAbility.h"
-#include "Out_of_Your_Element/Character/ElementCharacterBase.h"
+#include "ElementGameplayAbilityBase.h"
 #include "Out_of_Your_Element/Projectile/ElementZoneBase.h"
 #include "ElementGameplayAbility_FireZone.generated.h"
 
-/**
- * 
- */
+class UNiagaraSystem;
+
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_FireZone : public UGameplayAbility
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_FireZone : public UElementGameplayAbilityBase
 {
 	GENERATED_BODY()
 
 public:
-	//Override ActiveAbility
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-								 const FGameplayAbilityActorInfo* ActorInfo,
-								 const FGameplayAbilityActivationInfo ActivationInfo,
-								 const FGameplayEventData* TriggerEventData) override;
+	                             const FGameplayAbilityActorInfo* ActorInfo,
+	                             const FGameplayAbilityActivationInfo ActivationInfo,
+	                             const FGameplayEventData* TriggerEventData) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AElementZoneBase> ElementZoneBase;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> FireZoneDotDamageGameplayEffect;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<AElementZoneBase> FireZoneClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
-	float FireZoneDotDamage;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="FireZone")
+	float FireZoneDamageDuration = 4;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
-	float FireZoneDotDamageDuration;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="FireZone")
+	float FireZoneRadius = 250;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
-	float FireZoneRadius;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="FireZone")
+	float FireZoneLifeSpan = 10;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Floats")
-	float FireZoneLifeSpan;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireballDotVfx;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
+	UPROPERTY(EditDefaultsOnly, Category="VFX")
 	UNiagaraSystem* FireZoneVfx;
 };
