@@ -100,7 +100,7 @@ void AElementAICharacterBase::BeginPlay()
 		Move->bUseRVOAvoidance             = true;
 		Move->AvoidanceConsiderationRadius = 300.f;
 		Move->AvoidanceWeight              = 0.7f;
-	}	//AI Crowd avoidance försök
+	}rpuc	//AI Crowd avoidance försök
 
 	LastKnownLocation = GetActorLocation();*/
 }
