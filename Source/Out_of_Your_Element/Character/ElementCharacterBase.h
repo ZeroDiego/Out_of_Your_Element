@@ -10,7 +10,9 @@
 #include "ElementCharacterBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFireDamageTaken, const int32, NewTagCount);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaterDamageTaken, const int32, NewTagCount);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNatureDamageTaken, const int32, NewTagCount);
 
 UCLASS(Blueprintable)
@@ -30,13 +32,21 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnFireDamageTaken OnFireDamageTakenDelegate;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnWaterDamageTaken OnWaterDamageTakenDelegate;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnNatureDamageTaken OnNatureDamageTakenDelegate;
 
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	TObjectPtr<class UElementMovementAttributeSet> MovementAttributeSet;
+
+public:
 	// Sets default values for this character's properties
 	AElementCharacterBase();
 
@@ -46,6 +56,8 @@ public:
 	}
 
 protected:
+	virtual void PostInitializeComponents() override;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
