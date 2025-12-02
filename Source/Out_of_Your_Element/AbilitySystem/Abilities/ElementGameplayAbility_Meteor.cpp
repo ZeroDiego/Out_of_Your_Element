@@ -5,6 +5,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/Projectile/ElementMeteor.h"
 
 void UElementGameplayAbility_Meteor::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
@@ -27,6 +28,21 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 					GroundTypes, false, MouseCursorHitResult))
 				{
 					MeteorSpawnLocation = FTransform(FRotator::ZeroRotator, MouseCursorHitResult.Location);
+
+					const FTransform MeteorProjectileSpawnLocation = FTransform(
+						FRotator::ZeroRotator, MouseCursorHitResult.Location + MeteorSpawnOffset
+					);
+
+					if (AElementMeteor* Meteor = GetWorld()->SpawnActorDeferred<AElementMeteor>(
+						MeteorClass,
+						MeteorProjectileSpawnLocation
+					))
+					{
+						Meteor->SummoningTime = MeteorSummoningTime;
+						Meteor->TargetLocation = MouseCursorHitResult.Location;
+
+						UGameplayStatics::FinishSpawningActor(Meteor, MeteorProjectileSpawnLocation);
+					}
 
 					UAbilityTask_WaitDelay* DelayTask = UAbilityTask_WaitDelay::WaitDelay(this, MeteorSummoningTime);
 					DelayTask->OnFinish.AddDynamic(this, &UElementGameplayAbility_Meteor::OnDelayFinished);
