@@ -119,7 +119,8 @@ void UElementGameplayAbility_Thorns::ActivateAbility(
 			ThornPositions
 		);
 
-		const FVector SearchDistance = Caster->GetActorUpVector() * 25;
+		constexpr float AllowedHeightDifference = 50.0f;
+		const FVector SearchDistance = Caster->GetActorUpVector() * AllowedHeightDifference;
 		for (const FVector2D& ThornPosition2D : ThornPositions)
 		{
 			if (FVector ThornPosition(ThornPosition2D, Height);
