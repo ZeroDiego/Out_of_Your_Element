@@ -3,8 +3,12 @@
 
 #include "ElementCharacterBase.h"
 
+#include "AbilitySystemGlobals.h"
+#include "GameplayAbilitiesModule.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementMovementAttributeSet.h"
 #include "Out_of_Your_Element/AI/ElementalAIController.h"
 
 // Sets default values
@@ -15,6 +19,37 @@ AElementCharacterBase::AElementCharacterBase()
 
 	FireDotNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("NiagaraComponent"));
 	FireDotNiagaraComponent->SetupAttachment(GetRootComponent());
+
+	ElementAbilitySystemComponent =
+		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
+	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
+	MovementAttributeSet = CreateDefaultSubobject<UElementMovementAttributeSet>(TEXT("Movement Attribute Set"));
+}
+
+void AElementCharacterBase::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (Controller)
+	{
+		ElementAbilitySystemComponent->InitAbilityActorInfo(Controller, this);
+	}
+	else
+	{
+		ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+
+	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(
+		GetAbilitySystemComponent(),
+		*GetClass()->GetName(),
+		1,
+		true
+	);
+
+	HealthAttributeSet->InitHealth(HealthAttributeSet->GetMaxHealth());
+
+	if (UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement())
+		CharacterMovementComponent->MaxWalkSpeed = MovementAttributeSet->GetMovementSpeed();
 }
 
 // Called when the game starts or when spawned
@@ -60,7 +95,7 @@ void AElementCharacterBase::WaterDamageHandler(FGameplayTag Tag, const int32 New
 void AElementCharacterBase::NatureDamageHandler(FGameplayTag Tag, const int32 NewCount) const
 {
 	OnNatureDamageTakenDelegate.Broadcast(NewCount);
-	
+
 	/*
 	if (NewCount > 0)
 	{

@@ -67,9 +67,6 @@ public:
 	FOnElementChanged OnElementChangedDelegate;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
-	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
-
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
 
@@ -120,8 +117,6 @@ public:
 	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
 
 protected:
-	virtual void PostInitializeComponents() override;
-
 	virtual void BeginPlay() override;
 
 	virtual void Tick(const float DeltaSeconds) override;

@@ -57,12 +57,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
 	UNiagaraSystem* ElementPoofVfx;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GE")
-	TSubclassOf<UGameplayEffect> SlowGameplayEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GE")
-	TSubclassOf<UGameplayEffect> HitStunGameplayEffect;
-
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* NiagaraComponent;
 

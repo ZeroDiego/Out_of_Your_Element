@@ -31,42 +31,12 @@ AElementAICharacterBase::AElementAICharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AISoundComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
-
-	// Creates an ability system component
-	ElementAbilitySystemComponent = CreateDefaultSubobject<UElementAbilitySystemComponent>(
-		TEXT("ElementAbilitySystemComponent"));
-
-	// Creates an attribute set for health points
-	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
 }
 
 /* ─────────────────────────────────────────────── */
 UBehaviorTree* AElementAICharacterBase::GetBehaviorTree() const
 {
 	return BehaviorTree;
-}
-
-void AElementAICharacterBase::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(
-		GetAbilitySystemComponent(),
-		*GetClass()->GetName(),
-		1,
-		true
-	);
-
-	HealthAttributeSet->InitHealth(HealthAttributeSet->GetMaxHealth());
-
-	if (AAIController* AIController = GetController<AAIController>())
-	{
-		ElementAbilitySystemComponent->InitAbilityActorInfo(AIController, this);
-	}
-	else
-	{
-		ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}
 }
 
 /* ─────────────────────────────────────────────── */
@@ -100,7 +70,7 @@ void AElementAICharacterBase::BeginPlay()
 		Move->bUseRVOAvoidance             = true;
 		Move->AvoidanceConsiderationRadius = 300.f;
 		Move->AvoidanceWeight              = 0.7f;
-	}	//AI Crowd avoidance försök
+	}rpuc	//AI Crowd avoidance försök
 
 	LastKnownLocation = GetActorLocation();*/
 }

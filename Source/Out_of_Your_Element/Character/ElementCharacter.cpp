@@ -9,13 +9,8 @@
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/InputDeviceSubsystem.h"
-#include "GameFramework/PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "GameplayAbilitiesModule.h"
-#include "AbilitySystemGlobals.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -42,31 +37,6 @@ AElementCharacter::AElementCharacter()
 	FiringOffsetRef = CreateDefaultSubobject<UElementFiringOffset>(TEXT("FiringOffset"));
 	FiringOffsetRef->SetupAttachment(RootComponent);
 	FiringOffsetRef->SetRelativeLocation(FiringOffset);
-
-	ElementAbilitySystemComponent =
-		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
-	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
-}
-
-void AElementCharacter::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-	AActor* OwnerActor = this;
-	if (const APlayerState* CurrentPlayerState = GetPlayerState())
-		if (APlayerController* PlayerController = CurrentPlayerState->GetPlayerController())
-			OwnerActor = PlayerController;
-
-	ElementAbilitySystemComponent->InitAbilityActorInfo(OwnerActor, this);
-
-	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(
-		GetAbilitySystemComponent(),
-		*GetClass()->GetName(),
-		1,
-		true
-	);
-
-	HealthAttributeSet->InitHealth(HealthAttributeSet->GetMaxHealth());
 }
 
 void AElementCharacter::BeginPlay()

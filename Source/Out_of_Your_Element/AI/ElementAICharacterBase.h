@@ -49,12 +49,7 @@ public:
 	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
-	virtual void PostInitializeComponents() override;
-	
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
-	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* BehaviorTree;
