@@ -1,5 +1,7 @@
 ﻿#include "ElementGameplayAbility_Freeze.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
@@ -17,9 +19,13 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 			UEngineTypes::ConvertToObjectType(ECC_Pawn)
 		};
 
+		const UWorld* World = Caster->GetWorld();
+		const FVector Location = Caster->GetActorLocation();
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, FreezeActivateParticle, Location);
+
 		DrawDebugSphere(
-			Caster->GetWorld(),
-			Caster->GetActorLocation(),
+			World,
+			Location,
 			FreezeRadius,
 			16,
 			FColor::Red,
@@ -28,8 +34,8 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 		);
 
 		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
-				Caster->GetWorld(),
-				Caster->GetActorLocation(),
+				World,
+				Location,
 				FreezeRadius,
 				GroundTypes,
 				AElementAICharacterBase::StaticClass(),
