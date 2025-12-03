@@ -11,7 +11,7 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 	const FGameplayEventData* TriggerEventData
 )
 {
-	if (AActor* Caster = GetAvatarActorFromActorInfo())
+	if (AElementCharacterBase* Caster = Cast<AElementCharacterBase>(GetAvatarActorFromActorInfo()))
 	{
 		static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
 			UEngineTypes::ConvertToObjectType(ECC_Pawn)
@@ -46,18 +46,18 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 			DamageGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 				ElementGameplayTags::Abilities_Parameters_Damage, BaseDamage);
 
+			UElementAbilitySystemComponent* CasterAsc = Caster->ElementAbilitySystemComponent;
 			for (AActor* OutActor : OutActors)
 			{
 				if (const AElementCharacterBase* Frozen = Cast<AElementCharacterBase>(OutActor))
 				{
-					UElementAbilitySystemComponent* AbilitySystemComponent = Frozen->ElementAbilitySystemComponent;
-					AbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(FreezeGameplayEffectSpecHandle);
-					AbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(DamageGameplayEffectSpecHandle);
+					UElementAbilitySystemComponent* FrozenAsc = Frozen->ElementAbilitySystemComponent;
+					CasterAsc->BP_ApplyGameplayEffectSpecToTarget(FreezeGameplayEffectSpecHandle, FrozenAsc);
+					CasterAsc->BP_ApplyGameplayEffectSpecToTarget(DamageGameplayEffectSpecHandle, FrozenAsc);
 				}
 			}
 		}
 	}
-
 
 	CommitAbility(Handle, ActorInfo, ActivationInfo);
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
