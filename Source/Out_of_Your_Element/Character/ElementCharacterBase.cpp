@@ -17,9 +17,6 @@ AElementCharacterBase::AElementCharacterBase()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	FireDotNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(FName("NiagaraComponent"));
-	FireDotNiagaraComponent->SetupAttachment(GetRootComponent());
-
 	ElementAbilitySystemComponent =
 		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
@@ -70,21 +67,9 @@ void AElementCharacterBase::BeginPlay()
 		this, &AElementCharacterBase::NatureDamageHandler);
 }
 
-void AElementCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-}
-
 void AElementCharacterBase::FireDamageHandler(FGameplayTag Tag, const int32 NewCount) const
 {
-	if (NewCount > 0)
-	{
-		FireDotNiagaraComponent->SetAsset(FireDotVfx);
-	}
-	else
-	{
-		FireDotNiagaraComponent->SetAsset(nullptr);
-	}
+	OnFireDamageTakenDelegate.Broadcast(NewCount);
 }
 
 void AElementCharacterBase::WaterDamageHandler(FGameplayTag Tag, const int32 NewCount) const
@@ -117,16 +102,4 @@ void AElementCharacterBase::NatureDamageHandler(FGameplayTag Tag, const int32 Ne
 		}
 	}
 	*/
-}
-
-// Called every frame
-void AElementCharacterBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void AElementCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
