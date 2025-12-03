@@ -11,9 +11,6 @@
 // Sets default values
 AElementZoneBase::AElementZoneBase()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	ZoneSphereComponent = CreateDefaultSubobject<USphereComponent>(FName("ZoneSphereComponent"));
 	ZoneSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ZoneSphereComponent->SetCollisionObjectType(ECC_WorldDynamic);
@@ -25,22 +22,15 @@ AElementZoneBase::AElementZoneBase()
 	ZoneNiagaraComponent->SetupAttachment(RootComponent);
 }
 
-// Called when the game starts or when spawned
 void AElementZoneBase::BeginPlay()
 {
 	Super::BeginPlay();
+	FTimerHandle Handle = FTimerHandle();
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AElementZoneBase::DoDamage, 1.0f, true);
 }
 
-void AElementZoneBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AElementZoneBase::DoDamage() const
 {
-	Super::EndPlay(EndPlayReason);
-}
-
-// Called every frame
-void AElementZoneBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 	TArray<AActor*> OverlappedActors;
 	ZoneSphereComponent->GetOverlappingActors(OverlappedActors, AElementCharacterBase::StaticClass());
 

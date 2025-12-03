@@ -15,7 +15,6 @@ class OUT_OF_YOUR_ELEMENT_API AElementZoneBase : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AElementZoneBase();
 
 	UPROPERTY(EditAnywhere)
@@ -31,15 +30,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* ZoneSphereComponent;
 
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void DoDamage() const;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	void InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
 	                    UGameplayAbility* NewSourceAbility, UNiagaraSystem* ZoneVfx, const float Radius,
 	                    const float LifeSpan);
