@@ -93,4 +93,6 @@ namespace ElementGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Nature,
 	                               "Abilities.Nature",
 	                               "Tag granted when being hit by nature attacks");
+	
+	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Status_Frozen, "GameplayCue.Status.Frozen");
 }

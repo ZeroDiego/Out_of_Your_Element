@@ -11,16 +11,15 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 	const FGameplayEventData* TriggerEventData
 )
 {
-	if (const AActor* Actor = GetAvatarActorFromActorInfo())
+	if (AActor* Caster = GetAvatarActorFromActorInfo())
 	{
-		static const TArray<AActor*> EmptyIgnore;
 		static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
 			UEngineTypes::ConvertToObjectType(ECC_Pawn)
 		};
 
 		DrawDebugSphere(
-			Actor->GetWorld(),
-			Actor->GetActorLocation(),
+			Caster->GetWorld(),
+			Caster->GetActorLocation(),
 			FreezeRadius,
 			16,
 			FColor::Red,
@@ -29,12 +28,12 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 		);
 
 		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
-				Actor->GetWorld(),
-				Actor->GetActorLocation(),
+				Caster->GetWorld(),
+				Caster->GetActorLocation(),
 				FreezeRadius,
 				GroundTypes,
 				AElementAICharacterBase::StaticClass(),
-				EmptyIgnore,
+				{Caster},
 				OutActors)
 		)
 		{
@@ -49,9 +48,9 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 
 			for (AActor* OutActor : OutActors)
 			{
-				if (const AElementAICharacterBase* Enemy = Cast<AElementAICharacterBase>(OutActor))
+				if (const AElementCharacterBase* Frozen = Cast<AElementCharacterBase>(OutActor))
 				{
-					UElementAbilitySystemComponent* AbilitySystemComponent = Enemy->ElementAbilitySystemComponent;
+					UElementAbilitySystemComponent* AbilitySystemComponent = Frozen->ElementAbilitySystemComponent;
 					AbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(FreezeGameplayEffectSpecHandle);
 					AbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(DamageGameplayEffectSpecHandle);
 				}
