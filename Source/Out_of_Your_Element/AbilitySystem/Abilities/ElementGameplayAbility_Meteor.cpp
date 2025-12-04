@@ -85,7 +85,27 @@ void UElementGameplayAbility_Meteor::OnDelayFinished()
 
 		UGameplayStatics::FinishSpawningActor(MeteorZone, MeteorSpawnLocation);
 
-		CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo);
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		const FGameplayEffectSpecHandle ImpactGameplayEffectSpecHandle =
+			MakeOutgoingGameplayEffectSpec(ImpactDamageGameplayEffect);
+
+		ImpactGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+			ElementGameplayTags::Abilities_Parameters_Damage,
+			ImpactBaseDamage
+		);
+
+		TArray<AActor*> HitActors;
+		MeteorZone->GetOverlappingActors(HitActors, AElementCharacterBase::StaticClass());
+		for (AActor* HitActor : HitActors)
+		{
+			if (const AElementCharacterBase* HitCharacter = Cast<AElementCharacterBase>(HitActor))
+			{
+				HitCharacter->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
+					ImpactGameplayEffectSpecHandle
+				);
+			}
+		}
 	}
+
+	CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
