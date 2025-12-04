@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
-#include "NiagaraComponent.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "ElementCharacterBase.generated.h"
@@ -24,12 +23,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
-	UNiagaraComponent* FireDotNiagaraComponent;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* FireDotVfx;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnFireDamageTaken OnFireDamageTakenDelegate;
 
@@ -47,7 +40,6 @@ protected:
 	TObjectPtr<class UElementMovementAttributeSet> MovementAttributeSet;
 
 public:
-	// Sets default values for this character's properties
 	AElementCharacterBase();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override
@@ -58,21 +50,11 @@ public:
 protected:
 	virtual void PostInitializeComponents() override;
 	
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	void FireDamageHandler(FGameplayTag Tag, const int32 NewCount) const;
 
 	void WaterDamageHandler(FGameplayTag Tag, const int32 NewCount) const;
 
 	void NatureDamageHandler(FGameplayTag Tag, const int32 NewCount) const;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };
