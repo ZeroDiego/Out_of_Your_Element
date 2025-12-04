@@ -1,5 +1,7 @@
 ﻿#include "ElementGameplayAbility_Freeze.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
@@ -11,16 +13,19 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 	const FGameplayEventData* TriggerEventData
 )
 {
-	if (const AActor* Actor = GetAvatarActorFromActorInfo())
+	if (AElementCharacterBase* Caster = Cast<AElementCharacterBase>(GetAvatarActorFromActorInfo()))
 	{
-		static const TArray<AActor*> EmptyIgnore;
 		static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
 			UEngineTypes::ConvertToObjectType(ECC_Pawn)
 		};
 
+		const UWorld* World = Caster->GetWorld();
+		const FVector Location = Caster->GetActorLocation();
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, FreezeActivateParticle, Location);
+
 		DrawDebugSphere(
-			Actor->GetWorld(),
-			Actor->GetActorLocation(),
+			World,
+			Location,
 			FreezeRadius,
 			16,
 			FColor::Red,
@@ -29,12 +34,12 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 		);
 
 		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
-				Actor->GetWorld(),
-				Actor->GetActorLocation(),
+				World,
+				Location,
 				FreezeRadius,
 				GroundTypes,
 				AElementAICharacterBase::StaticClass(),
-				EmptyIgnore,
+				{Caster},
 				OutActors)
 		)
 		{
@@ -47,18 +52,18 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 			DamageGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 				ElementGameplayTags::Abilities_Parameters_Damage, BaseDamage);
 
+			UElementAbilitySystemComponent* CasterAsc = Caster->ElementAbilitySystemComponent;
 			for (AActor* OutActor : OutActors)
 			{
-				if (const AElementAICharacterBase* Enemy = Cast<AElementAICharacterBase>(OutActor))
+				if (const AElementCharacterBase* Frozen = Cast<AElementCharacterBase>(OutActor))
 				{
-					UElementAbilitySystemComponent* AbilitySystemComponent = Enemy->ElementAbilitySystemComponent;
-					AbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(FreezeGameplayEffectSpecHandle);
-					AbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(DamageGameplayEffectSpecHandle);
+					UElementAbilitySystemComponent* FrozenAsc = Frozen->ElementAbilitySystemComponent;
+					CasterAsc->BP_ApplyGameplayEffectSpecToTarget(FreezeGameplayEffectSpecHandle, FrozenAsc);
+					CasterAsc->BP_ApplyGameplayEffectSpecToTarget(DamageGameplayEffectSpecHandle, FrozenAsc);
 				}
 			}
 		}
 	}
-
 
 	CommitAbility(Handle, ActorInfo, ActivationInfo);
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

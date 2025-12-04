@@ -15,6 +15,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
 	TSubclassOf<UGameplayEffect> FreezeGameplayEffectClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
+	class UNiagaraSystem* FreezeActivateParticle;
+
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
