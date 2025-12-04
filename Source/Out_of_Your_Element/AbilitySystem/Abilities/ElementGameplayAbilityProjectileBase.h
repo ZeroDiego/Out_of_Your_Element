@@ -19,7 +19,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Element Ability Projectile")
 	TSubclassOf<AElementProjectileBase> ProjectileClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Meters"), Category="Element Ability Projectile")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Centimeters"), Category="Element Ability Projectile")
 	float ProjectileSpawnOffset = 0.5f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Element Ability Projectile")
