@@ -232,9 +232,17 @@ void AElementCharacter::DoBaseAttack()
 	if (!BaseAttack)
 		return;
 
+	const UGameplayEffect* CooldownEffect = BaseAttack.GetDefaultObject()->GetCooldownGameplayEffect();
+
+	if (!CooldownEffect)
+		return;
+
+	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
+	
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
-		.Ability = BaseAttack
+		.Ability = BaseAttack,
+		.Cooldown = TempSpec.GetDuration()
 	});
 }
 
@@ -254,12 +262,20 @@ void AElementCharacter::DoHeavyAttack()
 	if (!HeavyAttack)
 		return;
 
+	const UGameplayEffect* CooldownEffect = HeavyAttack.GetDefaultObject()->GetCooldownGameplayEffect();
+
+	if (!CooldownEffect)
+		return;
+
+	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
+	
 	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(HeavyAttack))
 	{
 		bIsAttacking = true;
 		OnAttackDelegate.Broadcast(FAttackData{
 			.Element = ActiveElement,
-			.Ability = HeavyAttack
+			.Ability = HeavyAttack,
+			.Cooldown = TempSpec.GetDuration()
 		});
 	}
 }
@@ -274,10 +290,18 @@ void AElementCharacter::DoSpecialAttack()
 	if (!SpecialAttack)
 		return;
 
+	const UGameplayEffect* CooldownEffect = SpecialAttack.GetDefaultObject()->GetCooldownGameplayEffect();
+
+	if (!CooldownEffect)
+		return;
+
+	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
+
 	bIsAttacking = true;
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
-		.Ability = SpecialAttack
+		.Ability = SpecialAttack,
+		.Cooldown = TempSpec.GetDuration()
 	});
 }
 
