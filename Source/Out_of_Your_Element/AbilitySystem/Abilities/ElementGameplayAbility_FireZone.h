@@ -15,6 +15,8 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_FireZone : public UElement
 	GENERATED_BODY()
 
 public:
+	UElementGameplayAbility_FireZone();
+	
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	                             const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,

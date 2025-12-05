@@ -2,3 +2,8 @@
 
 
 #include "ElementGameplayAbility_Fireball.h"
+
+UElementGameplayAbility_Fireball::UElementGameplayAbility_Fireball()
+{
+	AttackType = EAttackType::BaseAttack;
+}

@@ -12,6 +12,8 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_WaterGun : public UElement
 	GENERATED_BODY()
 
 public:
+	UElementGameplayAbility_WaterGun();
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Degrees"), Category="WaterGun")
 	float Spread = 45.0f;
 
@@ -25,4 +27,7 @@ protected:
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData
 	) override;
+	
+	virtual void OnAnimationFinished(FGameplayEventData GameplayEventData) override;
+	virtual void OnAbilityFinished(FGameplayEventData GameplayEventData) override;
 };
