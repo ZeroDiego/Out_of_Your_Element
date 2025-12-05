@@ -24,6 +24,9 @@ struct FAttackData
 
 	UPROPERTY(BlueprintReadOnly)
 	TSubclassOf<UGameplayAbility> Ability;
+
+	UPROPERTY(BlueprintReadOnly)
+	float Cooldown;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
