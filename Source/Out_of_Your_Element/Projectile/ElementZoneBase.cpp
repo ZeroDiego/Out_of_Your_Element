@@ -4,7 +4,6 @@
 #include "ElementZoneBase.h"
 
 #include "NiagaraFunctionLibrary.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AbilitySystem/Abilities/ElementGameplayAbility_FireZone.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
@@ -25,8 +24,30 @@ AElementZoneBase::AElementZoneBase()
 void AElementZoneBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ZoneSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AElementZoneBase::OnOverlapBegin);
+
 	FTimerHandle Handle = FTimerHandle();
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AElementZoneBase::DoDamage, 1.0f, true);
+
+	DoDamage();
+}
+
+void AElementZoneBase::OnOverlapBegin(
+	UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+)
+{
+	if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(OtherActor))
+	{
+		ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
+			GameplayEffectSpecHandle
+		);
+	}
 }
 
 void AElementZoneBase::DoDamage() const
@@ -38,20 +59,9 @@ void AElementZoneBase::DoDamage() const
 	{
 		if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(OverlappedActor))
 		{
-			/*
-			for (FGameplayTag Tag : ElementCharacterBase->GetAbilitySystemComponent()->GetOwnedGameplayTags())
-			{
-				if (Tag.IsValid())
-				{
-					if (Tag == ElementGameplayTags::Abilities_Fire)
-					{
-						return;
-					}
-				}
-			}*/
-
 			ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
-				GameplayEffectSpecHandle);
+				GameplayEffectSpecHandle
+			);
 		}
 	}
 }
