@@ -10,9 +10,18 @@
 #include "ElementCharacterBase.h"
 #include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "InputActionValue.h"
+#include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 #include "ElementCharacter.generated.h"
 
 class UInputAction;
+
+UENUM()
+enum EAttackType
+{
+	BaseAttack,
+	HeavyAttack,
+	SpecialAttack
+};
 
 USTRUCT(BlueprintType)
 struct FAttackData
@@ -69,6 +78,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnElementChanged OnElementChangedDelegate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* BaseAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* SpecialAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* HeavyAttackMontage;
+	
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
@@ -91,9 +109,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	bool bIsAttacking;
-
 private:
 	UPROPERTY()
 	UUserWidget* CursorWidgetRef;
@@ -112,6 +127,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	FElement ActiveElement;
+
+	UPROPERTY(VisibleAnywhere)
+	TEnumAsByte<EAttackType> AbilityToUseOnDoAttack;
 
 public:
 	AElementCharacter();
@@ -135,6 +153,9 @@ private:
 	void Look(const FInputActionValue& Value);
 	void CycleElement(const FInputActionValue& Value);
 
+	void InitAnimations();
+	void OnElementAnimNotify(const EAnimNotifyType NotifyType);
+
 public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(const float Right, const float Forward);
@@ -143,19 +164,16 @@ public:
 	virtual void DoLook(const float Yaw);
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoBaseAttack();
-
-	UFUNCTION(BlueprintCallable)
-	void DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack);
-
-	UFUNCTION(BlueprintCallable)
-	void DoSpecialAttackHelperFunction(const TSubclassOf<UGameplayAbility>& SpecialAttack);
+	virtual void StartBaseAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoHeavyAttack();
+	virtual void StartHeavyAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoSpecialAttack();
+	virtual void StartSpecialAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void DoAttack(const TSubclassOf<UGameplayAbility>& Attack);
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoCycleElement(const int Amount);

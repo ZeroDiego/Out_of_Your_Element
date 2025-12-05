@@ -11,6 +11,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -65,6 +66,8 @@ void AElementCharacter::BeginPlay()
 			}
 		}
 	}
+
+	InitAnimations();
 
 	DoCycleElement(0);
 }
@@ -125,21 +128,21 @@ void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 			BaseAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::DoBaseAttack
+			&AElementCharacter::StartBaseAttack
 		);
 
 		EnhancedInputComponent->BindAction(
 			HeavyAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::DoHeavyAttack
+			&AElementCharacter::StartHeavyAttack
 		);
 
 		EnhancedInputComponent->BindAction(
 			SpecialAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::DoSpecialAttack
+			&AElementCharacter::StartSpecialAttack
 		);
 
 		EnhancedInputComponent->BindAction(
@@ -222,7 +225,12 @@ void AElementCharacter::CycleElement(const FInputActionValue& Value)
 	DoCycleElement(In > 0 ? FMath::CeilToInt(In) : FMath::FloorToInt(In));
 }
 
-void AElementCharacter::DoBaseAttack()
+void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack)
+{
+	ElementAbilitySystemComponent->TryActivateAbilityByClass(Attack);
+}
+
+void AElementCharacter::StartBaseAttack()
 {
 	if (!ElementAbilitySystemComponent)
 		return;
@@ -238,21 +246,19 @@ void AElementCharacter::DoBaseAttack()
 		return;
 
 	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
-	
+
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
 		.Ability = BaseAttack,
 		.Cooldown = TempSpec.GetDuration()
 	});
+
+	AbilityToUseOnDoAttack = EAttackType::BaseAttack;
+
+	PlayAnimMontage(BaseAttackMontage);
 }
 
-void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack)
-{
-	ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack);
-}
-
-
-void AElementCharacter::DoHeavyAttack()
+void AElementCharacter::StartHeavyAttack()
 {
 	if (!ElementAbilitySystemComponent)
 		return;
@@ -268,19 +274,19 @@ void AElementCharacter::DoHeavyAttack()
 		return;
 
 	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
-	
-	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(HeavyAttack))
-	{
-		bIsAttacking = true;
-		OnAttackDelegate.Broadcast(FAttackData{
-			.Element = ActiveElement,
-			.Ability = HeavyAttack,
-			.Cooldown = TempSpec.GetDuration()
-		});
-	}
+
+	OnAttackDelegate.Broadcast(FAttackData{
+		.Element = ActiveElement,
+		.Ability = HeavyAttack,
+		.Cooldown = TempSpec.GetDuration()
+	});
+
+	AbilityToUseOnDoAttack = EAttackType::HeavyAttack;
+
+	PlayAnimMontage(HeavyAttackMontage);
 }
 
-void AElementCharacter::DoSpecialAttack()
+void AElementCharacter::StartSpecialAttack()
 {
 	if (!ElementAbilitySystemComponent)
 		return;
@@ -297,17 +303,15 @@ void AElementCharacter::DoSpecialAttack()
 
 	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
 
-	bIsAttacking = true;
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
 		.Ability = SpecialAttack,
 		.Cooldown = TempSpec.GetDuration()
 	});
-}
 
-void AElementCharacter::DoSpecialAttackHelperFunction(const TSubclassOf<UGameplayAbility>& SpecialAttack)
-{
-	ElementAbilitySystemComponent->TryActivateAbilityByClass(SpecialAttack);
+	AbilityToUseOnDoAttack = EAttackType::SpecialAttack;
+
+	PlayAnimMontage(SpecialAttackMontage);
 }
 
 void AElementCharacter::DoCycleElement(const int Amount)
@@ -350,5 +354,43 @@ void AElementCharacter::DoLook(const float Yaw)
 		FRotator Rotation = GetActorRotation();
 		Rotation.Yaw = FMath::Fmod(Rotation.Yaw + Yaw, 360);
 		SetActorRotation(Rotation);
+	}
+}
+
+void AElementCharacter::InitAnimations()
+{
+	if (BaseAttackMontage)
+	{
+		const auto NotifyEvents = BaseAttackMontage->Notifies;
+		for (FAnimNotifyEvent EventNotify : NotifyEvents)
+		{
+			if (const auto BaseAttackNotify = Cast<UElementAnimNotify>(EventNotify.Notify))
+			{
+				BaseAttackNotify->OnNotified.AddUObject(this, &AElementCharacter::OnElementAnimNotify);
+			}
+		}
+	}
+}
+
+void AElementCharacter::OnElementAnimNotify(const EAnimNotifyType NotifyType)
+{
+	DoAttack(ActiveElement.BaseAttackAbility);
+
+	switch (NotifyType)
+	{
+	case EAnimNotifyType::AttackStart:
+		switch (AbilityToUseOnDoAttack)
+			case EAttackType::BaseAttack:
+				DoAttack(ActiveElement.BaseAttackAbility);
+			break;
+			case EAttackType::SpecialAttack:
+				DoAttack(ActiveElement.SpecialAttackAbility);
+			break;
+			case EAttackType::HeavyAttack:
+				DoAttack(ActiveElement.HeavyAttackAbility);
+			break;
+		break;
+	case EAnimNotifyType::AttackEnd:
+		break;
 	}
 }
