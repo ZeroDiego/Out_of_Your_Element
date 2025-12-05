@@ -86,6 +86,14 @@ namespace ElementGameplayTags
 								   "Abilities.Cooldowns.Meteor",
 								   "Cooldown for Meteor");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_Freeze,
+								   "Abilities.Cooldowns.Freeze",
+								   "Cooldown for Freeze");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_Thorns,
+								   "Abilities.Cooldowns.Thorns",
+								   "Cooldown for Thorns");
+
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting,
 								   "Abilities.Casting",
 								   "Parent for casting tags");
@@ -130,6 +138,14 @@ namespace ElementGameplayTags
 								   "Abilities.Casting.Meteor",
 								   "Applied when casting Meteor");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_Freeze,
+								   "Abilities.Casting.Freeze",
+								   "Applied when casting Freeze");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_Thorns,
+								   "Abilities.Casting.Thorns",
+								   "Applied when casting Thorns");
+
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Fire,
 	                               "Abilities.Fire",
 	                               "Tag granted when being hit by fire attacks");
@@ -142,6 +158,6 @@ namespace ElementGameplayTags
 	                               "Abilities.Nature",
 	                               "Tag granted when being hit by nature attacks");
 	
-	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Status_Frozen, "GameplayCue.Status.Frozen");
-	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Status_Burning, "GameplayCue.Status.Burning");
+	UE_DEFINE_GAMEPLAY_TAG(Status_Frozen, "Status.Frozen");
+	UE_DEFINE_GAMEPLAY_TAG(Status_Burning, "Status.Burning");
 }
