@@ -2,8 +2,3 @@
 
 
 #include "ElementGameplayAbility_RockThrow.h"
-
-UElementGameplayAbility_RockThrow::UElementGameplayAbility_RockThrow()
-{
-	AttackType = EAttackType::BaseAttack;
-}

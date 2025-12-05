@@ -2,16 +2,7 @@
 
 
 #include "ElementGameplayAbility_WaterGun.h"
-
-#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
-#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Out_of_Your_Element/Character/ElementCharacterBase.h"
-
-UElementGameplayAbility_WaterGun::UElementGameplayAbility_WaterGun()
-{
-	AttackType = EAttackType::BaseAttack;
-}
+#include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 
 void UElementGameplayAbility_WaterGun::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
@@ -19,16 +10,6 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 	const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData
 )
-{
-	Super::SetAttackingTrue();
-
-	UAbilityTask_WaitGameplayEvent* WaitCastingTimeEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
-		this, ElementGameplayTags::Abilities_Casting_BaseAttack);
-	WaitCastingTimeEvent->EventReceived.AddDynamic(this, &UElementGameplayAbility_WaterGun::OnAnimationFinished);
-	WaitCastingTimeEvent->ReadyForActivation();
-}
-
-void UElementGameplayAbility_WaterGun::OnAnimationFinished(FGameplayEventData GameplayEventData)
 {
 	if (const AActor* Caster = GetAvatarActorFromActorInfo())
 	{
@@ -56,13 +37,6 @@ void UElementGameplayAbility_WaterGun::OnAnimationFinished(FGameplayEventData Ga
 		}
 	}
 
-	UAbilityTask_WaitGameplayEvent* WaitAbilityFinishedEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
-		this, ElementGameplayTags::Abilities_Casting);
-	WaitAbilityFinishedEvent->EventReceived.AddDynamic(this, &UElementGameplayAbility_WaterGun::OnAbilityFinished);
-	WaitAbilityFinishedEvent->ReadyForActivation();
-}
-
-void UElementGameplayAbility_WaterGun::OnAbilityFinished(FGameplayEventData GameplayEventData)
-{
-	Super::OnAbilityFinished(GameplayEventData);
+	CommitAbility(Handle, ActorInfo, ActivationInfo);
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

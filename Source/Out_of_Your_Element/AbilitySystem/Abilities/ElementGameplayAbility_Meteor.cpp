@@ -7,11 +7,6 @@
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Projectile/ElementMeteor.h"
 
-UElementGameplayAbility_Meteor::UElementGameplayAbility_Meteor()
-{
-	AttackType = EAttackType::HeavyAttack;
-}
-
 void UElementGameplayAbility_Meteor::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,

@@ -8,11 +8,6 @@
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
-UElementGameplayAbility_FireZone::UElementGameplayAbility_FireZone()
-{
-	AttackType = EAttackType::SpecialAttack;
-}
-
 void UElementGameplayAbility_FireZone::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,

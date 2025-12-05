@@ -4,7 +4,6 @@
 #pragma once
 
 #include "Abilities/GameplayAbility.h"
-#include "Out_of_Your_Element/Animation/ElementAnimInstance.h"
 #include "ElementGameplayAbilityBase.generated.h"
 
 UCLASS(Abstract)
@@ -24,7 +23,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	float BaseDamage = 25.0f;
-
-	UPROPERTY(BlueprintReadOnly)
-	EAttackType AttackType = EAttackType::None;
 };

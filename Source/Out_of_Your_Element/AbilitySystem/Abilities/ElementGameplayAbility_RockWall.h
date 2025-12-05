@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ElementGameplayAbilityBase.h"
 #include "Abilities/GameplayAbility.h"
 #include "Out_of_Your_Element/Projectile/ElementWallBase.h"
 #include "ElementGameplayAbility_RockWall.generated.h"
@@ -12,13 +11,12 @@
  * 
  */
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_RockWall : public UElementGameplayAbilityBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_RockWall : public UGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
-	UElementGameplayAbility_RockWall();
-	
+	//Override ActiveAbility
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	                             const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,

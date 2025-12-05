@@ -81,54 +81,6 @@ namespace ElementGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_RockWall,
 	                               "Abilities.Cooldowns.RockWall",
 	                               "Cooldown for RockWall");
-	
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Cooldowns_Meteor,
-								   "Abilities.Cooldowns.Meteor",
-								   "Cooldown for Meteor");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting,
-								   "Abilities.Casting",
-								   "Parent for casting tags");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_BaseAttack,
-								   "Abilities.Casting.BaseAttack",
-								   "Applied when casting base attacks");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_SpecialAttack,
-								   "Abilities.Casting.SpecialAttack",
-								   "Applied when casting special attacks");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_HeavyAttack,
-								   "Abilities.Casting.HeavyAttack",
-								   "Applied when casting heavy attacks");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_Fireball,
-								   "Abilities.Casting.Fireball",
-								   "Applied when casting Fireball");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_WaterGun,
-								   "Abilities.Casting.WaterGun",
-								   "Applied when casting WaterGun");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_RockThrow,
-								   "Abilities.Casting.RockThrow",
-								   "Applied when casting RockThrow");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_FireZone,
-								   "Abilities.Casting.FireZone",
-								   "Applied when casting FireZone");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_IceLance,
-								   "Abilities.Casting.IceLance",
-								   "Applied when casting IceLance");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_RockWall,
-								   "Abilities.Casting.RockWall",
-								   "Applied when casting RockWall");
-
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Casting_Meteor,
-								   "Abilities.Casting.Meteor",
-								   "Applied when casting Meteor");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Fire,
 	                               "Abilities.Fire",

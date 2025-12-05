@@ -27,26 +27,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Element Ability Projectile")
 	UNiagaraSystem* ProjectileHitVfx;
-	
+
+protected:
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData
 	) override;
-	
-	UFUNCTION()
-	virtual void OnDelayFinished();
-	
-	UFUNCTION()
-	virtual void OnAnimationFinished(FGameplayEventData GameplayEventData);
-
-	UFUNCTION()
-	virtual void OnAbilityFinished(FGameplayEventData GameplayEventData);
 
 	void ShootProjectile(const FVector& Location, const FRotator& Direction);
 	void ShootProjectile(const FTransform& Transform);
-
-	virtual void SetAttackingTrue();
-	virtual void SetAttackingFalse();
 };
