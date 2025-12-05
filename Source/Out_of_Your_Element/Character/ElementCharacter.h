@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
-#include "ElementFiringOffset.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ElementCharacterBase.h"
@@ -103,9 +102,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoomRef;
-
-	UPROPERTY(VisibleAnywhere)
-	UElementFiringOffset* FiringOffsetRef;
 
 	UPROPERTY(VisibleAnywhere)
 	int ActiveElementIndex;

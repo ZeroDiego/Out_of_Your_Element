@@ -32,11 +32,6 @@ AElementCharacter::AElementCharacter()
 
 	CameraRef->SetupAttachment(CameraBoomRef);
 	CameraRef->bUsePawnControlRotation = false;
-
-	// Creates a custom scene component called firing offset used for projectile spawn location
-	FiringOffsetRef = CreateDefaultSubobject<UElementFiringOffset>(TEXT("FiringOffset"));
-	FiringOffsetRef->SetupAttachment(RootComponent);
-	FiringOffsetRef->SetRelativeLocation(FiringOffset);
 }
 
 void AElementCharacter::BeginPlay()
