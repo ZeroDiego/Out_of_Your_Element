@@ -375,15 +375,17 @@ void AElementCharacter::OnElementAnimNotify(const EAnimNotifyType NotifyType)
 	{
 	case EAnimNotifyType::AttackStart:
 		switch (AbilityToUseOnDoAttack)
-			case EAttackType::BaseAttack:
-				DoAttack(ActiveElement.BaseAttackAbility);
+		{
+		case EAttackType::BaseAttack:
+			DoAttack(ActiveElement.BaseAttackAbility);
 			break;
-			case EAttackType::SpecialAttack:
-				DoAttack(ActiveElement.SpecialAttackAbility);
+		case EAttackType::SpecialAttack:
+			DoAttack(ActiveElement.SpecialAttackAbility);
 			break;
-			case EAttackType::HeavyAttack:
-				DoAttack(ActiveElement.HeavyAttackAbility);
+		case EAttackType::HeavyAttack:
+			DoAttack(ActiveElement.HeavyAttackAbility);
 			break;
+		}
 		break;
 	case EAnimNotifyType::AttackEnd:
 		break;
