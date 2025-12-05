@@ -12,6 +12,8 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Fireball : public UElement
 	GENERATED_BODY()
 
 public:
+	UElementGameplayAbility_Fireball();
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Seconds"), Category="Fireball")
 	float FireballDamageDuration;
 };

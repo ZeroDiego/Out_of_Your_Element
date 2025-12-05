@@ -10,4 +10,7 @@ UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_RockThrow : public UElementGameplayAbilityProjectileBase
 {
 	GENERATED_BODY()
+
+public:
+	UElementGameplayAbility_RockThrow();
 };

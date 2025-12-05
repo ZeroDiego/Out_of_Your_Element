@@ -5,6 +5,12 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/Animation/ElementAnimInstance.h"
+
+UElementGameplayAbility_RockWall::UElementGameplayAbility_RockWall()
+{
+	AttackType = EAttackType::SpecialAttack;
+}
 
 void UElementGameplayAbility_RockWall::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,

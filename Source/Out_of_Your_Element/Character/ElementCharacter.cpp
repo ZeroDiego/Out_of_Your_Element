@@ -238,11 +238,6 @@ void AElementCharacter::DoBaseAttack()
 	});
 }
 
-void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack)
-{
-	ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack);
-}
-
 
 void AElementCharacter::DoHeavyAttack()
 {
@@ -254,14 +249,10 @@ void AElementCharacter::DoHeavyAttack()
 	if (!HeavyAttack)
 		return;
 
-	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(HeavyAttack))
-	{
-		bIsAttacking = true;
-		OnAttackDelegate.Broadcast(FAttackData{
-			.Element = ActiveElement,
-			.Ability = HeavyAttack
-		});
-	}
+	OnAttackDelegate.Broadcast(FAttackData{
+		.Element = ActiveElement,
+		.Ability = HeavyAttack
+	});
 }
 
 void AElementCharacter::DoSpecialAttack()
@@ -274,16 +265,10 @@ void AElementCharacter::DoSpecialAttack()
 	if (!SpecialAttack)
 		return;
 
-	bIsAttacking = true;
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
 		.Ability = SpecialAttack
 	});
-}
-
-void AElementCharacter::DoSpecialAttackHelperFunction(const TSubclassOf<UGameplayAbility>& SpecialAttack)
-{
-	ElementAbilitySystemComponent->TryActivateAbilityByClass(SpecialAttack);
 }
 
 void AElementCharacter::DoCycleElement(const int Amount)
