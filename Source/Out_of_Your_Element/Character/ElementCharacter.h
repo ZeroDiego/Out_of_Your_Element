@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
+#include "ElementFiringOffset.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ElementCharacterBase.h"
@@ -23,9 +24,6 @@ struct FAttackData
 
 	UPROPERTY(BlueprintReadOnly)
 	TSubclassOf<UGameplayAbility> Ability;
-
-	UPROPERTY(BlueprintReadOnly)
-	float Cooldown;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
@@ -102,6 +100,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoomRef;
+
+	UPROPERTY(VisibleAnywhere)
+	UElementFiringOffset* FiringOffsetRef;
 
 	UPROPERTY(VisibleAnywhere)
 	int ActiveElementIndex;

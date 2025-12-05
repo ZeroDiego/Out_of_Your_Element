@@ -32,6 +32,11 @@ AElementCharacter::AElementCharacter()
 
 	CameraRef->SetupAttachment(CameraBoomRef);
 	CameraRef->bUsePawnControlRotation = false;
+
+	// Creates a custom scene component called firing offset used for projectile spawn location
+	FiringOffsetRef = CreateDefaultSubobject<UElementFiringOffset>(TEXT("FiringOffset"));
+	FiringOffsetRef->SetupAttachment(RootComponent);
+	FiringOffsetRef->SetRelativeLocation(FiringOffset);
 }
 
 void AElementCharacter::BeginPlay()
@@ -227,17 +232,9 @@ void AElementCharacter::DoBaseAttack()
 	if (!BaseAttack)
 		return;
 
-	const UGameplayEffect* CooldownEffect = BaseAttack.GetDefaultObject()->GetCooldownGameplayEffect();
-
-	if (!CooldownEffect)
-		return;
-
-	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
-	
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
-		.Ability = BaseAttack,
-		.Cooldown = TempSpec.GetDuration()
+		.Ability = BaseAttack
 	});
 }
 
@@ -257,20 +254,12 @@ void AElementCharacter::DoHeavyAttack()
 	if (!HeavyAttack)
 		return;
 
-	const UGameplayEffect* CooldownEffect = HeavyAttack.GetDefaultObject()->GetCooldownGameplayEffect();
-
-	if (!CooldownEffect)
-		return;
-
-	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
-	
 	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(HeavyAttack))
 	{
 		bIsAttacking = true;
 		OnAttackDelegate.Broadcast(FAttackData{
 			.Element = ActiveElement,
-			.Ability = HeavyAttack,
-			.Cooldown = TempSpec.GetDuration()
+			.Ability = HeavyAttack
 		});
 	}
 }
@@ -285,18 +274,10 @@ void AElementCharacter::DoSpecialAttack()
 	if (!SpecialAttack)
 		return;
 
-	const UGameplayEffect* CooldownEffect = SpecialAttack.GetDefaultObject()->GetCooldownGameplayEffect();
-
-	if (!CooldownEffect)
-		return;
-
-	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
-
 	bIsAttacking = true;
 	OnAttackDelegate.Broadcast(FAttackData{
 		.Element = ActiveElement,
-		.Ability = SpecialAttack,
-		.Cooldown = TempSpec.GetDuration()
+		.Ability = SpecialAttack
 	});
 }
 

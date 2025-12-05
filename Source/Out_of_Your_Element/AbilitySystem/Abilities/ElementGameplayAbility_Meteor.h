@@ -26,12 +26,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AElementZoneBase> MeteorZoneClass;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
-	TSubclassOf<UGameplayEffect> ImpactDamageGameplayEffect;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
-	float ImpactBaseDamage = 25.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
 	float MeteorSummoningTime = 3;
@@ -39,7 +33,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
 	float DotDamageDuration = 4;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="FireZone")
 	float MeteorZoneRadius = 250;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
