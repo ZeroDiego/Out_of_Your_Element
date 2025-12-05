@@ -1,7 +1,6 @@
 ﻿#include "ElementGameplayAbility_Freeze.h"
 
 #include "NiagaraFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
@@ -30,8 +29,11 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 			16,
 			FColor::Red,
 			true,
-			20
+			5
 		);
+
+		const FGameplayTagContainer Burning(ElementGameplayTags::Status_Burning);
+		BP_RemoveGameplayEffectFromOwnerWithGrantedTags(Burning);
 
 		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
 				World,
