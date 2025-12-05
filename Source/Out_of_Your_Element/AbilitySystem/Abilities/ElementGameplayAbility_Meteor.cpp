@@ -51,6 +51,8 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 			}
 		}
 	}
+
+	CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo);
 }
 
 void UElementGameplayAbility_Meteor::OnDelayFinished()
@@ -106,6 +108,5 @@ void UElementGameplayAbility_Meteor::OnDelayFinished()
 		}
 	}
 
-	CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo);
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
