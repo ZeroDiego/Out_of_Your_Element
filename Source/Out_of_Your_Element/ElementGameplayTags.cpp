@@ -77,6 +77,8 @@ namespace ElementGameplayTags
 	                               "Abilities.Nature",
 	                               "Tag granted when being hit by nature attacks");
 
+	UE_DEFINE_GAMEPLAY_TAG(Status_Frozen, "Status.Frozen");
+	UE_DEFINE_GAMEPLAY_TAG(Status_Burning, "Status.Burning");
 	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Status_Frozen, "GameplayCue.Status.Frozen");
 	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Status_Burning, "GameplayCue.Status.Burning");
 }
