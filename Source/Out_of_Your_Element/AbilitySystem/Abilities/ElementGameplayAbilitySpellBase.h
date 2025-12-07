@@ -19,6 +19,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	UAnimMontage* AbilityMontage;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
+	TSubclassOf<UGameplayEffect> CastingGameplayEffect;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	TSubclassOf<UGameplayEffect> DamageGameplayEffect = nullptr;

@@ -22,16 +22,6 @@ void UElementGameplayAbility_Freeze::CastSpell(
 		const FVector Location = Caster->GetActorLocation();
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, FreezeActivateParticle, Location);
 
-		DrawDebugSphere(
-			World,
-			Location,
-			FreezeRadius,
-			16,
-			FColor::Red,
-			true,
-			5
-		);
-
 		const FGameplayTagContainer Burning(ElementGameplayTags::Status_Burning);
 		BP_RemoveGameplayEffectFromOwnerWithGrantedTags(Burning);
 
