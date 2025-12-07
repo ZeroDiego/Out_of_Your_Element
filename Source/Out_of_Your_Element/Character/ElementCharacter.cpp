@@ -10,7 +10,9 @@
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/InputDeviceSubsystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 
 AElementCharacter::AElementCharacter()
@@ -33,6 +35,25 @@ AElementCharacter::AElementCharacter()
 
 	CameraRef->SetupAttachment(CameraBoomRef);
 	CameraRef->bUsePawnControlRotation = false;
+}
+
+bool AElementCharacter::IsCastingSpell() const
+{
+	if (!ElementAbilitySystemComponent)
+		return false;
+
+	TArray<UElementGameplayAbilitySpellBase*> ActiveSpells;
+	ElementAbilitySystemComponent->GetActiveAbilitiesWithTags(
+		FGameplayTagContainer(ElementGameplayTags::Abilities_Casting),
+		ActiveSpells
+	);
+
+	return !ActiveSpells.IsEmpty();
+}
+
+bool AElementCharacter::CanAttack() const
+{
+	return GetWorld() && !UGameplayStatics::IsGamePaused(GetWorld()) && IsAlive() && !IsCastingSpell();
 }
 
 void AElementCharacter::BeginPlay()
@@ -61,8 +82,6 @@ void AElementCharacter::BeginPlay()
 			}
 		}
 	}
-
-	InitAnimations();
 
 	DoCycleElement(0);
 }
@@ -220,98 +239,57 @@ void AElementCharacter::CycleElement(const FInputActionValue& Value)
 	DoCycleElement(In > 0 ? FMath::CeilToInt(In) : FMath::FloorToInt(In));
 }
 
-void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack)
+void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const
 {
-	ElementAbilitySystemComponent->TryActivateAbilityByClass(Attack);
+	if (!Attack)
+		return;
+
+	if (!CanAttack())
+		return;
+
+	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(Attack))
+	{
+		const UGameplayAbility* CDO = Attack->GetDefaultObject<UGameplayAbility>();
+		const FGameplayTagContainer& CooldownTags = *CDO->GetCooldownTags();
+		const FGameplayEffectQuery CooldownQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(CooldownTags);
+		const TArray<float> AbilityDurations = ElementAbilitySystemComponent->GetActiveEffectsDuration(CooldownQuery);
+
+		float MaxDuration = 0.0f;
+		for (const float Duration : AbilityDurations)
+		{
+			if (Duration > MaxDuration)
+				MaxDuration = Duration;
+		}
+
+		OnAttackDelegate.Broadcast(FAttackData{
+			.Element = ActiveElement,
+			.Ability = Attack,
+			.Cooldown = MaxDuration
+		});
+	}
 }
 
 void AElementCharacter::StartBaseAttack()
 {
-	if (!ElementAbilitySystemComponent)
-		return;
-
-	const TSubclassOf<UGameplayAbility>& BaseAttack = ActiveElement.BaseAttackAbility;
-
-	if (!BaseAttack)
-		return;
-
-	const UGameplayEffect* CooldownEffect = BaseAttack.GetDefaultObject()->GetCooldownGameplayEffect();
-
-	if (!CooldownEffect)
-		return;
-
-	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
-
-	OnAttackDelegate.Broadcast(FAttackData{
-		.Element = ActiveElement,
-		.Ability = BaseAttack,
-		.Cooldown = TempSpec.GetDuration()
-	});
-
-	AbilityToUseOnDoAttack = EAttackType::BaseAttack;
-
-	PlayAnimMontage(BaseAttackMontage);
+	DoAttack(ActiveElement.BaseAttackAbility);
 }
 
 void AElementCharacter::StartHeavyAttack()
 {
-	if (!ElementAbilitySystemComponent)
-		return;
-
-	const TSubclassOf<UGameplayAbility>& HeavyAttack = ActiveElement.HeavyAttackAbility;
-
-	if (!HeavyAttack)
-		return;
-
-	const UGameplayEffect* CooldownEffect = HeavyAttack.GetDefaultObject()->GetCooldownGameplayEffect();
-
-	if (!CooldownEffect)
-		return;
-
-	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
-
-	OnAttackDelegate.Broadcast(FAttackData{
-		.Element = ActiveElement,
-		.Ability = HeavyAttack,
-		.Cooldown = TempSpec.GetDuration()
-	});
-
-	AbilityToUseOnDoAttack = EAttackType::HeavyAttack;
-
-	PlayAnimMontage(HeavyAttackMontage);
+	DoAttack(ActiveElement.HeavyAttackAbility);
 }
 
 void AElementCharacter::StartSpecialAttack()
 {
-	if (!ElementAbilitySystemComponent)
-		return;
-
-	const TSubclassOf<UGameplayAbility>& SpecialAttack = ActiveElement.SpecialAttackAbility;
-
-	if (!SpecialAttack)
-		return;
-
-	const UGameplayEffect* CooldownEffect = SpecialAttack.GetDefaultObject()->GetCooldownGameplayEffect();
-
-	if (!CooldownEffect)
-		return;
-
-	FGameplayEffectSpec TempSpec(CooldownEffect, ElementAbilitySystemComponent->MakeEffectContext(), 1);
-
-	OnAttackDelegate.Broadcast(FAttackData{
-		.Element = ActiveElement,
-		.Ability = SpecialAttack,
-		.Cooldown = TempSpec.GetDuration()
-	});
-
-	AbilityToUseOnDoAttack = EAttackType::SpecialAttack;
-
-	PlayAnimMontage(SpecialAttackMontage);
+	DoAttack(ActiveElement.SpecialAttackAbility);
 }
 
 void AElementCharacter::DoCycleElement(const int Amount)
 {
 	if (Elements.IsEmpty())
+		return;
+
+	if (IsCastingSpell())
 		return;
 
 	ActiveElementIndex = (ActiveElementIndex + Amount) % Elements.Num();
@@ -349,45 +327,5 @@ void AElementCharacter::DoLook(const float Yaw)
 		FRotator Rotation = GetActorRotation();
 		Rotation.Yaw = FMath::Fmod(Rotation.Yaw + Yaw, 360);
 		SetActorRotation(Rotation);
-	}
-}
-
-void AElementCharacter::InitAnimations()
-{
-	if (BaseAttackMontage)
-	{
-		const auto NotifyEvents = BaseAttackMontage->Notifies;
-		for (FAnimNotifyEvent EventNotify : NotifyEvents)
-		{
-			if (const auto BaseAttackNotify = Cast<UElementAnimNotify>(EventNotify.Notify))
-			{
-				BaseAttackNotify->OnNotified.AddUObject(this, &AElementCharacter::OnElementAnimNotify);
-			}
-		}
-	}
-}
-
-void AElementCharacter::OnElementAnimNotify(const EAnimNotifyType NotifyType)
-{
-	DoAttack(ActiveElement.BaseAttackAbility);
-
-	switch (NotifyType)
-	{
-	case EAnimNotifyType::AttackStart:
-		switch (AbilityToUseOnDoAttack)
-		{
-		case EAttackType::BaseAttack:
-			DoAttack(ActiveElement.BaseAttackAbility);
-			break;
-		case EAttackType::SpecialAttack:
-			DoAttack(ActiveElement.SpecialAttackAbility);
-			break;
-		case EAttackType::HeavyAttack:
-			DoAttack(ActiveElement.HeavyAttackAbility);
-			break;
-		}
-		break;
-	case EAnimNotifyType::AttackEnd:
-		break;
 	}
 }

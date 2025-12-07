@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "ElementGameplayAbilityProjectileBase.h"
+#include "ElementGameplayAbilityProjectileSpellBase.h"
 #include "ElementGameplayAbility_WaterGun.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_WaterGun : public UElementGameplayAbilityProjectileBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_WaterGun : public UElementGameplayAbilityProjectileSpellBase
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ public:
 	int ProjectileCount = 3;
 
 protected:
-	virtual void ActivateAbility(
+	virtual void CastSpell(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,

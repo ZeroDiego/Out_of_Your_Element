@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "ElementGameplayAbilityBase.h"
+#include "ElementGameplayAbilitySpellBase.h"
 #include "ElementGameplayAbility_Freeze.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Freeze : public UElementGameplayAbilityBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Freeze : public UElementGameplayAbilitySpellBase
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,10 @@ public:
 	class UNiagaraSystem* FreezeActivateParticle;
 
 protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	                             const FGameplayAbilityActivationInfo ActivationInfo,
-	                             const FGameplayEventData* TriggerEventData) override;
+	virtual void CastSpell(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
 };

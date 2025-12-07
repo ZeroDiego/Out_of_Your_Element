@@ -5,7 +5,7 @@
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
 
-void UElementGameplayAbility_Freeze::ActivateAbility(
+void UElementGameplayAbility_Freeze::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -66,7 +66,4 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 			}
 		}
 	}
-
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

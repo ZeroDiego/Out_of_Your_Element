@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "ElementGameplayAbilityProjectileBase.h"
+#include "ElementGameplayAbilityProjectileSpellBase.h"
 #include "ElementGameplayAbility_RockThrow.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_RockThrow : public UElementGameplayAbilityProjectileBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_RockThrow : public UElementGameplayAbilityProjectileSpellBase
 {
 	GENERATED_BODY()
 };

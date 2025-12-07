@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 
-void UElementGameplayAbility_RockWall::ActivateAbility(
+void UElementGameplayAbility_RockWall::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -39,11 +39,11 @@ void UElementGameplayAbility_RockWall::ActivateAbility(
 						{
 							const FGameplayEffectSpecHandle RockWallGameplayEffectSpecHandle =
 								MakeOutgoingGameplayEffectSpec(
-									RockWallDamageGameplayEffect,
+									DamageGameplayEffect,
 									1);
 							RockWallGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 								ElementGameplayTags::Abilities_Parameters_Damage,
-								RockWallDamage);
+								BaseDamage);
 
 							RockWall->InitializeZone(RockWallGameplayEffectSpecHandle, this, RockWallPopInVfx,
 							                         RockWallPopOutVfx, RockWallScale,
@@ -58,7 +58,4 @@ void UElementGameplayAbility_RockWall::ActivateAbility(
 			}
 		}
 	}
-
-	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true, nullptr);
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

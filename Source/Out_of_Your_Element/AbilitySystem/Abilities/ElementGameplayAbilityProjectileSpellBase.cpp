@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ElementGameplayAbilityProjectileBase.h"
+#include "ElementGameplayAbilityProjectileSpellBase.h"
 
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Character.h"
@@ -9,7 +9,7 @@
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 
-void UElementGameplayAbilityProjectileBase::ActivateAbility(
+void UElementGameplayAbilityProjectileSpellBase::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -23,17 +23,14 @@ void UElementGameplayAbilityProjectileBase::ActivateAbility(
 		const FRotator Rotation = Caster->GetActorRotation();
 		ShootProjectile(Location, Rotation);
 	}
-
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
-void UElementGameplayAbilityProjectileBase::ShootProjectile(const FVector& Location, const FRotator& Direction)
+void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(const FVector& Location, const FRotator& Direction)
 {
 	ShootProjectile(FTransform(Direction, Location));
 }
 
-void UElementGameplayAbilityProjectileBase::ShootProjectile(const FTransform& Transform)
+void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(const FTransform& Transform)
 {
 	if (AElementProjectileBase* Projectile =
 		GetWorld()->SpawnActorDeferred<AElementProjectileBase>(ProjectileClass, Transform)

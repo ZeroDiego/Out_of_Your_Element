@@ -34,7 +34,7 @@ struct FAttackData
 	TSubclassOf<UGameplayAbility> Ability;
 
 	UPROPERTY(BlueprintReadOnly)
-	float Cooldown;
+	float Cooldown = 0.0f;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
@@ -129,6 +129,12 @@ private:
 
 public:
 	AElementCharacter();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsCastingSpell() const;
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool CanAttack() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
@@ -149,9 +155,6 @@ private:
 	void Look(const FInputActionValue& Value);
 	void CycleElement(const FInputActionValue& Value);
 
-	void InitAnimations();
-	void OnElementAnimNotify(const EAnimNotifyType NotifyType);
-
 public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoMove(const float Right, const float Forward);
@@ -169,7 +172,7 @@ public:
 	virtual void StartSpecialAttack();
 
 	UFUNCTION(BlueprintCallable)
-	void DoAttack(const TSubclassOf<UGameplayAbility>& Attack);
+	void DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const;
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoCycleElement(const int Amount);

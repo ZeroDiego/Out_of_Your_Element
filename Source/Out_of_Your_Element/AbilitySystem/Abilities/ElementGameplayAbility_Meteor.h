@@ -3,30 +3,35 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ElementGameplayAbilityBase.h"
+#include "ElementGameplayAbilitySpellBase.h"
 #include "Out_of_Your_Element/Projectile/ElementZoneBase.h"
 #include "ElementGameplayAbility_Meteor.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Meteor : public UElementGameplayAbilityBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Meteor : public UElementGameplayAbilitySpellBase
 {
 	GENERATED_BODY()
 
 public:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	                             const FGameplayAbilityActorInfo* ActorInfo,
-	                             const FGameplayAbilityActivationInfo ActivationInfo,
-	                             const FGameplayEventData* TriggerEventData) override;
+	virtual void CastSpell(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
 	FVector MeteorSpawnOffset = FVector(0, 0, 5000);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
 	TSubclassOf<class AElementMeteor> MeteorClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
 	TSubclassOf<AElementZoneBase> MeteorZoneClass;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category="Meteor")
+	UNiagaraSystem* MeteorZoneVfx;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
 	TSubclassOf<UGameplayEffect> ImpactDamageGameplayEffect;
 
@@ -44,13 +49,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
 	float MeteorZoneLifeSpan = 10;
-
-	UPROPERTY(EditDefaultsOnly, Category="VFX")
-	UNiagaraSystem* MeteorZoneVfx;
-
-protected:
-	UFUNCTION()
-	void OnDelayFinished();
 
 private:
 	FTransform MeteorSpawnLocation;

@@ -4,7 +4,7 @@
 #include "ElementGameplayAbility_WaterGun.h"
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 
-void UElementGameplayAbility_WaterGun::ActivateAbility(
+void UElementGameplayAbility_WaterGun::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -36,7 +36,4 @@ void UElementGameplayAbility_WaterGun::ActivateAbility(
 			);
 		}
 	}
-
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
