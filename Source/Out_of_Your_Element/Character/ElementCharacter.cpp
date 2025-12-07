@@ -250,15 +250,21 @@ void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) co
 	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(Attack))
 	{
 		const UGameplayAbility* CDO = Attack->GetDefaultObject<UGameplayAbility>();
-		const FGameplayTagContainer& CooldownTags = *CDO->GetCooldownTags();
-		const FGameplayEffectQuery CooldownQuery = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(CooldownTags);
-		const TArray<float> AbilityDurations = ElementAbilitySystemComponent->GetActiveEffectsDuration(CooldownQuery);
 
 		float MaxDuration = 0.0f;
-		for (const float Duration : AbilityDurations)
+		if (const FGameplayTagContainer* CooldownTags = CDO->GetCooldownTags())
 		{
-			if (Duration > MaxDuration)
-				MaxDuration = Duration;
+			const FGameplayEffectQuery CooldownQuery =
+				FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(*CooldownTags);
+
+			const TArray<float> AbilityDurations =
+				ElementAbilitySystemComponent->GetActiveEffectsDuration(CooldownQuery);
+
+			for (const float Duration : AbilityDurations)
+			{
+				if (Duration > MaxDuration)
+					MaxDuration = Duration;
+			}
 		}
 
 		OnAttackDelegate.Broadcast(FAttackData{

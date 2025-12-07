@@ -17,8 +17,17 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 		return;
 
+	// ReSharper disable once CppExpressionWithoutSideEffects -- Does have effect on owner. No return value is required
+	ApplyGameplayEffectSpecToOwner(
+		Handle,
+		ActorInfo,
+		ActivationInfo,
+		MakeOutgoingGameplayEffectSpec(CastingGameplayEffect)
+	);
+
 	if (!AbilityMontage)
 	{
+		CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 		K2_EndAbility();
 		return;
 	}
