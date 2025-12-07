@@ -28,7 +28,7 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 	if (!AbilityMontage)
 	{
 		CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-		K2_EndAbility();
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
 
@@ -41,7 +41,6 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 	MontageTask->OnBlendOut.AddDynamic(this, &UElementGameplayAbilitySpellBase::K2_EndAbility);
 	MontageTask->OnInterrupted.AddDynamic(this, &UElementGameplayAbilitySpellBase::K2_EndAbility);
 	MontageTask->OnCancelled.AddDynamic(this, &UElementGameplayAbilitySpellBase::K2_EndAbility);
-	MontageTask->OnCompleted.AddDynamic(this, &UElementGameplayAbilitySpellBase::K2_EndAbility);
 
 	for (const TArray<FAnimNotifyEvent>& NotifyEvents = AbilityMontage->Notifies;
 	     const FAnimNotifyEvent& EventNotify : NotifyEvents
@@ -55,9 +54,14 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 				{
 					CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 				}
+
+				if (NotifyType == AttackEnd)
+				{
+					EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+				}
 			});
 		}
 	}
 
-	MontageTask->Activate();
+	MontageTask->ReadyForActivation();
 }
