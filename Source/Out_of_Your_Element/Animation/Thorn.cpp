@@ -35,18 +35,54 @@ void AThorn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// If we are still lerping
+	// If we're in the waiting state, count down
+	if (bWaiting)
+	{
+		WaitTimer += DeltaTime;
+
+		if (WaitTimer >= WaitTime)
+		{
+			// Stop waiting and begin downward lerp
+			bWaiting = false;
+			bGoingUp = false;
+			LerpTime = 0.f;  
+		}
+
+		return; // Stop processing Tick until wait is done
+	}
+
+
+	// Handle upward or downward lerp
 	if (LerpTime < LerpDuration)
 	{
-		LerpTime += DeltaTime;  // Increase LerpTime with each frame
-
-		// Calculate the interpolation factor
+		LerpTime += DeltaTime;
 		float Alpha = FMath::Clamp(LerpTime / LerpDuration, 0.f, 1.f);
 
-		// Linearly interpolate between the underground and above ground locations
-		FVector NewLocation = FMath::Lerp(InitialLocation + UndergroundOffset, InitialLocation + AboveGroundOffset, Alpha);
+		FVector StartLocation;
+		FVector EndLocation;
 
-		// Update the actor's location
+		if (bGoingUp)
+		{
+			StartLocation = InitialLocation + UndergroundOffset;
+			EndLocation = InitialLocation + AboveGroundOffset;
+		}
+		else
+		{
+			StartLocation = InitialLocation + AboveGroundOffset;
+			EndLocation = InitialLocation + UndergroundOffset;
+		}
+
+		FVector NewLocation = FMath::Lerp(StartLocation, EndLocation, Alpha);
 		SetActorLocation(NewLocation);
+	}
+	else
+	{
+		if (bGoingUp)
+		{
+			// Finished going up → start waiting
+			bWaiting = true;
+			WaitTimer = 0.f;
+		}
+	
 	}
 }

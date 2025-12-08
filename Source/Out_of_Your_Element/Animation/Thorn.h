@@ -42,4 +42,9 @@ private:
 
 	// The initial position of the actor
 	FVector InitialLocation;
+	bool bGoingUp = true;
+	bool bWaiting = false;
+	float WaitTime = 3.5f;      // 1 second delay
+	float WaitTimer = 0.f;
+
 };
