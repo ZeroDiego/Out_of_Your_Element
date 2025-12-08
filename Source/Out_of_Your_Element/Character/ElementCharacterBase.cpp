@@ -6,35 +6,33 @@
 #include "AbilitySystemGlobals.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementMovementAttributeSet.h"
 #include "Out_of_Your_Element/AI/ElementalAIController.h"
 
-// Sets default values
 AElementCharacterBase::AElementCharacterBase()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	ElementAbilitySystemComponent =
 		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
 	MovementAttributeSet = CreateDefaultSubobject<UElementMovementAttributeSet>(TEXT("Movement Attribute Set"));
 }
 
+float AElementCharacterBase::GetHealth() const
+{
+	return HealthAttributeSet->GetHealth();
+}
+
+float AElementCharacterBase::IsAlive() const
+{
+	return GetHealth() > 0;
+}
+
 void AElementCharacterBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	if (Controller)
-	{
-		ElementAbilitySystemComponent->InitAbilityActorInfo(Controller, this);
-	}
-	else
-	{
-		ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}
+	ElementAbilitySystemComponent->InitAbilityActorInfo(this, this);
 
 	IGameplayAbilitiesModule::Get().GetAbilitySystemGlobals()->GetAttributeSetInitter()->InitAttributeSetDefaults(
 		GetAbilitySystemComponent(),
@@ -47,59 +45,4 @@ void AElementCharacterBase::PostInitializeComponents()
 
 	if (UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement())
 		CharacterMovementComponent->MaxWalkSpeed = MovementAttributeSet->GetMovementSpeed();
-}
-
-// Called when the game starts or when spawned
-void AElementCharacterBase::BeginPlay()
-{
-	Super::BeginPlay();
-
-	ElementAbilitySystemComponent->RegisterGameplayTagEvent(ElementGameplayTags::Abilities_Fire,
-	                                                        EGameplayTagEventType::NewOrRemoved).AddUObject(
-		this, &AElementCharacterBase::FireDamageHandler);
-
-	ElementAbilitySystemComponent->RegisterGameplayTagEvent(ElementGameplayTags::Abilities_Water,
-	                                                        EGameplayTagEventType::NewOrRemoved).AddUObject(
-		this, &AElementCharacterBase::WaterDamageHandler);
-
-	ElementAbilitySystemComponent->RegisterGameplayTagEvent(ElementGameplayTags::Abilities_Nature,
-	                                                        EGameplayTagEventType::NewOrRemoved).AddUObject(
-		this, &AElementCharacterBase::NatureDamageHandler);
-}
-
-void AElementCharacterBase::FireDamageHandler(FGameplayTag Tag, const int32 NewCount) const
-{
-	OnFireDamageTakenDelegate.Broadcast(NewCount);
-}
-
-void AElementCharacterBase::WaterDamageHandler(FGameplayTag Tag, const int32 NewCount) const
-{
-	OnWaterDamageTakenDelegate.Broadcast(NewCount);
-}
-
-void AElementCharacterBase::NatureDamageHandler(FGameplayTag Tag, const int32 NewCount) const
-{
-	OnNatureDamageTakenDelegate.Broadcast(NewCount);
-
-	/*
-	if (NewCount > 0)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 0;
-
-		if (AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
-		{
-			AIController->StopMovement();
-			AIController->GetBrainComponent()->StopLogic("HitStun");
-		}
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 300;
-
-		if (const AElementalAIController* AIController = Cast<AElementalAIController>(GetController()))
-		{
-			AIController->GetBrainComponent()->StartLogic();
-		}
-	}
-	*/
 }

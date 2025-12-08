@@ -66,12 +66,14 @@ void AElementZoneBase::DoDamage() const
 	}
 }
 
-void AElementZoneBase::InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
-                                      UGameplayAbility* NewSourceAbility, UNiagaraSystem* ZoneVfx,
-                                      const float Radius, const float LifeSpan)
+void AElementZoneBase::InitializeZone(
+	const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
+	UNiagaraSystem* ZoneVfx,
+	const float Radius,
+	const float LifeSpan
+)
 {
 	GameplayEffectSpecHandle = NewGameplayEffectSpecHandle;
-	SourceAbility = NewSourceAbility;
 	ZoneSphereComponent->SetSphereRadius(Radius);
 	SetLifeSpan(LifeSpan);
 

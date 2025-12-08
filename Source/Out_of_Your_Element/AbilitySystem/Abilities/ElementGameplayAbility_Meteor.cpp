@@ -7,7 +7,7 @@
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Projectile/ElementMeteor.h"
 
-void UElementGameplayAbility_Meteor::ActivateAbility(
+void UElementGameplayAbility_Meteor::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -41,71 +41,37 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 						Meteor->SummoningTime = MeteorSummoningTime;
 						Meteor->TargetLocation = MouseCursorHitResult.Location;
 
+						Meteor->MeteorZoneClass = MeteorZoneClass;
+						Meteor->MeteorZoneVfx = MeteorZoneVfx;
+						Meteor->MeteorZoneRadius = MeteorZoneRadius;
+						Meteor->MeteorZoneLifeSpan = MeteorZoneLifeSpan;
+
+						Meteor->ImpactGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+							ImpactDamageGameplayEffect
+						);
+
+						Meteor->ImpactGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+							ElementGameplayTags::Abilities_Parameters_Damage,
+							ImpactBaseDamage
+						);
+
+						Meteor->DotGameplayEffectSpecHandle =
+							MakeOutgoingGameplayEffectSpec(DamageGameplayEffect);
+
+						Meteor->DotGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+							ElementGameplayTags::Abilities_Parameters_Duration,
+							DotDamageDuration
+						);
+
+						Meteor->DotGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+							ElementGameplayTags::Abilities_Parameters_Damage,
+							BaseDamage
+						);
+
 						UGameplayStatics::FinishSpawningActor(Meteor, MeteorProjectileSpawnLocation);
 					}
-
-					UAbilityTask_WaitDelay* DelayTask = UAbilityTask_WaitDelay::WaitDelay(this, MeteorSummoningTime);
-					DelayTask->OnFinish.AddDynamic(this, &UElementGameplayAbility_Meteor::OnDelayFinished);
-					DelayTask->ReadyForActivation();
 				}
 			}
 		}
 	}
-}
-
-void UElementGameplayAbility_Meteor::OnDelayFinished()
-{
-	if (AElementZoneBase* MeteorZone = GetWorld()->SpawnActorDeferred<AElementZoneBase>(
-		MeteorZoneClass,
-		MeteorSpawnLocation,
-		nullptr,
-		nullptr,
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
-	{
-		const FGameplayEffectSpecHandle DotGameplayEffectSpecHandle =
-			MakeOutgoingGameplayEffectSpec(DamageGameplayEffect);
-
-		DotGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-			ElementGameplayTags::Abilities_Parameters_Duration,
-			DotDamageDuration
-		);
-
-		DotGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-			ElementGameplayTags::Abilities_Parameters_Damage,
-			BaseDamage
-		);
-
-		MeteorZone->InitializeZone(
-			DotGameplayEffectSpecHandle,
-			this,
-			MeteorZoneVfx,
-			MeteorZoneRadius,
-			MeteorZoneLifeSpan
-		);
-
-		UGameplayStatics::FinishSpawningActor(MeteorZone, MeteorSpawnLocation);
-
-		const FGameplayEffectSpecHandle ImpactGameplayEffectSpecHandle =
-			MakeOutgoingGameplayEffectSpec(ImpactDamageGameplayEffect);
-
-		ImpactGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-			ElementGameplayTags::Abilities_Parameters_Damage,
-			ImpactBaseDamage
-		);
-
-		TArray<AActor*> HitActors;
-		MeteorZone->GetOverlappingActors(HitActors, AElementCharacterBase::StaticClass());
-		for (AActor* HitActor : HitActors)
-		{
-			if (const AElementCharacterBase* HitCharacter = Cast<AElementCharacterBase>(HitActor))
-			{
-				HitCharacter->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
-					ImpactGameplayEffectSpecHandle
-				);
-			}
-		}
-	}
-
-	CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo);
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

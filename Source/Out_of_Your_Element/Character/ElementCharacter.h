@@ -4,15 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
-#include "ElementFiringOffset.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ElementCharacterBase.h"
 #include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "InputActionValue.h"
+#include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 #include "ElementCharacter.generated.h"
 
 class UInputAction;
+
+UENUM()
+enum EAttackType
+{
+	BaseAttack,
+	HeavyAttack,
+	SpecialAttack
+};
 
 USTRUCT(BlueprintType)
 struct FAttackData
@@ -24,6 +32,9 @@ struct FAttackData
 
 	UPROPERTY(BlueprintReadOnly)
 	TSubclassOf<UGameplayAbility> Ability;
+
+	UPROPERTY(BlueprintReadOnly)
+	float Cooldown = 0.0f;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
@@ -66,6 +77,15 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnElementChanged OnElementChangedDelegate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* BaseAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* SpecialAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* HeavyAttackMontage;
+	
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
@@ -88,9 +108,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	bool bIsAttacking;
-
 private:
 	UPROPERTY()
 	UUserWidget* CursorWidgetRef;
@@ -102,16 +119,22 @@ private:
 	USpringArmComponent* CameraBoomRef;
 
 	UPROPERTY(VisibleAnywhere)
-	UElementFiringOffset* FiringOffsetRef;
-
-	UPROPERTY(VisibleAnywhere)
 	int ActiveElementIndex;
 
 	UPROPERTY(VisibleAnywhere)
 	FElement ActiveElement;
 
+	UPROPERTY(VisibleAnywhere)
+	TEnumAsByte<EAttackType> AbilityToUseOnDoAttack;
+
 public:
 	AElementCharacter();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsCastingSpell() const;
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool CanAttack() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
@@ -140,19 +163,16 @@ public:
 	virtual void DoLook(const float Yaw);
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoBaseAttack();
-
-	UFUNCTION(BlueprintCallable)
-	void DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack);
-
-	UFUNCTION(BlueprintCallable)
-	void DoSpecialAttackHelperFunction(const TSubclassOf<UGameplayAbility>& SpecialAttack);
+	virtual void StartBaseAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoHeavyAttack();
+	virtual void StartHeavyAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoSpecialAttack();
+	virtual void StartSpecialAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const;
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoCycleElement(const int Amount);

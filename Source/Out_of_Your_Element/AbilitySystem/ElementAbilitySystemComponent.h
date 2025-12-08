@@ -9,4 +9,9 @@ UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UElementAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	void GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer,
+	                                TArray<class UElementGameplayAbilitySpellBase*>& ActiveAbilities) const;
 };

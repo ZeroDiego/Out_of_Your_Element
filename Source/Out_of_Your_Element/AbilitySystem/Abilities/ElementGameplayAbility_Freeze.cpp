@@ -1,12 +1,11 @@
 ﻿#include "ElementGameplayAbility_Freeze.h"
 
 #include "NiagaraFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
 
-void UElementGameplayAbility_Freeze::ActivateAbility(
+void UElementGameplayAbility_Freeze::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -23,15 +22,8 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 		const FVector Location = Caster->GetActorLocation();
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, FreezeActivateParticle, Location);
 
-		DrawDebugSphere(
-			World,
-			Location,
-			FreezeRadius,
-			16,
-			FColor::Red,
-			true,
-			20
-		);
+		const FGameplayTagContainer Burning(ElementGameplayTags::Status_Burning);
+		BP_RemoveGameplayEffectFromOwnerWithGrantedTags(Burning);
 
 		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
 				World,
@@ -64,7 +56,4 @@ void UElementGameplayAbility_Freeze::ActivateAbility(
 			}
 		}
 	}
-
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

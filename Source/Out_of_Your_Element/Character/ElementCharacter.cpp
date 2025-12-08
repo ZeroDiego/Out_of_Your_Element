@@ -10,7 +10,10 @@
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/InputDeviceSubsystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -32,11 +35,25 @@ AElementCharacter::AElementCharacter()
 
 	CameraRef->SetupAttachment(CameraBoomRef);
 	CameraRef->bUsePawnControlRotation = false;
+}
 
-	// Creates a custom scene component called firing offset used for projectile spawn location
-	FiringOffsetRef = CreateDefaultSubobject<UElementFiringOffset>(TEXT("FiringOffset"));
-	FiringOffsetRef->SetupAttachment(RootComponent);
-	FiringOffsetRef->SetRelativeLocation(FiringOffset);
+bool AElementCharacter::IsCastingSpell() const
+{
+	if (!ElementAbilitySystemComponent)
+		return false;
+
+	TArray<UElementGameplayAbilitySpellBase*> ActiveSpells;
+	ElementAbilitySystemComponent->GetActiveAbilitiesWithTags(
+		FGameplayTagContainer(ElementGameplayTags::Abilities_Casting),
+		ActiveSpells
+	);
+
+	return !ActiveSpells.IsEmpty();
+}
+
+bool AElementCharacter::CanAttack() const
+{
+	return GetWorld() && !UGameplayStatics::IsGamePaused(GetWorld()) && IsAlive() && !IsCastingSpell();
 }
 
 void AElementCharacter::BeginPlay()
@@ -125,21 +142,21 @@ void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 			BaseAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::DoBaseAttack
+			&AElementCharacter::StartBaseAttack
 		);
 
 		EnhancedInputComponent->BindAction(
 			HeavyAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::DoHeavyAttack
+			&AElementCharacter::StartHeavyAttack
 		);
 
 		EnhancedInputComponent->BindAction(
 			SpecialAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::DoSpecialAttack
+			&AElementCharacter::StartSpecialAttack
 		);
 
 		EnhancedInputComponent->BindAction(
@@ -222,73 +239,63 @@ void AElementCharacter::CycleElement(const FInputActionValue& Value)
 	DoCycleElement(In > 0 ? FMath::CeilToInt(In) : FMath::FloorToInt(In));
 }
 
-void AElementCharacter::DoBaseAttack()
+void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const
 {
-	if (!ElementAbilitySystemComponent)
+	if (!Attack)
 		return;
 
-	const TSubclassOf<UGameplayAbility>& BaseAttack = ActiveElement.BaseAttackAbility;
-
-	if (!BaseAttack)
+	if (!CanAttack())
 		return;
 
-	OnAttackDelegate.Broadcast(FAttackData{
-		.Element = ActiveElement,
-		.Ability = BaseAttack
-	});
-}
-
-void AElementCharacter::DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack)
-{
-	ElementAbilitySystemComponent->TryActivateAbilityByClass(BaseAttack);
-}
-
-
-void AElementCharacter::DoHeavyAttack()
-{
-	if (!ElementAbilitySystemComponent)
-		return;
-
-	const TSubclassOf<UGameplayAbility>& HeavyAttack = ActiveElement.HeavyAttackAbility;
-
-	if (!HeavyAttack)
-		return;
-
-	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(HeavyAttack))
+	if (ElementAbilitySystemComponent->TryActivateAbilityByClass(Attack))
 	{
-		bIsAttacking = true;
+		const UGameplayAbility* CDO = Attack->GetDefaultObject<UGameplayAbility>();
+
+		float MaxDuration = 0.0f;
+		if (const FGameplayTagContainer* CooldownTags = CDO->GetCooldownTags())
+		{
+			const FGameplayEffectQuery CooldownQuery =
+				FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(*CooldownTags);
+
+			const TArray<float> AbilityDurations =
+				ElementAbilitySystemComponent->GetActiveEffectsDuration(CooldownQuery);
+
+			for (const float Duration : AbilityDurations)
+			{
+				if (Duration > MaxDuration)
+					MaxDuration = Duration;
+			}
+		}
+
 		OnAttackDelegate.Broadcast(FAttackData{
 			.Element = ActiveElement,
-			.Ability = HeavyAttack
+			.Ability = Attack,
+			.Cooldown = MaxDuration
 		});
 	}
 }
 
-void AElementCharacter::DoSpecialAttack()
+void AElementCharacter::StartBaseAttack()
 {
-	if (!ElementAbilitySystemComponent)
-		return;
-
-	const TSubclassOf<UGameplayAbility>& SpecialAttack = ActiveElement.SpecialAttackAbility;
-
-	if (!SpecialAttack)
-		return;
-
-	bIsAttacking = true;
-	OnAttackDelegate.Broadcast(FAttackData{
-		.Element = ActiveElement,
-		.Ability = SpecialAttack
-	});
+	DoAttack(ActiveElement.BaseAttackAbility);
 }
 
-void AElementCharacter::DoSpecialAttackHelperFunction(const TSubclassOf<UGameplayAbility>& SpecialAttack)
+void AElementCharacter::StartHeavyAttack()
 {
-	ElementAbilitySystemComponent->TryActivateAbilityByClass(SpecialAttack);
+	DoAttack(ActiveElement.HeavyAttackAbility);
+}
+
+void AElementCharacter::StartSpecialAttack()
+{
+	DoAttack(ActiveElement.SpecialAttackAbility);
 }
 
 void AElementCharacter::DoCycleElement(const int Amount)
 {
 	if (Elements.IsEmpty())
+		return;
+
+	if (IsCastingSpell())
 		return;
 
 	ActiveElementIndex = (ActiveElementIndex + Amount) % Elements.Num();

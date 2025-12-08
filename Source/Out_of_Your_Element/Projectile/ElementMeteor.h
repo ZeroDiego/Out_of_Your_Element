@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "ElementMeteor.generated.h"
 
@@ -17,6 +18,24 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FVector TargetLocation;
 
+	UPROPERTY(BlueprintReadOnly)
+	TSubclassOf<class AElementZoneBase> MeteorZoneClass;
+
+	UPROPERTY()
+	class UNiagaraSystem* MeteorZoneVfx;
+
+	UPROPERTY()
+	float MeteorZoneRadius = 250;
+
+	UPROPERTY()
+	float MeteorZoneLifeSpan = 10;
+
+	UPROPERTY()
+	FGameplayEffectSpecHandle DotGameplayEffectSpecHandle;
+
+	UPROPERTY()
+	FGameplayEffectSpecHandle ImpactGameplayEffectSpecHandle;
+
 private:
 	float CurrentTime;
 	FVector StartLocation;
@@ -27,6 +46,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void LifeSpanExpired() override;
 };

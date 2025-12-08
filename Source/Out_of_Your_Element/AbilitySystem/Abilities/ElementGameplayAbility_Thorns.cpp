@@ -90,7 +90,7 @@ bool FindGroundLocation(const UWorld* World, const FVector& Start, const FVector
 	return false;
 }
 
-void UElementGameplayAbility_Thorns::ActivateAbility(
+void UElementGameplayAbility_Thorns::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -149,7 +149,4 @@ void UElementGameplayAbility_Thorns::ActivateAbility(
 			}
 		}
 	}
-
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

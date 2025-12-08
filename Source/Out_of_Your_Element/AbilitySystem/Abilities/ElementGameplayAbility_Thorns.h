@@ -1,10 +1,10 @@
 ﻿#pragma once
 
-#include "ElementGameplayAbilityBase.h"
+#include "ElementGameplayAbilitySpellBase.h"
 #include "ElementGameplayAbility_Thorns.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Thorns : public UElementGameplayAbilityBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Thorns : public UElementGameplayAbilitySpellBase
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Thorns")
 	int ThornCount = 10;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Thorns")
 	float ThornLifespan = 5.0f;
 
@@ -28,7 +28,10 @@ public:
 	TSubclassOf<class AElementThorn> AThornClass;
 
 protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	                             const FGameplayAbilityActivationInfo ActivationInfo,
-	                             const FGameplayEventData* TriggerEventData) override;
+	virtual void CastSpell(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
 };
