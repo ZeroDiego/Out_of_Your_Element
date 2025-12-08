@@ -32,6 +32,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Meteor")
 	UNiagaraSystem* MeteorZoneVfx;
 
+	UPROPERTY(EditDefaultsOnly, Category="Meteor")
+	UNiagaraSystem* MeteorIndicator;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
 	TSubclassOf<UGameplayEffect> ImpactDamageGameplayEffect;
 
