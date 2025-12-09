@@ -320,7 +320,7 @@ void AElementCharacter::DoCycleElement(const int Amount)
 
 	const FElement OldElement = ActiveElement;
 	ActiveElement = Elements[ActiveElementIndex];
-	OnElementChangedDelegate.Broadcast(OldElement, ActiveElement);
+	OnElementChangedDelegate.Broadcast(OldElement, ActiveElement, Amount);
 }
 
 void AElementCharacter::DoMove(const float Right, const float Forward)

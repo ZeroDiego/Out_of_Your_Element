@@ -40,7 +40,7 @@ struct FAttackData
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnElementChanged, FElement, OldElement, FElement, NewElement);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnElementChanged, FElement, OldElement, FElement, NewElement, int, CycleAmount);
 
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public AElementCharacterBase
