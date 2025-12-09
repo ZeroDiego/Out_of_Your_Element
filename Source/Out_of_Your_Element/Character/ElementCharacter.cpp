@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "InputActionValue.h"
+#include "NiagaraComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "Kismet/GameplayStatics.h"
@@ -35,6 +36,10 @@ AElementCharacter::AElementCharacter()
 
 	CameraRef->SetupAttachment(CameraBoomRef);
 	CameraRef->bUsePawnControlRotation = false;
+
+	AimMarker = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AimMarker"));
+	AimMarker->SetupAttachment(RootComponent);
+	AimMarker->SetAutoActivate(true);
 }
 
 bool AElementCharacter::IsCastingSpell() const
@@ -222,6 +227,17 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 				FRotator CurrentRotation = GetActorRotation();
 				CurrentRotation.Yaw = LookRotation.Yaw;
 				SetActorRotation(CurrentRotation);
+				if (AimMarker)
+				{
+					const FVector MarkerLocation = HitResult.ImpactPoint + HitResult.ImpactNormal *2.f;
+					AimMarker -> SetWorldLocation(MarkerLocation);
+
+					const FRotator MarkerRotation = FRotationMatrix::MakeFromZ(HitResult.ImpactNormal).Rotator();
+					AimMarker->SetWorldRotation(MarkerRotation);
+					
+
+					
+				}
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+#include "NiagaraComponent.h"
 #include "CoreMinimal.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
@@ -11,6 +11,7 @@
 #include "InputActionValue.h"
 #include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 #include "ElementCharacter.generated.h"
+
 
 class UInputAction;
 
@@ -85,7 +86,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* HeavyAttackMontage;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UNiagaraComponent* AimMarker;
+
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
