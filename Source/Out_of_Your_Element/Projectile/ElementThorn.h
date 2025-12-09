@@ -20,8 +20,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category="Thorn")
 	const class AElementCharacterBase* Caster;
 
-protected:
-	virtual void BeginPlay() override;
+	UPROPERTY(BlueprintReadWrite, Category="Thorn")
+	float ThornDistance = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Thorn")
+	float DamageDelay = 0.0f;
 
 public:
 	UFUNCTION(BlueprintCallable)

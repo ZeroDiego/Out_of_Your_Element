@@ -5,14 +5,6 @@
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
-void AElementThorn::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// TODO Replace with animation trigger
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AElementThorn::DoDamage);
-}
-
 void AElementThorn::DoDamage() const
 {
 	TArray<AActor*> OverlappingActors;

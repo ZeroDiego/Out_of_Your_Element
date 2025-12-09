@@ -172,6 +172,7 @@ void UElementGameplayAbility_Thorns::CastSpell(
 					Thorn->DamageGameplayEffect = DamageGameplayEffect;
 					Thorn->BaseDamage = BaseDamage;
 					Thorn->Caster = Caster;
+					Thorn->ThornDistance = (ThornPosition2D - Center).Length() / Length;
 					UGameplayStatics::FinishSpawningActor(Thorn, SpawnTransform);
 				}
 			}
