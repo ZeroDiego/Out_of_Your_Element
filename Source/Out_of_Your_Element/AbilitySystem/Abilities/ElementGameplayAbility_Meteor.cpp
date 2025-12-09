@@ -2,6 +2,8 @@
 
 
 #include "ElementGameplayAbility_Meteor.h"
+
+#include "NiagaraFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
@@ -31,6 +33,12 @@ void UElementGameplayAbility_Meteor::CastSpell(
 
 					const FTransform MeteorProjectileSpawnLocation = FTransform(
 						FRotator::ZeroRotator, MouseCursorHitResult.Location + MeteorSpawnOffset
+					);
+
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+						GetWorld(),
+						MeteorIndicator,
+						MouseCursorHitResult.Location
 					);
 
 					if (AElementMeteor* Meteor = GetWorld()->SpawnActorDeferred<AElementMeteor>(
