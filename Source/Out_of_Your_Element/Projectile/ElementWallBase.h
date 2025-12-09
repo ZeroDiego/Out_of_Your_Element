@@ -14,38 +14,13 @@ class OUT_OF_YOUR_ELEMENT_API AElementWallBase : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	AElementWallBase();
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UGameplayAbility* SourceAbility;
-
-	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* WallNiagaraComponent;
 	
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* RockWallPopOutVfx;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	// Called when the game starts or when spawned
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* MeshComponent;
-
+	UPROPERTY(BlueprintReadWrite)
+	const class AElementCharacterBase* Caster;
+	
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	void InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
-	                    UGameplayAbility* NewSourceAbility, UNiagaraSystem* WallPopInVfx, UNiagaraSystem* WallPopOutVfx,
-	                    const FVector& Scale,
-	                    const FVector& SpawnLocation,
-	                    const float LifeSpan);
+	UFUNCTION(BlueprintCallable)
+	void DoDamage() const;
 };

@@ -26,19 +26,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AElementWallBase> ElementWallBase;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* RockWallPopInVfx;
-
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* RockWallPopOutVfx;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector RockWallScale;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float RockWallOffset;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float RockWallLifeSpan;
 };
