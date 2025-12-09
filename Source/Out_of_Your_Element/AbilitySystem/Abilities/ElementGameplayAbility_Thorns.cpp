@@ -53,7 +53,8 @@ static void CalculateThornPositions(
 	const float HalfAngleRad = FMath::DegreesToRadians(Spread / 2.0f);
 
 	FVector2D ThornPosition;
-	for (int i = 0; i < ThornCount; ++i)
+	const int ThornsToSpawn = ThornCount - OutThornPositions.Num();
+	for (int i = 0; i < ThornsToSpawn; ++i)
 	{
 		for (int RetryCount = 0; RetryCount < 16; ++RetryCount)
 		{
@@ -109,6 +110,43 @@ void UElementGameplayAbility_Thorns::CastSpell(
 		const FVector2D Center(ActorLocation);
 		const FVector2D Direction(Caster->GetActorForwardVector());
 
+		// Always spawn thorn on cursor if in cone
+		if (const APlayerController* PlayerController = Cast<APlayerController>(Caster->GetController()))
+		{
+			if (PlayerController->IsLocalPlayerController())
+			{
+				static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
+					UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
+				};
+
+				if (FHitResult MouseCursorHitResult; PlayerController->GetHitResultUnderCursorForObjects(
+					GroundTypes,
+					false,
+					MouseCursorHitResult
+				))
+				{
+					// Is cursor close enough
+					const FVector2D CursorLocation = FVector2D(MouseCursorHitResult.Location);
+					if (const FVector2D RelativeCursorLocation = CursorLocation - Center;
+						RelativeCursorLocation.SquaredLength() <= Length * Length
+					)
+					{
+						// Is cursor inside cone angle
+						const FVector2D DirectionNormalized = Direction.GetSafeNormal();
+						const FVector2D CursorNormalized = RelativeCursorLocation.GetSafeNormal();
+						const double Dot = FVector2D::DotProduct(DirectionNormalized, CursorNormalized);
+
+						if (const double Angle = FMath::Acos(Dot);
+							Angle <= Spread / 2.0f
+						)
+						{
+							ThornPositions.Add(CursorLocation);
+						}
+					}
+				}
+			}
+		}
+
 		CalculateThornPositions(
 			Center,
 			Direction,
@@ -127,16 +165,6 @@ void UElementGameplayAbility_Thorns::CastSpell(
 				FindGroundLocation(World, ThornPosition, SearchDistance, ThornPosition)
 			)
 			{
-				DrawDebugSphere(
-					World,
-					ThornPosition,
-					5.f,
-					8,
-					FColor::Emerald,
-					false,
-					5.f
-				);
-
 				const FTransform SpawnTransform(FRotator::ZeroRotator, ThornPosition);
 				if (AElementThorn* Thorn = World->SpawnActorDeferred<AElementThorn>(AThornClass, SpawnTransform))
 				{
