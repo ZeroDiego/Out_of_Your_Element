@@ -6,34 +6,55 @@
 #include "GameFramework/Actor.h"
 #include "ElementMeteor.generated.h"
 
+class UGameplayEffect;
+class UNiagaraSystem;
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementMeteor : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
-	float SummoningTime;
+	UPROPERTY(BlueprintReadWrite)
+	FVector TargetLocation = FVector(NAN);
 
-	UPROPERTY(BlueprintReadOnly)
-	FVector TargetLocation;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
+	float SummoningTime = 1.5f;
 
-	UPROPERTY(BlueprintReadOnly)
-	TSubclassOf<class AElementZoneBase> MeteorZoneClass;
+	UPROPERTY(EditDefaultsOnly, Category="Meteor")
+	UNiagaraSystem* MeteorIndicator;
 
-	UPROPERTY()
-	class UNiagaraSystem* MeteorZoneVfx;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
+	TSubclassOf<UGameplayEffect> ImpactDamageGameplayEffect;
 
-	UPROPERTY()
-	float MeteorZoneRadius = 250;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
+	float ImpactDamage = 40.0f;
 
-	UPROPERTY()
-	float MeteorZoneLifeSpan = 10;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
+	TSubclassOf<UGameplayEffect> DotDamageGameplayEffect;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
+	float DotDamageDuration = 4;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
+	float DotDamage = 10.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
+	TSubclassOf<class AElementZoneBase> FlameZoneClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="Meteor")
+	UNiagaraSystem* FlameZoneVfx;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
+	float FlameZoneRadius = 250;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
+	float FlameZoneLifeSpan = 10;
+
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayEffectSpecHandle DotGameplayEffectSpecHandle;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayEffectSpecHandle ImpactGameplayEffectSpecHandle;
 
 private:
