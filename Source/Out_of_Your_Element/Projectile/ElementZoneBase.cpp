@@ -42,11 +42,9 @@ void AElementZoneBase::OnOverlapBegin(
 	const FHitResult& SweepResult
 )
 {
-	if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(OtherActor))
+	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
 	{
-		ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
-			GameplayEffectSpecHandle
-		);
+		AbilitySystemInterface->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
 	}
 }
 
