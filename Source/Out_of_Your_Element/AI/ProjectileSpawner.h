@@ -19,22 +19,24 @@ protected:
     virtual void Tick(float DeltaTime) override;
 
 public:
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
     TSubclassOf<AActor> ProjectileClass;
 
+    // Distance from player/camera
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
-    float SpawnDistance = 1500.f;
+    float SpawnDistance = 3000.0f;
 
+    // Spacing for multiple spawn points
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
-    float Spacing = 300.f;
+    float Spacing = 300.0f;
 
-    // 🔥 Auto-fire timer toggle
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
-    bool bAutoFire = true;
-
-    // 🔥 How often FireAll() is triggered
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing", meta = (ClampMin = "0.1"))
+    // Fire rate
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
     float FireInterval = 3.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
+    bool bAutoFire = true;
 
     UFUNCTION(BlueprintCallable)
     void FireAll();
@@ -45,7 +47,7 @@ protected:
 
 private:
     void CreateFixedSpawnPoints();
+    void StartFireTimer();
 
     FTimerHandle FireTimerHandle;
-    void StartFireTimer();
 };

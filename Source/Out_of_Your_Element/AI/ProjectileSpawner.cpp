@@ -1,22 +1,18 @@
 #include "ProjectileSpawner.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "DrawDebugHelpers.h"
 #include "Out_of_Your_Element/Character/ElementCharacter.h"
 
 AProjectileSpawner::AProjectileSpawner()
 {
     PrimaryActorTick.bCanEverTick = true;
-
     RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 }
 
 void AProjectileSpawner::BeginPlay()
 {
     Super::BeginPlay();
-
     CreateFixedSpawnPoints();
-
     StartFireTimer();
 }
 
@@ -24,7 +20,7 @@ void AProjectileSpawner::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    // Follow the player
+    // follow the player
     if (AElementCharacter* Player = Cast<AElementCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
     {
         SetActorLocation(Player->GetActorLocation());
@@ -33,73 +29,84 @@ void AProjectileSpawner::Tick(float DeltaTime)
 
 void AProjectileSpawner::StartFireTimer()
 {
-    if (!bAutoFire)
-        return;
+    if (!bAutoFire) return;
 
-    if (FireInterval > 0.f)
-    {
-        GetWorldTimerManager().SetTimer(
-            FireTimerHandle,
-            this,
-            &AProjectileSpawner::FireAll,
-            FireInterval,
-            true
-        );
-    }
+    GetWorldTimerManager().SetTimer(
+        FireTimerHandle,
+        this,
+        &AProjectileSpawner::FireAll,
+        FireInterval,
+        true
+    );
 }
 
 void AProjectileSpawner::CreateFixedSpawnPoints()
 {
     SpawnPoints.Empty();
 
-    auto CreatePoint = [&](FString Name, FVector Direction, float Offset)
+    auto CreatePoint = [&](FString Name, FVector BaseDirection, float Offset)
     {
         USceneComponent* Comp = NewObject<USceneComponent>(this, *Name);
         Comp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
         Comp->RegisterComponent();
 
-        FVector Perpendicular(-Direction.Y, Direction.X, 0);
-        FVector Location = Direction * SpawnDistance + Perpendicular * Offset;
+        // perpendicular offset spacing
+        FVector Side(-BaseDirection.Y, BaseDirection.X, 0);
+        FVector Loc = BaseDirection * SpawnDistance + Side * Offset;
 
-        Comp->SetRelativeLocation(Location);
-        Comp->SetRelativeRotation(Direction.Rotation());
+        Comp->SetRelativeLocation(Loc);
+
+        // **FLIP THE ROTATION 180 DEGREES**
+        FRotator Rot = BaseDirection.Rotation();
+        Rot.Yaw += 180.0f;
+
+        Comp->SetRelativeRotation(Rot);
 
         SpawnPoints.Add(Comp);
     };
 
-    TArray<float> Offsets = { -1.5f * Spacing, -0.5f * Spacing, 0.5f * Spacing, 1.5f * Spacing };
+    const int32 CountLR = 22;
+    const int32 CountUD = 18;
 
-    for (int i = 0; i < 4; i++)
+    auto MakeOffsets = [&](int32 Count)
     {
-        CreatePoint("Left_" + FString::FromInt(i), FVector(-1, 0, 0), Offsets[i]);
-        CreatePoint("Right_" + FString::FromInt(i), FVector(1, 0, 0), Offsets[i]);
-        CreatePoint("Up_" + FString::FromInt(i), FVector(0, 1, 0), Offsets[i]);
-        CreatePoint("Down_" + FString::FromInt(i), FVector(0, -1, 0), Offsets[i]);
+        TArray<float> O;
+        int32 Half = Count / 2;
+        float Start = (Count % 2 == 0) ? -(Half - 0.5f) : -Half;
+        for (int32 i = 0; i < Count; i++)
+            O.Add((Start + i) * Spacing);
+        return O;
+    };
+
+    TArray<float> LR = MakeOffsets(CountLR);
+    TArray<float> UD = MakeOffsets(CountUD);
+
+    for (int32 i = 0; i < CountLR; i++)
+    {
+        CreatePoint("Left" + FString::FromInt(i), FVector(-1, 0, 0), LR[i]);
+        CreatePoint("Right" + FString::FromInt(i), FVector(1, 0, 0), LR[i]);
+    }
+
+    for (int32 i = 0; i < CountUD; i++)
+    {
+        CreatePoint("Up" + FString::FromInt(i), FVector(0, 1, 0), UD[i]);
+        CreatePoint("Down" + FString::FromInt(i), FVector(0, -1, 0), UD[i]);
     }
 }
 
 void AProjectileSpawner::FireAll()
 {
-    if (!ProjectileClass)
-        return;
+    if (!ProjectileClass) return;
 
     for (USceneComponent* Point : SpawnPoints)
     {
-        if (!Point)
-            continue;
-
-        FActorSpawnParameters Params;
-        Params.SpawnCollisionHandlingOverride =
-            ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+        if (!Point) continue;
 
         GetWorld()->SpawnActor<AActor>(
             ProjectileClass,
             Point->GetComponentLocation(),
-            Point->GetComponentRotation(),
-            Params
+            Point->GetComponentRotation(),  // <-- use flipped rotation
+            FActorSpawnParameters()
         );
-
-        // Debug visualization (optional)
-        //DrawDebugSphere(GetWorld(), Point->GetComponentLocation(), 32, 12, FColor::Red, false, 1.0f);
     }
 }
