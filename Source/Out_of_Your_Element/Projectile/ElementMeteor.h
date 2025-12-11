@@ -4,6 +4,7 @@
 
 #include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
+#include "Components/DecalComponent.h"
 #include "ElementMeteor.generated.h"
 
 class UGameplayEffect;
@@ -50,6 +51,25 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
 	float FlameZoneLifeSpan = 10;
+	UPROPERTY(EditDefaultsOnly, Category="Meteor")
+	UNiagaraSystem* ImpactVfx;
+
+	
+	UPROPERTY(EditDefaultsOnly, Category="Meteor")
+	TSubclassOf<UCameraShakeBase> ImpactCameraShake;
+
+	
+	UPROPERTY(EditDefaultsOnly, Category="Meteor|Decal")
+	UMaterialInterface* ImpactDecalMaterial;
+
+	
+	UPROPERTY(EditDefaultsOnly, Category="Meteor|Decal")
+	FVector ImpactDecalSize = FVector(300.f, 300.f, 300.f);
+
+	
+	UPROPERTY(EditDefaultsOnly, Category="Meteor|Decal")
+	float ImpactDecalLifetime = 10.f;
+
 
 	UPROPERTY(BlueprintReadWrite)
 	FGameplayEffectSpecHandle DotGameplayEffectSpecHandle;

@@ -130,4 +130,31 @@ void AElementMeteor::LifeSpanExpired()
 			}
 		}
 	}
+	if (ImpactVfx)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			ImpactVfx,
+			GetActorLocation()
+		);
+	}
+	if (ImpactCameraShake)
+	{
+		if (APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+		{
+			PC->ClientStartCameraShake(ImpactCameraShake);
+		}
+	}
+	if (ImpactDecalMaterial)
+	{
+		UGameplayStatics::SpawnDecalAtLocation(
+			GetWorld(),
+			ImpactDecalMaterial,
+			ImpactDecalSize,
+			TargetLocation,
+			FRotator(-90.f, FMath::RandRange(0.f, 360.f), 0.f),  
+			ImpactDecalLifetime
+		);
+		
+	}
 }
