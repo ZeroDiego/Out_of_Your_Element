@@ -25,34 +25,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
 	TSubclassOf<class AElementMeteor> MeteorClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
-	TSubclassOf<AElementZoneBase> MeteorZoneClass;
-
-	UPROPERTY(EditDefaultsOnly, Category="Meteor")
-	UNiagaraSystem* MeteorZoneVfx;
-
-	UPROPERTY(EditDefaultsOnly, Category="Meteor")
-	UNiagaraSystem* MeteorIndicator;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
-	TSubclassOf<UGameplayEffect> ImpactDamageGameplayEffect;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
-	float ImpactBaseDamage = 25.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
-	float MeteorSummoningTime = 3;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
-	float DotDamageDuration = 4;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
-	float MeteorZoneRadius = 250;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor")
-	float MeteorZoneLifeSpan = 10;
-
-private:
-	FTransform MeteorSpawnLocation;
 };

@@ -3,10 +3,8 @@
 
 #include "ElementGameplayAbility_Meteor.h"
 
-#include "NiagaraFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Kismet/GameplayStatics.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Projectile/ElementMeteor.h"
 
 void UElementGameplayAbility_Meteor::CastSpell(
@@ -22,23 +20,17 @@ void UElementGameplayAbility_Meteor::CastSpell(
 		{
 			if (PlayerController->IsLocalPlayerController())
 			{
-				static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
-					UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
-				};
-
-				if (FHitResult MouseCursorHitResult; PlayerController->GetHitResultUnderCursorForObjects(
-					GroundTypes, false, MouseCursorHitResult))
+				if (FHitResult MouseCursorHitResult;
+					PlayerController->GetHitResultUnderCursorByChannel(
+						UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel2),
+						false,
+						MouseCursorHitResult
+					)
+				)
 				{
-					MeteorSpawnLocation = FTransform(FRotator::ZeroRotator, MouseCursorHitResult.Location);
-
+					const FVector TargetLocation = MouseCursorHitResult.ImpactPoint;
 					const FTransform MeteorProjectileSpawnLocation = FTransform(
-						FRotator::ZeroRotator, MouseCursorHitResult.Location + MeteorSpawnOffset
-					);
-
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-						GetWorld(),
-						MeteorIndicator,
-						MouseCursorHitResult.Location
+						FRotator::ZeroRotator, TargetLocation + MeteorSpawnOffset
 					);
 
 					if (AElementMeteor* Meteor = GetWorld()->SpawnActorDeferred<AElementMeteor>(
@@ -46,36 +38,7 @@ void UElementGameplayAbility_Meteor::CastSpell(
 						MeteorProjectileSpawnLocation
 					))
 					{
-						Meteor->SummoningTime = MeteorSummoningTime;
-						Meteor->TargetLocation = MouseCursorHitResult.Location;
-
-						Meteor->MeteorZoneClass = MeteorZoneClass;
-						Meteor->MeteorZoneVfx = MeteorZoneVfx;
-						Meteor->MeteorZoneRadius = MeteorZoneRadius;
-						Meteor->MeteorZoneLifeSpan = MeteorZoneLifeSpan;
-
-						Meteor->ImpactGameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-							ImpactDamageGameplayEffect
-						);
-
-						Meteor->ImpactGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-							ElementGameplayTags::Abilities_Parameters_Damage,
-							ImpactBaseDamage
-						);
-
-						Meteor->DotGameplayEffectSpecHandle =
-							MakeOutgoingGameplayEffectSpec(DamageGameplayEffect);
-
-						Meteor->DotGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-							ElementGameplayTags::Abilities_Parameters_Duration,
-							DotDamageDuration
-						);
-
-						Meteor->DotGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
-							ElementGameplayTags::Abilities_Parameters_Damage,
-							BaseDamage
-						);
-
+						Meteor->TargetLocation = TargetLocation;
 						UGameplayStatics::FinishSpawningActor(Meteor, MeteorProjectileSpawnLocation);
 					}
 				}
