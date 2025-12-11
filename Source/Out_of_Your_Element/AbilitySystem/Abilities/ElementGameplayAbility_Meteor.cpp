@@ -7,13 +7,20 @@
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/Projectile/ElementMeteor.h"
 
-void UElementGameplayAbility_Meteor::CastSpell(
+void UElementGameplayAbility_Meteor::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData
 )
 {
+	Super::ActivateAbility(
+		Handle,
+		ActorInfo,
+		ActivationInfo,
+		TriggerEventData
+	);
+
 	if (const ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
 	{
 		if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
@@ -45,4 +52,12 @@ void UElementGameplayAbility_Meteor::CastSpell(
 			}
 		}
 	}
+}
+
+void UElementGameplayAbility_Meteor::CastSpell(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
+{
 }
