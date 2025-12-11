@@ -3,8 +3,16 @@
 #include "ElementWallBase.h"
 
 #include "ElementProjectileBase.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
+
+AElementWallBase::AElementWallBase()
+{
+	ElementAbilitySystemComponent =
+		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
+
+	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
+}
 
 void AElementWallBase::DoDamage() const
 {
@@ -25,38 +33,32 @@ void AElementWallBase::DoDamage() const
 	}
 }
 
-void AElementWallBase::BeginPlay()
+void AElementWallBase::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 
-	OnActorBeginOverlap.AddUniqueDynamic(this, &AElementWallBase::OnOverlap);
+	HealthAttributeSet->InitMaxHealth(DefaultHealth);
+	HealthAttributeSet->InitHealth(DefaultHealth);
+	HealthAttributeSet->OnHealthChanged.AddUniqueDynamic(this, &AElementWallBase::OnHealthChangeEvent);
+
+	const FGameplayEffectContextHandle ContextHandle = ElementAbilitySystemComponent->MakeEffectContext();
+	for (const auto& DefaultGameplayEffect : DefaultGameplayEffects)
+	{
+		FGameplayEffectSpecHandle SpecHandle = ElementAbilitySystemComponent->MakeOutgoingSpec(
+			DefaultGameplayEffect.Key,
+			UGameplayEffect::INVALID_LEVEL,
+			ContextHandle
+		);
+
+		SpecHandle.Data->SetByCallerTagMagnitudes = DefaultGameplayEffect.Value.Tags;
+		ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(SpecHandle);
+	}
 }
 
-void AElementWallBase::OnOverlap(AActor* OverlappedActor, AActor* OtherActor)
+void AElementWallBase::OnHealthChangeEvent(UAttributeSet* AttributeSet, float OldValue, float NewValue)
 {
-	if (const AElementProjectileBase* Projectile = Cast<AElementProjectileBase>(OtherActor))
+	if (NewValue == 0)
 	{
-		if (const FGameplayEffectSpecHandle& GameplayEffect = Projectile->GameplayEffectSpecHandle;
-			GameplayEffect.IsValid() && GameplayEffect.Data
-		)
-		{
-			FGameplayTagContainer AssetTags;
-			GameplayEffect.Data->GetAllAssetTags(AssetTags);
-
-			if (AssetTags.HasTagExact(ElementGameplayTags::Damage_Type_Fire))
-			{
-				if (const float Damage = GameplayEffect.Data->GetSetByCallerMagnitude(
-						ElementGameplayTags::Abilities_Parameters_Damage
-					);
-					Damage > 0
-				)
-				{
-					if (FMath::IsNearlyZero(Health -= FMath::Min(Damage, Health)))
-					{
-						Destroy();
-					}
-				}
-			}
-		}
+		Destroy();
 	}
 }

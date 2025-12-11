@@ -75,10 +75,13 @@ void AElementProjectileBase::LifeSpanExpired()
 // ReSharper disable once CppMemberFunctionMayBeConst -- Cannot be const. Used by overlap delegate
 void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
+	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	{
+		AbilitySystemInterface->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
+	}
+
 	if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(OtherActor))
 	{
-		ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
-
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			ElementPoofVfx,
