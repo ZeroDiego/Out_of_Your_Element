@@ -1,97 +1,105 @@
 #include "ProjectileSpawner.h"
 #include "Components/SceneComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
+#include "Out_of_Your_Element/Character/ElementCharacter.h"
 
 AProjectileSpawner::AProjectileSpawner()
 {
-    PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = true;
 
-    RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
-}
-
-void AProjectileSpawner::OnConstruction(const FTransform& Transform)
-{
-    Super::OnConstruction(Transform);
-
-    GenerateSpawnPoints();
-}
-
-void AProjectileSpawner::GenerateSpawnPoints()
-{
-    // Remove old components
-    for (USceneComponent* Comp : SpawnPoints)
-    {
-        if (Comp)
-        {
-            Comp->DestroyComponent();
-        }
-    }
-    SpawnPoints.Empty();
-
-    auto CreatePoints = [&](int Count, const FString& Prefix)
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            FString Name = Prefix + "_" + FString::FromInt(i + 1);
-
-            USceneComponent* Point = NewObject<USceneComponent>(this, *Name);
-            Point->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-
-            Point->RegisterComponent();
-
-            // Default positions can be whatever you want
-            // e.g. left and right positioned automatically
-            if (Prefix == "Left")    Point->SetRelativeLocation(FVector(0, -500, 0));
-            if (Prefix == "Right")   Point->SetRelativeLocation(FVector(0, 500, 0));
-            if (Prefix == "Top")     Point->SetRelativeLocation(FVector(500, 0, 0));
-            if (Prefix == "Bottom")  Point->SetRelativeLocation(FVector(-500, 0, 0));
-
-            SpawnPoints.Add(Point);
-        }
-    };
-
-    CreatePoints(LeftCount,   "Left");
-    CreatePoints(RightCount,  "Right");
-    CreatePoints(TopCount,    "Top");
-    CreatePoints(BottomCount, "Bottom");
+    RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 }
 
 void AProjectileSpawner::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (ProjectileClass)
+    CreateFixedSpawnPoints();
+
+    StartFireTimer();
+}
+
+void AProjectileSpawner::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    // Follow the player
+    if (AElementCharacter* Player = Cast<AElementCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
     {
-        GetWorld()->GetTimerManager().SetTimer(
-            FireTimer,
+        SetActorLocation(Player->GetActorLocation());
+    }
+}
+
+void AProjectileSpawner::StartFireTimer()
+{
+    if (!bAutoFire)
+        return;
+
+    if (FireInterval > 0.f)
+    {
+        GetWorldTimerManager().SetTimer(
+            FireTimerHandle,
             this,
-            &AProjectileSpawner::FireAllPoints,
+            &AProjectileSpawner::FireAll,
             FireInterval,
             true
         );
     }
 }
 
-void AProjectileSpawner::FireAllPoints()
+void AProjectileSpawner::CreateFixedSpawnPoints()
 {
-    for (USceneComponent* Point : SpawnPoints)
+    SpawnPoints.Empty();
+
+    auto CreatePoint = [&](FString Name, FVector Direction, float Offset)
     {
-        FireFrom(Point);
+        USceneComponent* Comp = NewObject<USceneComponent>(this, *Name);
+        Comp->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+        Comp->RegisterComponent();
+
+        FVector Perpendicular(-Direction.Y, Direction.X, 0);
+        FVector Location = Direction * SpawnDistance + Perpendicular * Offset;
+
+        Comp->SetRelativeLocation(Location);
+        Comp->SetRelativeRotation(Direction.Rotation());
+
+        SpawnPoints.Add(Comp);
+    };
+
+    TArray<float> Offsets = { -1.5f * Spacing, -0.5f * Spacing, 0.5f * Spacing, 1.5f * Spacing };
+
+    for (int i = 0; i < 4; i++)
+    {
+        CreatePoint("Left_" + FString::FromInt(i), FVector(-1, 0, 0), Offsets[i]);
+        CreatePoint("Right_" + FString::FromInt(i), FVector(1, 0, 0), Offsets[i]);
+        CreatePoint("Up_" + FString::FromInt(i), FVector(0, 1, 0), Offsets[i]);
+        CreatePoint("Down_" + FString::FromInt(i), FVector(0, -1, 0), Offsets[i]);
     }
 }
 
-void AProjectileSpawner::FireFrom(USceneComponent* SpawnPoint)
+void AProjectileSpawner::FireAll()
 {
-    if (!SpawnPoint || !ProjectileClass) return;
+    if (!ProjectileClass)
+        return;
 
-    const FVector Loc = SpawnPoint->GetComponentLocation();
-    const FRotator Rot = SpawnPoint->GetComponentRotation();
-
-    AActor* Projectile = GetWorld()->SpawnActor<AActor>(ProjectileClass, Loc, Rot);
-
-    if (UProjectileMovementComponent* Move = Projectile->FindComponentByClass<UProjectileMovementComponent>())
+    for (USceneComponent* Point : SpawnPoints)
     {
-        Move->Velocity = SpawnPoint->GetForwardVector() * ProjectileSpeed;
+        if (!Point)
+            continue;
+
+        FActorSpawnParameters Params;
+        Params.SpawnCollisionHandlingOverride =
+            ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+        GetWorld()->SpawnActor<AActor>(
+            ProjectileClass,
+            Point->GetComponentLocation(),
+            Point->GetComponentRotation(),
+            Params
+        );
+
+        // Debug visualization (optional)
+        //DrawDebugSphere(GetWorld(), Point->GetComponentLocation(), 32, 12, FColor::Red, false, 1.0f);
     }
 }

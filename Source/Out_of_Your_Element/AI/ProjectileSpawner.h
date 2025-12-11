@@ -4,48 +4,48 @@
 #include "GameFramework/Actor.h"
 #include "ProjectileSpawner.generated.h"
 
+class USceneComponent;
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AProjectileSpawner : public AActor
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	AProjectileSpawner();
+    AProjectileSpawner();
 
-	virtual void BeginPlay() override;
-	virtual void OnConstruction(const FTransform& Transform) override;
+protected:
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
-	// Projectile class
-	UPROPERTY(EditAnywhere, Category="Spawner")
-	TSubclassOf<AActor> ProjectileClass;
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
+    TSubclassOf<AActor> ProjectileClass;
 
-	UPROPERTY(EditAnywhere, Category="Spawner")
-	float FireInterval = 1.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
+    float SpawnDistance = 1500.f;
 
-	UPROPERTY(EditAnywhere, Category="Spawner")
-	float ProjectileSpeed = 1200.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
+    float Spacing = 300.f;
 
-	// ========= Spawn point counts per side =========
-	UPROPERTY(EditAnywhere, Category="Spawner Config")
-	int32 LeftCount = 0;
+    // 🔥 Auto-fire timer toggle
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
+    bool bAutoFire = true;
 
-	UPROPERTY(EditAnywhere, Category="Spawner Config")
-	int32 RightCount = 0;
+    // 🔥 How often FireAll() is triggered
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing", meta = (ClampMin = "0.1"))
+    float FireInterval = 3.0f;
 
-	UPROPERTY(EditAnywhere, Category="Spawner Config")
-	int32 TopCount = 0;
+    UFUNCTION(BlueprintCallable)
+    void FireAll();
 
-	UPROPERTY(EditAnywhere, Category="Spawner Config")
-	int32 BottomCount = 0;
+protected:
+    UPROPERTY(VisibleAnywhere)
+    TArray<USceneComponent*> SpawnPoints;
 
 private:
-	FTimerHandle FireTimer;
+    void CreateFixedSpawnPoints();
 
-	// All dynamically created spawn components
-	UPROPERTY()
-	TArray<USceneComponent*> SpawnPoints;
-
-	void GenerateSpawnPoints();
-	void FireAllPoints();
-	void FireFrom(USceneComponent* SpawnPoint);
+    FTimerHandle FireTimerHandle;
+    void StartFireTimer();
 };
