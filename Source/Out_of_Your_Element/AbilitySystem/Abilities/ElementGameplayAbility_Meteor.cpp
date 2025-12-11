@@ -27,9 +27,13 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 		{
 			if (PlayerController->IsLocalPlayerController())
 			{
+				static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
+					UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)
+				};
+
 				if (FHitResult MouseCursorHitResult;
-					PlayerController->GetHitResultUnderCursorByChannel(
-						UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel2),
+					PlayerController->GetHitResultUnderCursorForObjects(
+						GroundTypes,
 						false,
 						MouseCursorHitResult
 					)
