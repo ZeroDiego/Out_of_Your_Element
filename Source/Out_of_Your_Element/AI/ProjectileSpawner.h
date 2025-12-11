@@ -17,29 +17,22 @@ public:
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
-
-    // Recreate spawn points (can be called from editor if needed)
     void RebuildSpawnPoints();
 
 public:
-    // Projectile to spawn
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
     TSubclassOf<AActor> ProjectileClass;
 
-    // Distance from center/player where spawn points sit
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
     float SpawnDistance = 3000.0f;
 
-    // Spacing between spawn points along the side
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
     float Spacing = 300.0f;
 
-    // Counts (Left is base for Right; Down is base for Up)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
     int32 LeftCount = 6;
 
-    // If bRightFollowLeft==true, Right points are computed as midpoints between consecutive Left points (RightCount overriden).
-    // If false, RightCount is used as independent count.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
     bool bRightFollowLeft = true;
 
@@ -49,38 +42,65 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
     int32 DownCount = 8;
 
-    // If true, Up points are midpoints between consecutive Down points.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
     bool bUpFollowDown = true;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts", meta=(EditCondition="!bUpFollowDown"))
     int32 UpCount = 8;
 
-    // Firing control
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
-    bool bAutoFire = true;
+    // Enable toggles
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Enable")
+    bool bEnableLeft = true;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Enable")
+    bool bEnableRight = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Enable")
+    bool bEnableUp = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Enable")
+    bool bEnableDown = true;
+
+    // Live-update system
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
+    bool bLiveUpdate = true;
+
+    // firing
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing", meta = (ClampMin = "0.05"))
     float FireInterval = 3.0f;
 
-    // Manual fire
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
+    bool bAutoFire = true;
+
     UFUNCTION(BlueprintCallable, Category = "Firing")
     void FireAll();
 
-    // Rebuild spawn points from editor (callable)
     UFUNCTION(CallInEditor, Category = "Editor")
     void Editor_RebuildSpawnPoints();
 
 protected:
-    // Internally stored spawn components
+
     UPROPERTY()
     TArray<USceneComponent*> SpawnPoints;
 
 private:
     void CreateSpawnPoints();
-
-    // create one spawn component, set location & rotation; returns component pointer
     USceneComponent* CreateSpawnComponent(const FString& Name, const FVector& RelLocation, const FRotator& RelRotation);
+
+    // stored previous values for live change detection
+    bool Prev_EnableLeft;
+    bool Prev_EnableRight;
+    bool Prev_EnableUp;
+    bool Prev_EnableDown;
+    int32 Prev_LeftCount;
+    int32 Prev_RightCount;
+    int32 Prev_DownCount;
+    int32 Prev_UpCount;
+    float Prev_SpawnDistance;
+    float Prev_Spacing;
+
+    void CacheCurrentState();
+    void CheckForLiveChanges();
 
     FTimerHandle FireTimerHandle;
     void StartFireTimer();
