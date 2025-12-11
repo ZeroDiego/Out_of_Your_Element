@@ -13,7 +13,9 @@ AProjectileSpawner::AProjectileSpawner()
 void AProjectileSpawner::BeginPlay()
 {
     Super::BeginPlay();
+
     CreateSpawnPoints();
+    CacheCurrentState();
     StartFireTimer();
 }
 
@@ -21,18 +23,56 @@ void AProjectileSpawner::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    // follow player
     if (AElementCharacter* Player = Cast<AElementCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
-    {
         SetActorLocation(Player->GetActorLocation());
+
+    // live update
+    if (bLiveUpdate)
+        CheckForLiveChanges();
+}
+
+void AProjectileSpawner::CacheCurrentState()
+{
+    Prev_EnableLeft = bEnableLeft;
+    Prev_EnableRight = bEnableRight;
+    Prev_EnableUp = bEnableUp;
+    Prev_EnableDown = bEnableDown;
+
+    Prev_LeftCount = LeftCount;
+    Prev_RightCount = RightCount;
+    Prev_DownCount = DownCount;
+    Prev_UpCount = UpCount;
+
+    Prev_SpawnDistance = SpawnDistance;
+    Prev_Spacing = Spacing;
+}
+
+void AProjectileSpawner::CheckForLiveChanges()
+{
+    bool bChanged =
+        Prev_EnableLeft != bEnableLeft ||
+        Prev_EnableRight != bEnableRight ||
+        Prev_EnableUp != bEnableUp ||
+        Prev_EnableDown != bEnableDown ||
+        Prev_LeftCount != LeftCount ||
+        Prev_RightCount != RightCount ||
+        Prev_DownCount != DownCount ||
+        Prev_UpCount != UpCount ||
+        Prev_SpawnDistance != SpawnDistance ||
+        Prev_Spacing != Spacing;
+
+    if (bChanged)
+    {
+        RebuildSpawnPoints();
+        CacheCurrentState();
     }
 }
 
 void AProjectileSpawner::StartFireTimer()
 {
     if (!bAutoFire) return;
-
-    if (FireInterval <= 0.0f)
-        FireInterval = 0.1f;
+    if (FireInterval <= 0.0f) FireInterval = 0.1f;
 
     if (GetWorld())
         GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AProjectileSpawner::FireAll, FireInterval, true);
@@ -65,7 +105,7 @@ void AProjectileSpawner::CreateSpawnPoints()
         if (C) C->DestroyComponent();
     SpawnPoints.Empty();
 
-    auto GenerateOffsets = [&](int32 Count) -> TArray<float>
+    auto GenerateOffsets = [&](int32 Count)
     {
         TArray<float> Off;
         if (Count <= 0) return Off;
@@ -80,14 +120,13 @@ void AProjectileSpawner::CreateSpawnPoints()
     };
 
     //
-    // REAL WORLD MAPPING:
     // Left  = -Y
     // Right = +Y
     // Up    = -X
     // Down  = +X
     //
 
-    // -------------------------- LEFT (base)  --------------------------
+    // LEFT
     if (bEnableLeft)
     {
         TArray<float> LeftOffsets = GenerateOffsets(LeftCount);
@@ -95,51 +134,50 @@ void AProjectileSpawner::CreateSpawnPoints()
         for (int32 i = 0; i < LeftOffsets.Num(); ++i)
         {
             FVector RelLoc = FVector(LeftOffsets[i], -SpawnDistance, 0.f);
-            FRotator Rot = FVector(0, -1, 0).Rotation();
+            FRotator Rot = FVector(0,-1,0).Rotation();
             Rot.Yaw += 180.f;
             CreateSpawnComponent(FString::Printf(TEXT("Left_%d"), i), RelLoc, Rot);
         }
 
-        // -------------------------- RIGHT (midpoints OR independent)  --------------------------
         if (bEnableRight)
         {
             if (bRightFollowLeft)
             {
                 for (int32 i = 0; i < LeftOffsets.Num() - 1; ++i)
                 {
-                    float Mid = (LeftOffsets[i] + LeftOffsets[i + 1]) * 0.5f;
+                    float Mid = (LeftOffsets[i] + LeftOffsets[i+1]) * 0.5f;
                     FVector RelLoc = FVector(Mid, SpawnDistance, 0.f);
-                    FRotator Rot = FVector(0, 1, 0).Rotation();
+                    FRotator Rot = FVector(0,1,0).Rotation();
                     Rot.Yaw += 180.f;
                     CreateSpawnComponent(FString::Printf(TEXT("Right_mid_%d"), i), RelLoc, Rot);
                 }
             }
             else
             {
-                TArray<float> RightOffsets = GenerateOffsets(RightCount);
-                for (int32 i = 0; i < RightOffsets.Num(); ++i)
+                TArray<float> Off = GenerateOffsets(RightCount);
+                for (int32 i = 0; i < Off.Num(); ++i)
                 {
-                    FVector RelLoc = FVector(RightOffsets[i], SpawnDistance, 0.f);
-                    FRotator Rot = FVector(0, 1, 0).Rotation();
+                    FVector RelLoc = FVector(Off[i], SpawnDistance, 0.f);
+                    FRotator Rot = FVector(0,1,0).Rotation();
                     Rot.Yaw += 180.f;
                     CreateSpawnComponent(FString::Printf(TEXT("Right_%d"), i), RelLoc, Rot);
                 }
             }
         }
     }
-    else if (bEnableRight) // left disabled but right enabled → independent right
+    else if (bEnableRight)
     {
-        TArray<float> RightOffsets = GenerateOffsets(RightCount);
-        for (int32 i = 0; i < RightOffsets.Num(); ++i)
+        TArray<float> Off = GenerateOffsets(RightCount);
+        for (int32 i = 0; i < Off.Num(); ++i)
         {
-            FVector RelLoc = FVector(RightOffsets[i], SpawnDistance, 0.f);
-            FRotator Rot = FVector(0, 1, 0).Rotation();
+            FVector RelLoc = FVector(Off[i], SpawnDistance, 0.f);
+            FRotator Rot = FVector(0,1,0).Rotation();
             Rot.Yaw += 180.f;
             CreateSpawnComponent(FString::Printf(TEXT("Right_%d"), i), RelLoc, Rot);
         }
     }
 
-    // -------------------------- DOWN (base) --------------------------
+    // DOWN
     if (bEnableDown)
     {
         TArray<float> DownOffsets = GenerateOffsets(DownCount);
@@ -147,12 +185,11 @@ void AProjectileSpawner::CreateSpawnPoints()
         for (int32 i = 0; i < DownOffsets.Num(); ++i)
         {
             FVector RelLoc = FVector(SpawnDistance, DownOffsets[i], 0.f);
-            FRotator Rot = FVector(1, 0, 0).Rotation();
+            FRotator Rot = FVector(1,0,0).Rotation();
             Rot.Yaw += 180.f;
             CreateSpawnComponent(FString::Printf(TEXT("Down_%d"), i), RelLoc, Rot);
         }
 
-        // -------------------------- UP (midpoints OR independent) --------------------------
         if (bEnableUp)
         {
             if (bUpFollowDown)
@@ -161,31 +198,31 @@ void AProjectileSpawner::CreateSpawnPoints()
                 {
                     float Mid = (DownOffsets[i] + DownOffsets[i + 1]) * 0.5f;
                     FVector RelLoc = FVector(-SpawnDistance, Mid, 0.f);
-                    FRotator Rot = FVector(-1, 0, 0).Rotation();
+                    FRotator Rot = FVector(-1,0,0).Rotation();
                     Rot.Yaw += 180.f;
                     CreateSpawnComponent(FString::Printf(TEXT("Up_mid_%d"), i), RelLoc, Rot);
                 }
             }
             else
             {
-                TArray<float> UpOffsets = GenerateOffsets(UpCount);
-                for (int32 i = 0; i < UpOffsets.Num(); ++i)
+                TArray<float> Off = GenerateOffsets(UpCount);
+                for (int32 i = 0; i < Off.Num(); ++i)
                 {
-                    FVector RelLoc = FVector(-SpawnDistance, UpOffsets[i], 0.f);
-                    FRotator Rot = FVector(-1, 0, 0).Rotation();
+                    FVector RelLoc = FVector(-SpawnDistance, Off[i], 0.f);
+                    FRotator Rot = FVector(-1,0,0).Rotation();
                     Rot.Yaw += 180.f;
                     CreateSpawnComponent(FString::Printf(TEXT("Up_%d"), i), RelLoc, Rot);
                 }
             }
         }
     }
-    else if (bEnableUp) // down disabled but up enabled → independent up
+    else if (bEnableUp)
     {
-        TArray<float> UpOffsets = GenerateOffsets(UpCount);
-        for (int32 i = 0; i < UpOffsets.Num(); ++i)
+        TArray<float> Off = GenerateOffsets(UpCount);
+        for (int32 i = 0; i < Off.Num(); ++i)
         {
-            FVector RelLoc = FVector(-SpawnDistance, UpOffsets[i], 0.f);
-            FRotator Rot = FVector(-1, 0, 0).Rotation();
+            FVector RelLoc = FVector(-SpawnDistance, Off[i], 0.f);
+            FRotator Rot = FVector(-1,0,0).Rotation();
             Rot.Yaw += 180.f;
             CreateSpawnComponent(FString::Printf(TEXT("Up_%d"), i), RelLoc, Rot);
         }
@@ -195,7 +232,6 @@ void AProjectileSpawner::CreateSpawnPoints()
 void AProjectileSpawner::FireAll()
 {
     if (!ProjectileClass) return;
-    if (!GetWorld()) return;
 
     FActorSpawnParameters Params;
     Params.SpawnCollisionHandlingOverride =

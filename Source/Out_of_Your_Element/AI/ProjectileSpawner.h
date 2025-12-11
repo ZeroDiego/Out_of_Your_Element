@@ -30,7 +30,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
     float Spacing = 300.0f;
 
-    // BASE SIDE = Left
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
     int32 LeftCount = 6;
 
@@ -40,7 +39,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts", meta=(EditCondition="!bRightFollowLeft"))
     int32 RightCount = 6;
 
-    // BASE SIDE = Down
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
     int32 DownCount = 8;
 
@@ -50,7 +48,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts", meta=(EditCondition="!bUpFollowDown"))
     int32 UpCount = 8;
 
-    // ✔ Enable toggles
+    // Enable toggles
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Enable")
     bool bEnableLeft = true;
 
@@ -62,6 +60,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Enable")
     bool bEnableDown = true;
+
+    // Live-update system
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
+    bool bLiveUpdate = true;
 
     // firing
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing", meta = (ClampMin = "0.05"))
@@ -84,6 +86,21 @@ protected:
 private:
     void CreateSpawnPoints();
     USceneComponent* CreateSpawnComponent(const FString& Name, const FVector& RelLocation, const FRotator& RelRotation);
+
+    // stored previous values for live change detection
+    bool Prev_EnableLeft;
+    bool Prev_EnableRight;
+    bool Prev_EnableUp;
+    bool Prev_EnableDown;
+    int32 Prev_LeftCount;
+    int32 Prev_RightCount;
+    int32 Prev_DownCount;
+    int32 Prev_UpCount;
+    float Prev_SpawnDistance;
+    float Prev_Spacing;
+
+    void CacheCurrentState();
+    void CheckForLiveChanges();
 
     FTimerHandle FireTimerHandle;
     void StartFireTimer();
