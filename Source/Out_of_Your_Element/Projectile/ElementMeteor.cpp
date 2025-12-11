@@ -61,7 +61,7 @@ void AElementMeteor::BeginPlay()
 		}
 	}
 
-	if (!ImpactGameplayEffectSpecHandle.IsValid())
+	if (!DotGameplayEffectSpecHandle.IsValid())
 	{
 		if (const UGameplayEffect* DotDamageEffectCDO = DotDamageGameplayEffect.GetDefaultObject())
 		{
