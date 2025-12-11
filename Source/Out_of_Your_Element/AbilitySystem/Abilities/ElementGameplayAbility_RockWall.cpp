@@ -5,8 +5,9 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
-void UElementGameplayAbility_RockWall::ActivateAbility(
+void UElementGameplayAbility_RockWall::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
@@ -15,9 +16,9 @@ void UElementGameplayAbility_RockWall::ActivateAbility(
 {
 	if (AActor* Actor = GetAvatarActorFromActorInfo())
 	{
-		if (const ACharacter* Character = Cast<ACharacter>(Actor))
+		if (const AElementCharacterBase* Caster = Cast<AElementCharacterBase>(Actor))
 		{
-			if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+			if (const APlayerController* PlayerController = Cast<APlayerController>(Caster->GetController()))
 			{
 				if (PlayerController->IsLocalPlayerController())
 				{
@@ -28,7 +29,10 @@ void UElementGameplayAbility_RockWall::ActivateAbility(
 					if (FHitResult MouseCursorHitResult; PlayerController->GetHitResultUnderCursorForObjects(
 						GroundTypes, false, MouseCursorHitResult))
 					{
-						const FTransform MouseCursorTransform(Character->GetActorRotation() + FRotator(0, 90, 0), MouseCursorHitResult.Location);
+						const FTransform MouseCursorTransform(
+							Caster->GetActorRotation(),
+							MouseCursorHitResult.Location
+						);
 
 						if (AElementWallBase* RockWall = GetWorld()->SpawnActorDeferred<AElementWallBase>(
 							ElementWallBase,
@@ -39,18 +43,15 @@ void UElementGameplayAbility_RockWall::ActivateAbility(
 						{
 							const FGameplayEffectSpecHandle RockWallGameplayEffectSpecHandle =
 								MakeOutgoingGameplayEffectSpec(
-									RockWallDamageGameplayEffect,
+									DamageGameplayEffect,
 									1);
+
 							RockWallGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 								ElementGameplayTags::Abilities_Parameters_Damage,
-								RockWallDamage);
+								BaseDamage);
 
-							RockWall->InitializeZone(RockWallGameplayEffectSpecHandle, this, RockWallPopInVfx,
-							                         RockWallPopOutVfx, RockWallScale,
-							                         FVector(MouseCursorTransform.GetLocation().X,
-							                                 MouseCursorTransform.GetLocation().Y,
-							                                 MouseCursorTransform.GetLocation().Z + RockWallOffset),
-							                         RockWallLifeSpan);
+							RockWall->GameplayEffectSpecHandle = RockWallGameplayEffectSpecHandle;
+							RockWall->Caster = Caster;
 							UGameplayStatics::FinishSpawningActor(RockWall, MouseCursorTransform);
 						}
 					}
@@ -58,7 +59,4 @@ void UElementGameplayAbility_RockWall::ActivateAbility(
 			}
 		}
 	}
-
-	CommitAbilityCooldown(Handle, ActorInfo, ActivationInfo, true, nullptr);
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

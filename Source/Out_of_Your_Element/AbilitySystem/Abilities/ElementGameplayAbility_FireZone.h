@@ -3,22 +3,24 @@
 
 #pragma once
 
-#include "ElementGameplayAbilityBase.h"
+#include "ElementGameplayAbilitySpellBase.h"
 #include "Out_of_Your_Element/Projectile/ElementZoneBase.h"
 #include "ElementGameplayAbility_FireZone.generated.h"
 
 class UNiagaraSystem;
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_FireZone : public UElementGameplayAbilityBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_FireZone : public UElementGameplayAbilitySpellBase
 {
 	GENERATED_BODY()
 
 public:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	                             const FGameplayAbilityActorInfo* ActorInfo,
-	                             const FGameplayAbilityActivationInfo ActivationInfo,
-	                             const FGameplayEventData* TriggerEventData) override;
+	virtual void CastSpell(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AElementZoneBase> FireZoneClass;

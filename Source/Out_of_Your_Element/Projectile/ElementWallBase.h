@@ -3,49 +3,49 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NiagaraSystem.h"
-#include "Abilities/GameplayAbility.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Actor.h"
+#include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "ElementWallBase.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API AElementWallBase : public AActor
+class OUT_OF_YOUR_ELEMENT_API AElementWallBase : public AActor, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
-	AElementWallBase();
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UGameplayAbility* SourceAbility;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
-	UPROPERTY(VisibleAnywhere)
-	UNiagaraComponent* WallNiagaraComponent;
-	
-	UPROPERTY(EditAnywhere, Category="VFX")
-	UNiagaraSystem* RockWallPopOutVfx;
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(EditDefaultsOnly)
+	float DefaultHealth = 50.0f;
 
-	// Called when the game starts or when spawned
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn), Category = "Effects")
+	TMap<TSubclassOf<UGameplayEffect>, FDefaultGameplayEffectTags> DefaultGameplayEffects;
 
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* MeshComponent;
+	UPROPERTY(BlueprintReadWrite)
+	const class AElementCharacterBase* Caster;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	AElementWallBase();
 
-	void InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
-	                    UGameplayAbility* NewSourceAbility, UNiagaraSystem* WallPopInVfx, UNiagaraSystem* WallPopOutVfx,
-	                    const FVector& Scale,
-	                    const FVector& SpawnLocation,
-	                    const float LifeSpan);
+	UFUNCTION(BlueprintCallable)
+	void DoDamage() const;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override
+	{
+		return ElementAbilitySystemComponent;
+	}
+
+protected:
+	virtual void PostInitializeComponents() override;
+
+	UFUNCTION()
+	void OnHealthChangeEvent(UAttributeSet* AttributeSet, float OldValue, float NewValue);
 };

@@ -1,18 +1,27 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+#include "NiagaraComponent.h"
 #include "CoreMinimal.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
-#include "ElementFiringOffset.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ElementCharacterBase.h"
 #include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "InputActionValue.h"
+#include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 #include "ElementCharacter.generated.h"
 
+
 class UInputAction;
+
+UENUM()
+enum EAttackType
+{
+	BaseAttack,
+	HeavyAttack,
+	SpecialAttack
+};
 
 USTRUCT(BlueprintType)
 struct FAttackData
@@ -24,11 +33,14 @@ struct FAttackData
 
 	UPROPERTY(BlueprintReadOnly)
 	TSubclassOf<UGameplayAbility> Ability;
+
+	UPROPERTY(BlueprintReadOnly)
+	float Cooldown = 0.0f;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnElementChanged, FElement, OldElement, FElement, NewElement);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnElementChanged, FElement, OldElement, FElement, NewElement, int, CycleAmount);
 
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public AElementCharacterBase
@@ -66,10 +78,19 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnElementChanged OnElementChangedDelegate;
 
-protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
-	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* BaseAttackMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* SpecialAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* HeavyAttackMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UNiagaraComponent* AimMarker;
+
+protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
 
@@ -91,9 +112,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	bool bIsAttacking;
-
 private:
 	UPROPERTY()
 	UUserWidget* CursorWidgetRef;
@@ -105,23 +123,27 @@ private:
 	USpringArmComponent* CameraBoomRef;
 
 	UPROPERTY(VisibleAnywhere)
-	UElementFiringOffset* FiringOffsetRef;
-
-	UPROPERTY(VisibleAnywhere)
 	int ActiveElementIndex;
 
 	UPROPERTY(VisibleAnywhere)
 	FElement ActiveElement;
 
+	UPROPERTY(VisibleAnywhere)
+	TEnumAsByte<EAttackType> AbilityToUseOnDoAttack;
+
 public:
 	AElementCharacter();
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsCastingSpell() const;
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool CanAttack() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
 
 protected:
-	virtual void PostInitializeComponents() override;
-
 	virtual void BeginPlay() override;
 
 	virtual void Tick(const float DeltaSeconds) override;
@@ -145,19 +167,16 @@ public:
 	virtual void DoLook(const float Yaw);
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoBaseAttack();
-
-	UFUNCTION(BlueprintCallable)
-	void DoBaseAttackHelperFunction(const TSubclassOf<UGameplayAbility>& BaseAttack);
-
-	UFUNCTION(BlueprintCallable)
-	void DoSpecialAttackHelperFunction(const TSubclassOf<UGameplayAbility>& SpecialAttack);
+	virtual void StartBaseAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoHeavyAttack();
+	virtual void StartHeavyAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoSpecialAttack();
+	virtual void StartSpecialAttack();
+
+	UFUNCTION(BlueprintCallable)
+	void DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const;
 
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoCycleElement(const int Amount);

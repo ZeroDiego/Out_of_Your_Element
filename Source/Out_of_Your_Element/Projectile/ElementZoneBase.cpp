@@ -4,16 +4,12 @@
 #include "ElementZoneBase.h"
 
 #include "NiagaraFunctionLibrary.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AbilitySystem/Abilities/ElementGameplayAbility_FireZone.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
 // Sets default values
 AElementZoneBase::AElementZoneBase()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	ZoneSphereComponent = CreateDefaultSubobject<USphereComponent>(FName("ZoneSphereComponent"));
 	ZoneSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ZoneSphereComponent->SetCollisionObjectType(ECC_WorldDynamic);
@@ -25,22 +21,35 @@ AElementZoneBase::AElementZoneBase()
 	ZoneNiagaraComponent->SetupAttachment(RootComponent);
 }
 
-// Called when the game starts or when spawned
 void AElementZoneBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ZoneSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &AElementZoneBase::OnOverlapBegin);
+
+	FTimerHandle Handle = FTimerHandle();
+	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AElementZoneBase::DoDamage, 1.0f, true);
+
+	DoDamage();
 }
 
-void AElementZoneBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AElementZoneBase::OnOverlapBegin(
+	UPrimitiveComponent* OverlappedComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult
+)
 {
-	Super::EndPlay(EndPlayReason);
+	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	{
+		AbilitySystemInterface->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
+	}
 }
 
-// Called every frame
-void AElementZoneBase::Tick(float DeltaTime)
+void AElementZoneBase::DoDamage() const
 {
-	Super::Tick(DeltaTime);
-
 	TArray<AActor*> OverlappedActors;
 	ZoneSphereComponent->GetOverlappingActors(OverlappedActors, AElementCharacterBase::StaticClass());
 
@@ -48,30 +57,21 @@ void AElementZoneBase::Tick(float DeltaTime)
 	{
 		if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(OverlappedActor))
 		{
-			/*
-			for (FGameplayTag Tag : ElementCharacterBase->GetAbilitySystemComponent()->GetOwnedGameplayTags())
-			{
-				if (Tag.IsValid())
-				{
-					if (Tag == ElementGameplayTags::Abilities_Fire)
-					{
-						return;
-					}
-				}
-			}*/
-
 			ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(
-				GameplayEffectSpecHandle);
+				GameplayEffectSpecHandle
+			);
 		}
 	}
 }
 
-void AElementZoneBase::InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
-                                      UGameplayAbility* NewSourceAbility, UNiagaraSystem* ZoneVfx,
-                                      const float Radius, const float LifeSpan)
+void AElementZoneBase::InitializeZone(
+	const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
+	UNiagaraSystem* ZoneVfx,
+	const float Radius,
+	const float LifeSpan
+)
 {
 	GameplayEffectSpecHandle = NewGameplayEffectSpecHandle;
-	SourceAbility = NewSourceAbility;
 	ZoneSphereComponent->SetSphereRadius(Radius);
 	SetLifeSpan(LifeSpan);
 

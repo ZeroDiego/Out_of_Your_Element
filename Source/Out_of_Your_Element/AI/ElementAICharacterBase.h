@@ -3,25 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
-#include "GameFramework/Character.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
 #include "ElementAICharacterBase.generated.h"
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAIDeathEvent);
-
-USTRUCT(Blueprintable)
-struct FDefaultGameplayEffectTags
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FGameplayTag, float> Tags;
-};
 
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementAICharacterBase : public AElementCharacterBase
@@ -49,12 +38,7 @@ public:
 	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
-	virtual void PostInitializeComponents() override;
-	
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
-	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* BehaviorTree;

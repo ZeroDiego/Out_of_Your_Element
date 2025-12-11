@@ -44,6 +44,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> DamageGameplayEffect = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	float Damage = 25.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UGameplayAbility* SourceAbility;
@@ -52,16 +58,7 @@ public:
 	USphereComponent* ProjectileSphereComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
-	UNiagaraSystem* ElementVfx;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
 	UNiagaraSystem* ElementPoofVfx;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GE")
-	TSubclassOf<UGameplayEffect> SlowGameplayEffect;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GE")
-	TSubclassOf<UGameplayEffect> HitStunGameplayEffect;
 
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* NiagaraComponent;

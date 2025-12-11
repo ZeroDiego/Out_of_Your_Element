@@ -1,69 +1,64 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ElementWallBase.h"
 
-#include "NiagaraFunctionLibrary.h"
+#include "ElementProjectileBase.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
+#include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
-// Sets default values
 AElementWallBase::AElementWallBase()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	ElementAbilitySystemComponent =
+		CreateDefaultSubobject<UElementAbilitySystemComponent>(TEXT("ElementAbilitySystemComponent"));
 
-	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
-	RootComponent = MeshComponent;
+	HealthAttributeSet = CreateDefaultSubobject<UElementHealthAttributeSet>(TEXT("Health Attribute Set"));
 }
 
-// Called when the game starts or when spawned
-void AElementWallBase::BeginPlay()
+void AElementWallBase::DoDamage() const
 {
-	Super::BeginPlay();
+	TArray<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors, AElementCharacterBase::StaticClass());
+
+	UElementAbilitySystemComponent* CasterAsc = Caster->ElementAbilitySystemComponent;
+	for (const AActor* OverlappingActor : OverlappingActors)
+	{
+		if (OverlappingActor == Caster)
+			continue;
+
+		if (const AElementCharacterBase* Target = Cast<AElementCharacterBase>(OverlappingActor))
+		{
+			UElementAbilitySystemComponent* TargetAsc = Target->ElementAbilitySystemComponent;
+			CasterAsc->BP_ApplyGameplayEffectSpecToTarget(GameplayEffectSpecHandle, TargetAsc);
+		}
+	}
 }
 
-void AElementWallBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AElementWallBase::PostInitializeComponents()
 {
-	Super::EndPlay(EndPlayReason);
+	Super::PostInitializeComponents();
 
-	WallNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
-		RockWallPopOutVfx,
-		GetRootComponent(),
-		NAME_None,
-		FVector::ZeroVector,
-		FRotator::ZeroRotator,
-		EAttachLocation::KeepRelativeOffset,
-		true,
-		true
-	);
+	HealthAttributeSet->InitMaxHealth(DefaultHealth);
+	HealthAttributeSet->InitHealth(DefaultHealth);
+	HealthAttributeSet->OnHealthChanged.AddUniqueDynamic(this, &AElementWallBase::OnHealthChangeEvent);
+
+	const FGameplayEffectContextHandle ContextHandle = ElementAbilitySystemComponent->MakeEffectContext();
+	for (const auto& DefaultGameplayEffect : DefaultGameplayEffects)
+	{
+		FGameplayEffectSpecHandle SpecHandle = ElementAbilitySystemComponent->MakeOutgoingSpec(
+			DefaultGameplayEffect.Key,
+			UGameplayEffect::INVALID_LEVEL,
+			ContextHandle
+		);
+
+		SpecHandle.Data->SetByCallerTagMagnitudes = DefaultGameplayEffect.Value.Tags;
+		ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(SpecHandle);
+	}
 }
 
-// Called every frame
-void AElementWallBase::Tick(float DeltaTime)
+void AElementWallBase::OnHealthChangeEvent(UAttributeSet* AttributeSet, float OldValue, float NewValue)
 {
-	Super::Tick(DeltaTime);
-}
-
-void AElementWallBase::InitializeZone(const FGameplayEffectSpecHandle& NewGameplayEffectSpecHandle,
-                                      UGameplayAbility* NewSourceAbility, UNiagaraSystem* WallPopInVfx,
-                                      UNiagaraSystem* WallPopOutVfx, const FVector& Scale,
-                                      const FVector& SpawnLocation, const float LifeSpan)
-{
-	GameplayEffectSpecHandle = NewGameplayEffectSpecHandle;
-	SourceAbility = NewSourceAbility;
-	MeshComponent->SetRelativeScale3D(Scale);
-	MeshComponent->SetRelativeLocation(SpawnLocation);
-	SetLifeSpan(LifeSpan);
-
-	WallNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
-		WallPopInVfx,
-		GetRootComponent(),
-		NAME_None,
-		FVector::ZeroVector,
-		FRotator::ZeroRotator,
-		EAttachLocation::KeepRelativeOffset,
-		true,
-		true
-	);
-
-	RockWallPopOutVfx = WallPopOutVfx;
+	if (NewValue == 0)
+	{
+		Destroy();
+	}
 }
