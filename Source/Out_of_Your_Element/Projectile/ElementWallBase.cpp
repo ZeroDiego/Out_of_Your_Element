@@ -2,6 +2,8 @@
 
 #include "ElementWallBase.h"
 
+#include "ElementProjectileBase.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
 void AElementWallBase::DoDamage() const
@@ -19,6 +21,42 @@ void AElementWallBase::DoDamage() const
 		{
 			UElementAbilitySystemComponent* TargetAsc = Target->ElementAbilitySystemComponent;
 			CasterAsc->BP_ApplyGameplayEffectSpecToTarget(GameplayEffectSpecHandle, TargetAsc);
+		}
+	}
+}
+
+void AElementWallBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OnActorBeginOverlap.AddUniqueDynamic(this, &AElementWallBase::OnOverlap);
+}
+
+void AElementWallBase::OnOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (const AElementProjectileBase* Projectile = Cast<AElementProjectileBase>(OtherActor))
+	{
+		if (const FGameplayEffectSpecHandle& GameplayEffect = Projectile->GameplayEffectSpecHandle;
+			GameplayEffect.IsValid() && GameplayEffect.Data
+		)
+		{
+			FGameplayTagContainer AssetTags;
+			GameplayEffect.Data->GetAllAssetTags(AssetTags);
+
+			if (AssetTags.HasTagExact(ElementGameplayTags::Damage_Type_Fire))
+			{
+				if (const float Damage = GameplayEffect.Data->GetSetByCallerMagnitude(
+						ElementGameplayTags::Abilities_Parameters_Damage
+					);
+					Damage > 0
+				)
+				{
+					if (FMath::IsNearlyZero(Health -= FMath::Min(Damage, Health)))
+					{
+						Destroy();
+					}
+				}
+			}
 		}
 	}
 }

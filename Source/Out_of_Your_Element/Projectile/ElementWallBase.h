@@ -16,11 +16,19 @@ class OUT_OF_YOUR_ELEMENT_API AElementWallBase : public AActor
 public:
 	UPROPERTY(BlueprintReadWrite)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
-	
+
 	UPROPERTY(BlueprintReadWrite)
 	const class AElementCharacterBase* Caster;
-	
-public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float Health = 50.0f;
+
 	UFUNCTION(BlueprintCallable)
 	void DoDamage() const;
+
+protected:
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnOverlap(AActor* OverlappedActor, AActor* OtherActor);
 };
