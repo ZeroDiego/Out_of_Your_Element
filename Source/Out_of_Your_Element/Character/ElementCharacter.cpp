@@ -229,14 +229,11 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 				SetActorRotation(CurrentRotation);
 				if (AimMarker)
 				{
-					const FVector MarkerLocation = HitResult.ImpactPoint + HitResult.ImpactNormal *2.f;
-					AimMarker -> SetWorldLocation(MarkerLocation);
+					const FVector MarkerLocation = HitResult.ImpactPoint + HitResult.ImpactNormal * 2.f;
+					AimMarker->SetWorldLocation(MarkerLocation);
 
 					const FRotator MarkerRotation = FRotationMatrix::MakeFromZ(HitResult.ImpactNormal).Rotator();
 					AimMarker->SetWorldRotation(MarkerRotation);
-					
-
-					
 				}
 			}
 		}
@@ -309,9 +306,6 @@ void AElementCharacter::StartSpecialAttack()
 void AElementCharacter::DoCycleElement(const int Amount)
 {
 	if (Elements.IsEmpty())
-		return;
-
-	if (IsCastingSpell())
 		return;
 
 	ActiveElementIndex = (ActiveElementIndex + Amount) % Elements.Num();

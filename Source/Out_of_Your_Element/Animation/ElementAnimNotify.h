@@ -7,7 +7,6 @@
 #include "ElementAnimNotify.generated.h"
 
 
-
 UENUM()
 enum EAnimNotifyType
 {
@@ -15,7 +14,7 @@ enum EAnimNotifyType
 	AttackEnd
 };
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnNotifySignature, EAnimNotifyType)
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnNotifySignature, AActor*, EAnimNotifyType)
 
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UElementAnimNotify : public UAnimNotify
@@ -24,7 +23,12 @@ class OUT_OF_YOUR_ELEMENT_API UElementAnimNotify : public UAnimNotify
 
 public:
 	FOnNotifySignature OnNotified;
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+
+	virtual void Notify(
+		USkeletalMeshComponent* MeshComp,
+		UAnimSequenceBase* Animation,
+		const FAnimNotifyEventReference& EventReference
+	) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TEnumAsByte<EAnimNotifyType> NotifyType;

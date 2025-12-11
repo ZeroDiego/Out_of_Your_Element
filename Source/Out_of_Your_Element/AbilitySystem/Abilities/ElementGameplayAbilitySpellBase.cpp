@@ -48,18 +48,25 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 	{
 		if (UElementAnimNotify* const ElementAnimNotify = Cast<UElementAnimNotify>(EventNotify.Notify))
 		{
-			ElementAnimNotify->OnNotified.AddWeakLambda(this, [=, this](const EAnimNotifyType NotifyType)
-			{
-				if (NotifyType == AttackStart)
+			const AActor* Caster = GetAvatarActorFromActorInfo();
+			ElementAnimNotify->OnNotified.AddWeakLambda(
+				this,
+				[=, this](const AActor* Actor, const EAnimNotifyType NotifyType)
 				{
-					CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-				}
+					if (Caster != Actor)
+						return;
 
-				if (NotifyType == AttackEnd)
-				{
-					EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+					if (NotifyType == AttackStart)
+					{
+						CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+					}
+
+					if (NotifyType == AttackEnd)
+					{
+						EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+					}
 				}
-			});
+			);
 		}
 	}
 
