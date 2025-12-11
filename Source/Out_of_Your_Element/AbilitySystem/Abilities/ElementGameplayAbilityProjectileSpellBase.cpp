@@ -46,9 +46,6 @@ void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(const FTransfor
 			}
 		}
 
-		Projectile->ElementVfx = ProjectileVfx;
-		Projectile->ElementPoofVfx = ProjectileHitVfx;
-
 		if (DamageGameplayEffect)
 		{
 			const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(DamageGameplayEffect);
