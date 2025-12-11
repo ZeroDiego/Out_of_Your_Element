@@ -11,6 +11,13 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbilitySpellBase : public UGamepla
 	GENERATED_BODY()
 
 protected:
+	virtual void ActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
+
 	virtual void CastSpell(
 		const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
@@ -19,7 +26,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	UAnimMontage* AbilityMontage;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	TSubclassOf<UGameplayEffect> CastingGameplayEffect;
 
@@ -28,12 +35,4 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	float BaseDamage = 25.0f;
-
-private:
-	virtual void ActivateAbility(
-		const FGameplayAbilitySpecHandle Handle,
-		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo,
-		const FGameplayEventData* TriggerEventData
-	) override;
 };

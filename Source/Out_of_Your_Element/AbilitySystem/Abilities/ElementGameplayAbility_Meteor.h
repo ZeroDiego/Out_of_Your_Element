@@ -13,6 +13,13 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Meteor : public UElementGa
 	GENERATED_BODY()
 
 public:
+	virtual void ActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
+
 	virtual void CastSpell(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,

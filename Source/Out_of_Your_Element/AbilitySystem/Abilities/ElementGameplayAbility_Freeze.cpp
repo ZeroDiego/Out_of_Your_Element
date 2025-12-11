@@ -14,7 +14,7 @@ void UElementGameplayAbility_Freeze::CastSpell(
 {
 	if (AElementCharacterBase* Caster = Cast<AElementCharacterBase>(GetAvatarActorFromActorInfo()))
 	{
-		static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
+		static const TArray<TEnumAsByte<EObjectTypeQuery>> FreezeTypes = {
 			UEngineTypes::ConvertToObjectType(ECC_Pawn)
 		};
 
@@ -29,7 +29,7 @@ void UElementGameplayAbility_Freeze::CastSpell(
 				World,
 				Location,
 				FreezeRadius,
-				GroundTypes,
+				FreezeTypes,
 				AElementAICharacterBase::StaticClass(),
 				{Caster},
 				OutActors)
