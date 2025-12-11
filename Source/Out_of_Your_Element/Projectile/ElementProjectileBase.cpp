@@ -2,10 +2,13 @@
 
 
 #include "ElementProjectileBase.h"
+
+#include "AbilitySystemGlobals.h"
 #include "Components/SceneComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Character/ElementCharacter.h"
 
 // Sets default values
@@ -38,10 +41,21 @@ void AElementProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ElementVfx)
+	if (!GameplayEffectSpecHandle.IsValid() && DamageGameplayEffect)
 	{
-		NiagaraComponent->SetAsset(ElementVfx);
-		NiagaraComponent->Activate(true);
+		if (const UGameplayEffect* DamageEffectCDO = DamageGameplayEffect.GetDefaultObject())
+		{
+			FGameplayEffectContext* EffectContext = UAbilitySystemGlobals::Get().AllocGameplayEffectContext();
+
+			GameplayEffectSpecHandle = FGameplayEffectSpecHandle(
+				new FGameplayEffectSpec(DamageEffectCDO, FGameplayEffectContextHandle(EffectContext))
+			);
+
+			GameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+				ElementGameplayTags::Abilities_Parameters_Damage,
+				Damage
+			);
+		}
 	}
 
 	SetLifeSpan(LifeTime);
