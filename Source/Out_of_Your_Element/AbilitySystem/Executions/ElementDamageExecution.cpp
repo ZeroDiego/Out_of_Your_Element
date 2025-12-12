@@ -114,7 +114,7 @@ void UElementDamageExecution::Execute_Implementation(
 				ElementAbilitySystemComponent->GetAttributeSet(UElementHealthAttributeSet::StaticClass())
 			))
 		{
-			HealthAttributeSet->OnDamageTaken.Broadcast(TotalDamage, true, DamageType);
+			HealthAttributeSet->OnDamageTaken.Broadcast(FDamageTaken(TotalDamage, true, DamageType));
 		}
 	}
 
