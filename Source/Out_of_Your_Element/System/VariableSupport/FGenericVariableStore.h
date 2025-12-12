@@ -88,4 +88,8 @@ public:
 	bool HasVariable(const FString& Name) const;
 	void RemoveVariable(const FString& Name);
 	void Clear();
+
+	// ---------- Modify / Increment ----------
+	int32 AddInt(const FString& Name, int32 Delta);
+	float AddFloat(const FString& Name, float Delta);
 };
