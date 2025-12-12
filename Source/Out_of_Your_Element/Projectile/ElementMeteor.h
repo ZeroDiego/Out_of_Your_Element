@@ -68,7 +68,7 @@ public:
 
 	
 	UPROPERTY(EditDefaultsOnly, Category="Meteor|Decal")
-	float ImpactDecalLifetime = 10.f;
+	float ImpactDecalLifetime = 1.f;
 
 
 	UPROPERTY(BlueprintReadWrite)
