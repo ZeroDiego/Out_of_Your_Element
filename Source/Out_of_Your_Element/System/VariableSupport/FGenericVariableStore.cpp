@@ -95,3 +95,36 @@ void FGenericVariableStore::Clear()
 {
     Variables.Empty();
 }
+
+// ---------- Modify / Increment ----------
+
+int32 FGenericVariableStore::AddInt(const FString& Name, int32 Delta)
+{
+    FGenericVariable& Var = Variables.FindOrAdd(Name);
+
+    int32 CurrentValue = 0;
+    if (Var.Type == EVariableType::Int)
+    {
+        CurrentValue = Var.IntValue;
+    }
+
+    const int32 NewValue = CurrentValue + Delta;
+    Var.Set(NewValue);
+    return NewValue;
+}
+
+float FGenericVariableStore::AddFloat(const FString& Name, float Delta)
+{
+    FGenericVariable& Var = Variables.FindOrAdd(Name);
+
+    float CurrentValue = 0.0f;
+    if (Var.Type == EVariableType::Float)
+    {
+        CurrentValue = Var.FloatValue;
+    }
+
+    const float NewValue = CurrentValue + Delta;
+    Var.Set(NewValue);
+    return NewValue;
+}
+

@@ -101,4 +101,15 @@ public:
     /** Removes all variables from the store. */
     UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
     static void GV_Clear(UPARAM(ref) FGenericVariableStore& Store);
+
+	// ---------- Modify / Increment ----------
+
+	/** Adds Delta to an int variable. Creates it if missing (starts at 0). Returns new value. */
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static int32 GV_AddInt(UPARAM(ref) FGenericVariableStore& Store, const FString& Name, int32 Delta);
+
+	/** Adds Delta to a float variable. Creates it if missing (starts at 0). Returns new value. */
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static float GV_AddFloat(UPARAM(ref) FGenericVariableStore& Store, const FString& Name, float Delta);
+
 };

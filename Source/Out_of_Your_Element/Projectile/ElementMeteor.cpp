@@ -147,14 +147,20 @@ void AElementMeteor::LifeSpanExpired()
 	}
 	if (ImpactDecalMaterial)
 	{
-		UGameplayStatics::SpawnDecalAtLocation(
+		UDecalComponent* DecalComp = UGameplayStatics::SpawnDecalAtLocation(
 			GetWorld(),
 			ImpactDecalMaterial,
 			ImpactDecalSize,
 			TargetLocation,
-			FRotator(-90.f, FMath::RandRange(0.f, 360.f), 0.f),  
-			ImpactDecalLifetime
+			FRotator(-90.f, FMath::RandRange(0.f, 360.f), 0.f),
+			ImpactDecalLifetime 
 		);
-		
+
+		if (DecalComp)
+		{
+			DecalComp->FadeScreenSize = 0.0f; 
+			DecalComp->SetFadeOut(ImpactDecalLifetime * 0.3f, ImpactDecalLifetime * 0.3f);
+			
+		}
 	}
 }

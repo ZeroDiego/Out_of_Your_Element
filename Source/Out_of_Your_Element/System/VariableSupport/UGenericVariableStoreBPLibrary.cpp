@@ -76,3 +76,21 @@ void UGenericVariableStoreBPLibrary::GV_Clear(UPARAM(ref) FGenericVariableStore&
 {
     Store.Clear();
 }
+
+// ---------- Modify / Increment ----------
+
+int32 UGenericVariableStoreBPLibrary::GV_AddInt(
+    UPARAM(ref) FGenericVariableStore& Store,
+    const FString& Name,
+    int32 Delta)
+{
+    return Store.AddInt(Name, Delta);
+}
+
+float UGenericVariableStoreBPLibrary::GV_AddFloat(
+    UPARAM(ref) FGenericVariableStore& Store,
+    const FString& Name,
+    float Delta)
+{
+    return Store.AddFloat(Name, Delta);
+}
