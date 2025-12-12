@@ -159,7 +159,7 @@ void AElementMeteor::LifeSpanExpired()
 		if (DecalComp)
 		{
 			DecalComp->FadeScreenSize = 0.0f; 
-			DecalComp->SetFadeOut(ImpactDecalLifetime * 0.5f, ImpactDecalLifetime * 0.5f);
+			DecalComp->SetFadeOut(ImpactDecalLifetime * 0.3f, ImpactDecalLifetime * 0.3f);
 			
 		}
 	}
