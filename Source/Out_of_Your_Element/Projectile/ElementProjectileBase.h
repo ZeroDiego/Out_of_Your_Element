@@ -40,7 +40,7 @@ public:
 	float GravityScale = 0.0f;
 
 	UPROPERTY(EditAnywhere)
-	float LifeTime = 3.0f;
+	float LifeTime = 5.0f;
 
 	UPROPERTY(EditAnywhere)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
