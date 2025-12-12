@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
 	class UNiagaraSystem* FreezeActivateParticle;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
+	USoundBase* ActivationSound;
+
 protected:
 	virtual void CastSpell(
 		const FGameplayAbilitySpecHandle Handle,

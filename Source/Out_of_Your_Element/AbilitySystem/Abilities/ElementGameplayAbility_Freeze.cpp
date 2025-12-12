@@ -1,6 +1,7 @@
 ﻿#include "ElementGameplayAbility_Freeze.h"
 
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
@@ -24,6 +25,8 @@ void UElementGameplayAbility_Freeze::CastSpell(
 
 		const FGameplayTagContainer Burning(ElementGameplayTags::Status_Burning);
 		BP_RemoveGameplayEffectFromOwnerWithGrantedTags(Burning);
+
+		UGameplayStatics::PlaySoundAtLocation(World, ActivationSound, Location, Caster->GetActorRotation());
 
 		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
 				World,
