@@ -9,7 +9,6 @@
 #include "ElementCharacterBase.h"
 #include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "InputActionValue.h"
-#include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 #include "ElementCharacter.generated.h"
 
 
@@ -38,9 +37,47 @@ struct FAttackData
 	float Cooldown = 0.0f;
 };
 
+USTRUCT(BlueprintType)
+struct FExperience
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int Current;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int CurrentLevel;
+};
+
+USTRUCT(BlueprintType)
+struct FLevelData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int RequiredXPForLevelUp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayAbility> AbilityToUnlock;
+};
+
+USTRUCT(BlueprintType)
+struct FLevelUpData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FLevelData> Levels;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttack, FAttackData, AttackData);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnElementChanged, FElement, OldElement, FElement, NewElement, int, CycleAmount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnElementChanged,
+	FElement, OldElement,
+	FElement, NewElement,
+	int, CycleAmount
+);
 
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public AElementCharacterBase
@@ -90,6 +127,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UNiagaraComponent* AimMarker;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="XP")
+	TMap<FGameplayTag, FLevelUpData> ElementLevelUpMap;
+
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
@@ -128,20 +168,26 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	FElement ActiveElement;
 
-	UPROPERTY(VisibleAnywhere)
-	TEnumAsByte<EAttackType> AbilityToUseOnDoAttack;
+	UPROPERTY(VisibleAnywhere, Category="XP")
+	TMap<FGameplayTag, FExperience> ElementXPMap;
 
 public:
 	AElementCharacter();
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool IsCastingSpell() const;
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool CanAttack() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE FElement& GetActiveElementRef() { return ActiveElement; }
+	FORCEINLINE FElement& GetActiveElementRef()
+	{
+		return ActiveElement;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void GiveXP(const FElement& Element, int XP);
 
 protected:
 	virtual void BeginPlay() override;

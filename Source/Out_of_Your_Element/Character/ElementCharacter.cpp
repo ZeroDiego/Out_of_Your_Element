@@ -14,7 +14,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -59,6 +58,34 @@ bool AElementCharacter::IsCastingSpell() const
 bool AElementCharacter::CanAttack() const
 {
 	return GetWorld() && !UGameplayStatics::IsGamePaused(GetWorld()) && IsAlive() && !IsCastingSpell();
+}
+
+void AElementCharacter::GiveXP(const FElement& Element, int XP)
+{
+	if (const FLevelUpData* LevelUpData = ElementLevelUpMap.Find(Element.DamageType))
+	{
+		auto& [Current, CurrentLevel] = ElementXPMap.FindOrAdd(Element.DamageType);
+		const TArray<FLevelData>& Levels = LevelUpData->Levels;
+		const int AvailableLevels = Levels.Num();
+
+		while (
+			CurrentLevel < AvailableLevels &&
+			XP > 0
+		)
+		{
+			const auto& [RequiredXPForLevelUp, AbilityToUnlock] = Levels[CurrentLevel];
+			const int RemainingXP = RequiredXPForLevelUp - Current;
+			const int XPToObtain = FMath::Min(XP, RemainingXP);
+
+			XP -= XPToObtain;
+			Current = (Current + XPToObtain) % RequiredXPForLevelUp;
+			if (Current == 0)
+			{
+				++CurrentLevel;
+				GetAbilitySystemComponent()->K2_GiveAbility(AbilityToUnlock);
+			}
+		}
+	}
 }
 
 void AElementCharacter::BeginPlay()
