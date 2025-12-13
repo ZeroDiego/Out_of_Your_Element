@@ -83,7 +83,15 @@ void UElementHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffect
 		const float MaxHealthValue = GetMaxHealth();
 		const float NewHealthValue = FMath::Clamp(OldHealthValue - DamageValue, 0.0f, MaxHealthValue);
 
-		OnDamageTaken.Broadcast(FDamageTaken(DamageValue, false, FGameplayTag::EmptyTag));
+		const FGameplayEffectContextHandle& Context = Data.EffectSpec.GetContext();
+		OnDamageTaken.Broadcast(FDamageTaken(
+			DamageValue,
+			false,
+			FGameplayTag::EmptyTag,
+			Context.GetOriginalInstigator(),
+			Context.GetEffectCauser()
+		));
+
 		if (OldHealthValue != NewHealthValue)
 			SetHealth(NewHealthValue);
 

@@ -18,6 +18,12 @@ struct FDamageTaken
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTag Element;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* Instigator; // Example: Player
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* Cause; // Example: Fireball
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
