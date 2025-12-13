@@ -60,11 +60,11 @@ bool AElementCharacter::CanAttack() const
 	return GetWorld() && !UGameplayStatics::IsGamePaused(GetWorld()) && IsAlive() && !IsCastingSpell();
 }
 
-void AElementCharacter::GiveXP(const FElement& Element, int XP)
+void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
 {
-	if (const FLevelUpData* LevelUpData = ElementLevelUpMap.Find(Element.DamageType))
+	if (const FLevelUpData* LevelUpData = ElementLevelUpMap.Find(Element))
 	{
-		auto& [Current, CurrentLevel] = ElementXPMap.FindOrAdd(Element.DamageType);
+		auto& [Current, CurrentLevel] = ElementXPMap.FindOrAdd(Element);
 		const TArray<FLevelData>& Levels = LevelUpData->Levels;
 		const int AvailableLevels = Levels.Num();
 

@@ -187,7 +187,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void GiveXP(const FElement& Element, int XP);
+	void GiveXP(const FGameplayTag& Element, int XP);
 
 protected:
 	virtual void BeginPlay() override;
