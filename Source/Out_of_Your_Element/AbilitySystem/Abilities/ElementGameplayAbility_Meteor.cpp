@@ -21,9 +21,9 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 		TriggerEventData
 	);
 
-	if (const ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
+	if (ACharacter* Caster = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
 	{
-		if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+		if (const APlayerController* PlayerController = Cast<APlayerController>(Caster->GetController()))
 		{
 			if (PlayerController->IsLocalPlayerController())
 			{
@@ -49,6 +49,7 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 						MeteorProjectileSpawnLocation
 					))
 					{
+						Meteor->Caster = Caster;
 						Meteor->TargetLocation = TargetLocation;
 						UGameplayStatics::FinishSpawningActor(Meteor, MeteorProjectileSpawnLocation);
 					}
