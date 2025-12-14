@@ -72,15 +72,14 @@ void AElementProjectileBase::LifeSpanExpired()
 	);
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst -- Cannot be const. Used by overlap delegate
-void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
+void AElementProjectileBase::DoProjectileHit(AActor* HitActor)
 {
-	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OtherActor))
+	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(HitActor))
 	{
 		AbilitySystemInterface->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
 	}
 
-	if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(OtherActor))
+	if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(HitActor))
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
@@ -98,10 +97,14 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 	}
 
 	const FMutableBool ShouldDestroy = true;
-	OnProjectileHit.Broadcast(this, OtherActor, ShouldDestroy);
+	OnProjectileHit.Broadcast(this, HitActor, ShouldDestroy);
 
 	if (ShouldDestroy)
-	{
 		Destroy();
-	}
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst -- Cannot be const. Used by overlap delegate
+void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	DoProjectileHit(OtherActor);
 }

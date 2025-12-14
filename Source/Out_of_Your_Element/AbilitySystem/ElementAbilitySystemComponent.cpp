@@ -25,3 +25,24 @@ void UElementAbilitySystemComponent::GetActiveAbilitiesWithTags(const FGameplayT
 		}
 	}
 }
+
+void UElementAbilitySystemComponent::SetAbilityLevel(FGameplayAbilitySpec* AbilitySpec, const int NewLevel)
+{
+	if (AbilitySpec)
+	{
+		AbilitySpec->Level = NewLevel;
+		MarkAbilitySpecDirty(*AbilitySpec);
+	}
+}
+
+void UElementAbilitySystemComponent::SetAbilityLevelByClass(const TSubclassOf<UGameplayAbility> AbilityClass,
+                                                            const int NewLevel)
+{
+	SetAbilityLevel(FindAbilitySpecFromClass(AbilityClass), NewLevel);
+}
+
+void UElementAbilitySystemComponent::SetAbilityLevelByHandle(const FGameplayAbilitySpecHandle AbilityHandle,
+                                                             const int NewLevel)
+{
+	SetAbilityLevel(FindAbilitySpecFromHandle(AbilityHandle), NewLevel);
+}
