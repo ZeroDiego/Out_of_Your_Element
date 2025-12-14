@@ -71,17 +71,19 @@ static void CalculateThornPositions(
 bool FindGroundLocation(const UWorld* World, const FVector& Start, const FVector& SearchDistance, FVector& OutLocation)
 {
 	constexpr ECollisionChannel Ground = ECC_GameTraceChannel2;
+	const FVector OffsetStart = Start + SearchDistance;
 	const FVector End = Start - SearchDistance;
 	if (FHitResult HitResult;
 		World->LineTraceSingleByChannel(
 			HitResult,
-			Start,
+			OffsetStart + SearchDistance,
 			End,
 			Ground
 		)
 	)
 	{
 		DrawDebugLine(World, Start, HitResult.Location, FColor::Green, false, 5);
+		DrawDebugLine(World, OffsetStart, HitResult.Location, FColor::Green, false, 5);
 		DrawDebugLine(World, HitResult.Location, End, FColor::Red, false, 5);
 
 		OutLocation = HitResult.Location;
