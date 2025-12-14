@@ -22,6 +22,7 @@
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Out_of_Your_Element/Character/ElementCharacter.h"
 
 /* ─────────────────────────────────────────────── */
 /*                   CONSTRUCTOR                   */
@@ -31,6 +32,8 @@ AElementAICharacterBase::AElementAICharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AISoundComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
+
+	HealthAttributeSet->OnDeath.AddUniqueDynamic(this, &AElementAICharacterBase::OnDeath);
 }
 
 /* ─────────────────────────────────────────────── */
@@ -79,4 +82,16 @@ void AElementAICharacterBase::BeginPlay()
 void AElementAICharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst -- Cannot be made const, used in OnDeath delegate
+void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken)
+{
+	if (DroppedXP > 0)
+	{
+		if (AElementCharacter* Caster = Cast<AElementCharacter>(DamageTaken.Instigator))
+		{
+			Caster->GiveXP(DamageTaken.Element, DroppedXP);
+		}
+	}
 }

@@ -61,7 +61,6 @@ void UElementDamageExecution::Execute_Implementation(
 	float HealPercent = 0.0f;
 	float HealFixed = 0.0f;
 
-
 	for (FActiveGameplayEffectIterator<const FActiveGameplayEffect, FActiveGameplayEffectsContainer> It =
 		     ExecutionParams.GetTargetAbilitySystemComponent()->
 		                     GetActiveGameplayEffects().
@@ -114,7 +113,14 @@ void UElementDamageExecution::Execute_Implementation(
 				ElementAbilitySystemComponent->GetAttributeSet(UElementHealthAttributeSet::StaticClass())
 			))
 		{
-			HealthAttributeSet->OnDamageTaken.Broadcast(TotalDamage, true, DamageType);
+			const FGameplayEffectContextHandle& Context = DamageSpec.GetContext();
+			HealthAttributeSet->OnDamageTaken.Broadcast(FDamageTaken(
+				TotalDamage,
+				true,
+				DamageType,
+				Context.GetOriginalInstigator(),
+				Context.GetEffectCauser()
+			));
 		}
 	}
 

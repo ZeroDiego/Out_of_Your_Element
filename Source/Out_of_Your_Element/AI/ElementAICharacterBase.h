@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
 #include "ElementAICharacterBase.generated.h"
@@ -20,11 +21,14 @@ class OUT_OF_YOUR_ELEMENT_API AElementAICharacterBase : public AElementCharacter
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn), Category = "Effects")
 	TMap<TSubclassOf<UGameplayEffect>, FDefaultGameplayEffectTags> DefaultGameplayEffects;
-	
+
 public:
 	AElementAICharacterBase();
 
 	UBehaviorTree* GetBehaviorTree() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="XP")
+	int DroppedXP;
 
 	//UPROPERTY(BlueprintReadWrite)
 	//int32 AIHealth;
@@ -64,4 +68,8 @@ public:
 	//bool bIsDead = false;
 
 	//FVector LastKnownLocation;
+
+private:
+	UFUNCTION()
+	void OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken);
 };

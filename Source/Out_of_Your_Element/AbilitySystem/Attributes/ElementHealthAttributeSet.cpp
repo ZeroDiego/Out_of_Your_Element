@@ -2,10 +2,10 @@
 
 #include "Out_of_Your_Element/AbilitySystem/Executions/ElementDamageExecution.h"
 #include "GameplayEffectExtension.h"
-#include "Out_of_Your_Element/ElementGameplayTags.h"
 
 UElementHealthAttributeSet::UElementHealthAttributeSet()
 {
+	OnDamageTaken.AddUniqueDynamic(this, &UElementHealthAttributeSet::SetLastDamageTaken);
 }
 
 void UElementHealthAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -37,6 +37,24 @@ void UElementHealthAttributeSet::PostAttributeChange(
 {
 	CHECK_AND_NOTIFY_UPDATE(Health, MaxHealth);
 
+	if (Attribute == GetHealthAttribute())
+	{
+		if (OldValue > 0.0f && NewValue <= 0.0f)
+		{
+			if (LastDamageTaken)
+			{
+				OnDeath.Broadcast(GetOwningActor(), *LastDamageTaken);
+			}
+			else
+			{
+				const FDamageTaken DamageTaken(OldValue - NewValue, false, FGameplayTag::EmptyTag);
+				OnDeath.Broadcast(GetOwningActor(), DamageTaken);
+			}
+		}
+
+		LastDamageTaken = nullptr;
+	}
+
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 }
 
@@ -65,10 +83,23 @@ void UElementHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffect
 		const float MaxHealthValue = GetMaxHealth();
 		const float NewHealthValue = FMath::Clamp(OldHealthValue - DamageValue, 0.0f, MaxHealthValue);
 
+		const FGameplayEffectContextHandle& Context = Data.EffectSpec.GetContext();
+		OnDamageTaken.Broadcast(FDamageTaken(
+			DamageValue,
+			false,
+			FGameplayTag::EmptyTag,
+			Context.GetOriginalInstigator(),
+			Context.GetEffectCauser()
+		));
+
 		if (OldHealthValue != NewHealthValue)
 			SetHealth(NewHealthValue);
 
-		OnDamageTaken.Broadcast(DamageValue, false, FGameplayTag::EmptyTag);
 		SetDamage(0.0f);
 	}
+}
+
+void UElementHealthAttributeSet::SetLastDamageTaken(const FDamageTaken& DamageTaken)
+{
+	LastDamageTaken = MakeUnique<FDamageTaken>(DamageTaken);
 }
