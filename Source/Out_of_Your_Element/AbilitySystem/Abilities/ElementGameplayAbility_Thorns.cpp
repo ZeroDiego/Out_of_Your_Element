@@ -82,7 +82,6 @@ bool FindGroundLocation(const UWorld* World, const FVector& Start, const FVector
 		)
 	)
 	{
-		DrawDebugLine(World, Start, HitResult.Location, FColor::Green, false, 5);
 		DrawDebugLine(World, OffsetStart, HitResult.Location, FColor::Green, false, 5);
 		DrawDebugLine(World, HitResult.Location, End, FColor::Red, false, 5);
 
@@ -102,15 +101,20 @@ void UElementGameplayAbility_Thorns::CastSpell(
 {
 	if (const AElementCharacterBase* Caster = Cast<AElementCharacterBase>(GetAvatarActorFromActorInfo()))
 	{
-		TArray<FVector2D> ThornPositions;
-		ThornPositions.Reserve(ThornCount);
-
 		const FVector ActorLocation = Caster->GetActorLocation();
 		const float Height = ActorLocation.Z - Caster->GetSimpleCollisionHalfHeight();
 		UWorld* World = Caster->GetWorld();
 
 		const FVector2D Center(ActorLocation);
 		const FVector2D Direction(Caster->GetActorForwardVector());
+		const int Level = GetAbilityLevel(Handle, ActorInfo);
+		const float ActualThornCount = Level < 2 ? ThornCount : ThornCount + AdditionalThornCount;
+		const float ActualSpread = Level < 2 ? Spread : Spread + AdditionalSpread;
+		const float ActualLength = Level < 2 ? Length : Length + AdditionalLength;
+		const float ActualDamage = Level < 2 ? BaseDamage : BaseDamage * DamageMultiplier;
+
+		TArray<FVector2D> ThornPositions;
+		ThornPositions.Reserve(ActualThornCount);
 
 		// Always spawn thorn on cursor if in cone
 		if (const APlayerController* PlayerController = Cast<APlayerController>(Caster->GetController()))
@@ -130,7 +134,7 @@ void UElementGameplayAbility_Thorns::CastSpell(
 					// Is cursor close enough
 					const FVector2D CursorLocation = FVector2D(MouseCursorHitResult.Location);
 					if (const FVector2D RelativeCursorLocation = CursorLocation - Center;
-						RelativeCursorLocation.SquaredLength() <= Length * Length
+						RelativeCursorLocation.SquaredLength() <= ActualLength * ActualLength
 					)
 					{
 						// Is cursor inside cone angle
@@ -139,7 +143,7 @@ void UElementGameplayAbility_Thorns::CastSpell(
 						const double Dot = FVector2D::DotProduct(DirectionNormalized, CursorNormalized);
 
 						if (const double Angle = FMath::Acos(Dot);
-							Angle <= Spread / 2.0f
+							Angle <= ActualSpread / 2.0f
 						)
 						{
 							ThornPositions.Add(CursorLocation);
@@ -152,10 +156,10 @@ void UElementGameplayAbility_Thorns::CastSpell(
 		CalculateThornPositions(
 			Center,
 			Direction,
-			Length,
-			Spread,
+			ActualLength,
+			ActualSpread,
 			MinSpacing,
-			ThornCount,
+			ActualThornCount,
 			ThornPositions
 		);
 
@@ -172,9 +176,9 @@ void UElementGameplayAbility_Thorns::CastSpell(
 				{
 					Thorn->SetLifeSpan(ThornLifespan);
 					Thorn->DamageGameplayEffect = DamageGameplayEffect;
-					Thorn->BaseDamage = BaseDamage;
+					Thorn->BaseDamage = ActualDamage;
 					Thorn->Caster = Caster;
-					Thorn->ThornDistance = (ThornPosition2D - Center).Length() / Length;
+					Thorn->ThornDistance = (ThornPosition2D - Center).Length() / ActualLength;
 					UGameplayStatics::FinishSpawningActor(Thorn, SpawnTransform);
 				}
 			}
