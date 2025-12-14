@@ -24,7 +24,8 @@ void UElementGameplayAbility_WaterGun::CastSpell(
 		);
 
 		const int Level = GetAbilityLevel(Handle, ActorInfo);
-		for (int i = 0; i < ProjectileCount; ++i)
+		const int SpawnCount = Level < 2 ? ProjectileCount : ProjectileCount + AdditionalProjectiles;
+		for (int i = 0; i < SpawnCount; ++i)
 		{
 			const FVector Offset = Forward * ProjectileSpawnOffset;
 			const FVector Location = Caster->GetActorLocation() + Offset;
