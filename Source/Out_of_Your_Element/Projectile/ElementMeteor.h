@@ -76,6 +76,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta=(ExposeOnSpawn))
 	AActor* Caster = nullptr;
 
+	UPROPERTY(BlueprintReadOnly, meta=(ExposeOnSpawn))
+	int Level = 1;
+
 private:
 	float CurrentTime;
 	FVector StartLocation;

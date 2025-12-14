@@ -40,18 +40,16 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 				)
 				{
 					const FVector TargetLocation = MouseCursorHitResult.ImpactPoint;
-					const FTransform MeteorProjectileSpawnLocation = FTransform(
-						FRotator::ZeroRotator, TargetLocation + MeteorSpawnOffset
-					);
+					const FVector SpawnDirection = Caster->GetActorForwardVector();
+					FVector SpawnLocation = TargetLocation + MeteorSpawnOffset;
 
-					if (AElementMeteor* Meteor = GetWorld()->SpawnActorDeferred<AElementMeteor>(
-						MeteorClass,
-						MeteorProjectileSpawnLocation
-					))
+					const int Level = GetAbilityLevel(Handle, ActorInfo);
+					const int SpawnCount = Level < 2 ? 1 : MeteorCount;
+
+					for (int i = 0; i < SpawnCount; ++i)
 					{
-						Meteor->Caster = Caster;
-						Meteor->TargetLocation = TargetLocation;
-						UGameplayStatics::FinishSpawningActor(Meteor, MeteorProjectileSpawnLocation);
+						SpawnMeteor(Caster, SpawnLocation, Level);
+						SpawnLocation += MeteorSpacing * SpawnDirection;
 					}
 				}
 			}
@@ -65,4 +63,28 @@ void UElementGameplayAbility_Meteor::CastSpell(
 	const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
+}
+
+void UElementGameplayAbility_Meteor::SpawnMeteor(
+	AActor* Caster,
+	const FVector& SpawnLocation,
+	const int Level
+) const
+{
+	const FTransform SpawnTransform(FRotator::ZeroRotator, SpawnLocation);
+	if (AElementMeteor* Meteor = GetWorld()->SpawnActorDeferred<AElementMeteor>(
+		MeteorClass,
+		SpawnTransform
+	))
+	{
+		Meteor->Caster = Caster;
+		Meteor->Level = Level;
+
+		if (Level >= 2)
+		{
+			Meteor->ImpactDamage *= MeteorImpactMultiplier;
+		}
+
+		UGameplayStatics::FinishSpawningActor(Meteor, SpawnTransform);
+	}
 }
