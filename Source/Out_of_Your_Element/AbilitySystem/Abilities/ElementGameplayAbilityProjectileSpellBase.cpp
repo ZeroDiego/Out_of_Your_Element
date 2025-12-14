@@ -21,23 +21,27 @@ void UElementGameplayAbilityProjectileSpellBase::CastSpell(
 		const FVector Offset = Caster->GetActorForwardVector() * ProjectileSpawnOffset;
 		const FVector Location = Caster->GetActorLocation() + Offset;
 		const FRotator Rotation = Caster->GetActorRotation();
-		ShootProjectile(Location, Rotation);
+		const FTransform Transform(Rotation, Location);
+		const int Level = GetAbilityLevel(Handle, ActorInfo);
+
+		ShootProjectile(Transform, Level);
 	}
 }
 
-void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(const FVector& Location, const FRotator& Direction)
-{
-	ShootProjectile(FTransform(Direction, Location));
-}
-
-void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(const FTransform& Transform)
+void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(
+	const FTransform& Transform,
+	const int Level
+) const
 {
 	if (AElementProjectileBase* Projectile =
 		GetWorld()->SpawnActorDeferred<AElementProjectileBase>(ProjectileClass, Transform)
 	)
 	{
+		Projectile->Level = Level;
+
 		if (AActor* Caster = GetAvatarActorFromActorInfo())
 		{
+			Projectile->Caster = Caster;
 			Projectile->ProjectileSphereComponent->IgnoreActorWhenMoving(Caster, true);
 
 			if (const ACharacter* CasterCharacter = Cast<ACharacter>(Caster))
@@ -57,8 +61,6 @@ void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(const FTransfor
 
 			Projectile->GameplayEffectSpecHandle = SpecHandle;
 		}
-
-		Projectile->SourceAbility = this;
 
 		UGameplayStatics::FinishSpawningActor(Projectile, Transform);
 	}
