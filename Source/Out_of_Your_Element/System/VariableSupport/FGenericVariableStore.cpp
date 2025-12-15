@@ -158,6 +158,44 @@ FGenericVariableStore FGenericVariableStore::Where(const FString& NameContains, 
     return Result;
 }
 
+bool FGenericVariableStore::FindFirstByNameContains(const FString& NameContains, FGenericVariable& OutVariable,
+    FString& OutFoundName, ESearchCase::Type SearchCase) const
+{
+    if (Variables.Num() == 0)
+        return false;
+
+    // Deterministic: iterate keys in sorted order
+    const TArray<FString> Keys = GetSortedNames(SearchCase);
+
+    // Empty substring => first key in sorted order
+    if (NameContains.IsEmpty())
+    {
+        const FString& FirstKey = Keys[0];
+        if (const FGenericVariable* Var = Variables.Find(FirstKey))
+        {
+            OutFoundName = FirstKey;
+            OutVariable = *Var;
+            return true;
+        }
+        return false;
+    }
+
+    for (const FString& Key : Keys)
+    {
+        if (Key.Contains(NameContains, SearchCase))
+        {
+            if (const FGenericVariable* Var = Variables.Find(Key))
+            {
+                OutFoundName = Key;
+                OutVariable = *Var;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 void FGenericVariableStore::SortByName(ESearchCase::Type SearchCase)
 {
     Variables.KeySort([SearchCase](const FString& A, const FString& B)

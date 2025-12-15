@@ -83,6 +83,16 @@ FGenericVariableStore UGenericVariableStoreBPLibrary::GV_Where(FGenericVariableS
     return Store.Where(NameContains);
 }
 
+bool UGenericVariableStoreBPLibrary::GV_FindFirstByNameContains(FGenericVariableStore& Store,
+    const FString& NameContains, FGenericVariable& OutVariable, FString& OutFoundName, bool bIgnoreCase)
+{
+    return Store.FindFirstByNameContains(
+        NameContains,
+        OutVariable,
+        OutFoundName,
+        bIgnoreCase ? ESearchCase::IgnoreCase : ESearchCase::CaseSensitive);
+}
+
 void UGenericVariableStoreBPLibrary::GV_SortByName(FGenericVariableStore& Store, bool bIgnoreCase)
 {
     Store.SortByName(bIgnoreCase ? ESearchCase::IgnoreCase : ESearchCase::CaseSensitive);

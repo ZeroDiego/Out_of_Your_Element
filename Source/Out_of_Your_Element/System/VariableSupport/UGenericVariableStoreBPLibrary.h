@@ -116,6 +116,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
 	static FGenericVariableStore GV_Where(UPARAM(ref) FGenericVariableStore& Store, const FString& NameContains);
 
+	/** Finds the first variable whose Name contains NameContains. */
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static bool GV_FindFirstByNameContains(
+		UPARAM(ref) FGenericVariableStore& Store,
+		const FString& NameContains,
+		FGenericVariable& OutVariable,
+		FString& OutFoundName,
+		bool bIgnoreCase = true);
+	
 	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
 	static void GV_SortByName(UPARAM(ref) FGenericVariableStore& Store, bool bIgnoreCase = true);
 
