@@ -23,4 +23,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	void GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer,
 	                                TArray<class UElementGameplayAbilitySpellBase*>& ActiveAbilities) const;
+
+	void SetAbilityLevel(FGameplayAbilitySpec* AbilitySpec, int NewLevel);
+
+	UFUNCTION(BlueprintCallable)
+	void SetAbilityLevelByClass(TSubclassOf<UGameplayAbility> AbilityClass, int NewLevel);
+
+	UFUNCTION(BlueprintCallable)
+	void SetAbilityLevelByHandle(FGameplayAbilitySpecHandle AbilityHandle, int NewLevel);
 };

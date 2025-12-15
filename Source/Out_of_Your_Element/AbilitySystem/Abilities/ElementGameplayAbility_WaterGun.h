@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="WaterGun")
 	int ProjectileCount = 3;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="WaterGun Level 2")
+	int AdditionalProjectiles = 2;
+
 protected:
 	virtual void CastSpell(
 		const FGameplayAbilitySpecHandle Handle,

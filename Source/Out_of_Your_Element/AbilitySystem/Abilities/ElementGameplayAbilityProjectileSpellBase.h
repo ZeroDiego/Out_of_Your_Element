@@ -29,6 +29,5 @@ protected:
 		const FGameplayEventData* TriggerEventData
 	) override;
 
-	void ShootProjectile(const FVector& Location, const FRotator& Direction);
-	void ShootProjectile(const FTransform& Transform);
+	void ShootProjectile(const FTransform& Transform, int Level) const;
 };
