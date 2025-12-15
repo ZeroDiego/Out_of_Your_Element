@@ -33,8 +33,7 @@ AElementProjectileBase::AElementProjectileBase()
 	NiagaraComponent->SetupAttachment(RootComponent);
 	NiagaraComponent->bAutoActivate = false; // We activate it in BeginPlay
 
-	// Adds functionality for overlapping with other actors
-	OnActorBeginOverlap.AddDynamic(this, &AElementProjectileBase::OnActorOverlap);
+	OnActorHit.AddDynamic(this, &AElementProjectileBase::OnHit);
 }
 
 void AElementProjectileBase::BeginPlay()
@@ -103,8 +102,7 @@ void AElementProjectileBase::DoProjectileHit(AActor* HitActor)
 		Destroy();
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst -- Cannot be const. Used by overlap delegate
-void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
+void AElementProjectileBase::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
 	DoProjectileHit(OtherActor);
 }
