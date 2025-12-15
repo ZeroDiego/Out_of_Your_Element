@@ -20,7 +20,7 @@ public:
 	TSubclassOf<class AElementMeteor> MeteorClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor Level 2")
-	int MeteorImpactMultiplier = 0.75f;
+	float MeteorImpactMultiplier = 0.75f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor Level 2")
 	int MeteorCount = 3;
