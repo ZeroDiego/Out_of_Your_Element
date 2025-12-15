@@ -77,6 +77,22 @@ void UGenericVariableStoreBPLibrary::GV_Clear(UPARAM(ref) FGenericVariableStore&
     Store.Clear();
 }
 
+FGenericVariableStore UGenericVariableStoreBPLibrary::GV_Where(FGenericVariableStore& Store,
+    const FString& NameContains)
+{
+    return Store.Where(NameContains);
+}
+
+void UGenericVariableStoreBPLibrary::GV_SortByName(FGenericVariableStore& Store, bool bIgnoreCase)
+{
+    Store.SortByName(bIgnoreCase ? ESearchCase::IgnoreCase : ESearchCase::CaseSensitive);
+}
+
+TArray<FString> UGenericVariableStoreBPLibrary::GV_GetSortedNames(FGenericVariableStore& Store, bool bIgnoreCase)
+{
+    return Store.GetSortedNames(bIgnoreCase ? ESearchCase::IgnoreCase : ESearchCase::CaseSensitive);
+}
+
 // ---------- Modify / Increment ----------
 
 int32 UGenericVariableStoreBPLibrary::GV_AddInt(
