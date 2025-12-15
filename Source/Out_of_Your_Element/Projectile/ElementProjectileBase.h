@@ -14,10 +14,14 @@
 #include "ElementProjectileBase.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnProjectileHit,
-                                               AElementProjectileBase*, Projectile,
-                                               AActor*, HitActor,
-                                               FMutableBool, ShouldDestory);
+class AElementProjectileBase;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnProjectileHit,
+	AElementProjectileBase*, Projectile,
+	AActor*, HitActor,
+	FMutableBool, ShouldDestroy
+);
 
 UCLASS(Blueprintable)
 class OUT_OF_YOUR_ELEMENT_API AElementProjectileBase : public AActor
@@ -44,15 +48,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
-	
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> DamageGameplayEffect = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 	float Damage = 25.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UGameplayAbility* SourceAbility;
 
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* ProjectileSphereComponent;
@@ -69,10 +70,18 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnProjectileHit OnProjectileHit;
 
+	UPROPERTY(BlueprintReadOnly)
+	AActor* Caster;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int Level = 1;
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void LifeSpanExpired() override;
+
+	virtual void DoProjectileHit(AActor* HitActor);
 
 private:
 	UFUNCTION()

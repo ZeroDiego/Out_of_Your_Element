@@ -23,12 +23,15 @@ void UElementGameplayAbility_WaterGun::CastSpell(
 			FVector::ZAxisVector
 		);
 
-		for (int i = 0; i < ProjectileCount; ++i)
+		const int Level = GetAbilityLevel(Handle, ActorInfo);
+		const int SpawnCount = Level < 2 ? ProjectileCount : ProjectileCount + AdditionalProjectiles;
+		for (int i = 0; i < SpawnCount; ++i)
 		{
 			const FVector Offset = Forward * ProjectileSpawnOffset;
 			const FVector Location = Caster->GetActorLocation() + Offset;
 			const FRotator Rotation = Forward.Rotation();
-			ShootProjectile(Location, Rotation);
+			const FTransform Transform(Rotation, Location);
+			ShootProjectile(Transform, Level);
 
 			Forward = Forward.RotateAngleAxis(
 				StepAngle,

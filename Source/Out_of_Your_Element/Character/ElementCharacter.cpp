@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/System/ElementGameInstance.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -62,6 +63,14 @@ bool AElementCharacter::CanAttack() const
 
 void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
 {
+	UWorld* World = GetWorld();
+	if (!World) 
+		return;
+	if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
+	{
+		Egi->GlobalVariables.AddInt(TEXT("Stats.XP Gained"), XP);
+	}
+	
 	if (const FLevelUpData* LevelUpData = ElementLevelUpMap.Find(Element))
 	{
 		auto& [Current, CurrentLevel] = ElementXPMap.FindOrAdd(Element);
@@ -83,6 +92,11 @@ void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
 			{
 				++CurrentLevel;
 				GetAbilitySystemComponent()->K2_GiveAbility(AbilityToUnlock);
+				
+				if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
+				{
+					Egi->GlobalVariables.AddInt(TEXT("Stats.TotalLevel"), XP);
+				}
 			}
 		}
 	}
@@ -281,6 +295,10 @@ void AElementCharacter::CycleElement(const FInputActionValue& Value)
 
 void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const
 {
+	UWorld* World = GetWorld();
+	if (!World) 
+		return;
+	
 	if (!Attack)
 		return;
 
@@ -312,6 +330,16 @@ void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) co
 			.Ability = Attack,
 			.Cooldown = MaxDuration
 		});
+
+		if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
+		{
+			Egi->GlobalVariables.AddInt(TEXT("Stats.Abilities.Total"), 1);
+			
+			const FString AbilityId = Attack->GetDisplayNameText().ToString();
+			const FString PerAbilityKey = FString::Printf(TEXT("Stats.Abilities.%s.Uses"), *AbilityId);
+
+			Egi->GlobalVariables.AddInt(PerAbilityKey, 1);
+		}
 	}
 }
 
