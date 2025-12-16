@@ -20,6 +20,7 @@ AElementProjectileBase::AElementProjectileBase()
 	ProjectileSphereComponent = CreateDefaultSubobject<USphereComponent>(FName("ProjectileSphereComponent"));
 	RootComponent = ProjectileSphereComponent;
 	ProjectileSphereComponent->SetRelativeScale3D(ProjectileScale);
+	ProjectileSphereComponent->SetCollisionResponseToAllChannels(ECR_Block);
 	ProjectileSphereComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
 	ProjectileSphereComponent->SetCollisionObjectType(ECC_GameTraceChannel1);
 

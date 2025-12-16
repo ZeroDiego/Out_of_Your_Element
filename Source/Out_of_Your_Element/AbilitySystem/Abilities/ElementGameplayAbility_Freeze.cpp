@@ -28,10 +28,12 @@ void UElementGameplayAbility_Freeze::CastSpell(
 
 		UGameplayStatics::PlaySoundAtLocation(World, ActivationSound, Location, Caster->GetActorRotation());
 
+		const int Level = GetAbilityLevel(Handle, ActorInfo);
+		const float ActualFreezeRadius = Level < 2 ? FreezeRadius : FreezeRadius + AdditionalFreezeRadius;
 		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
 				World,
 				Location,
-				FreezeRadius,
+				ActualFreezeRadius,
 				FreezeTypes,
 				AElementAICharacterBase::StaticClass(),
 				{Caster},
