@@ -20,6 +20,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
 	USoundBase* ActivationSound;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze Level 2")
+	float AdditionalFreezeRadius = 250;
 
 protected:
 	virtual void CastSpell(

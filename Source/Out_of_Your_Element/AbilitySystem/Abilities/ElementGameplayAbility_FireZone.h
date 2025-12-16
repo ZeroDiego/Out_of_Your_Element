@@ -33,6 +33,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="FireZone")
 	float FireZoneLifeSpan = 10;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="FireZone Level 2")
+	float AdditionalFireZoneRadius = 250;
 
 	UPROPERTY(EditDefaultsOnly, Category="VFX")
 	UNiagaraSystem* FireZoneVfx;
