@@ -32,7 +32,7 @@ void AElementRock::OnRockHit(const FProjectileHitEvent& Event)
 {
 	if (AElementCharacterBase* HitCharacter = Cast<AElementCharacterBase>(Event.HitActor))
 	{
-		if (!HitCharacter->ActorHasTag(TEXT("State.Immune.Knockback")))
+		if (!HitCharacter->ElementAbilitySystemComponent->ComponentHasTag(TEXT("State.Immune.Knockback")))
 		{
 			FGameplayEffectContextHandle Context;
 			MakeCasterContext(this, Context);
