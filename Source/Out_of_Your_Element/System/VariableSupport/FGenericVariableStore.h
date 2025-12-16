@@ -92,4 +92,34 @@ public:
 	// ---------- Modify / Increment ----------
 	int32 AddInt(const FString& Name, int32 Delta);
 	float AddFloat(const FString& Name, float Delta);
+
+	// ---------- Store Functions ----------
+	/** Returns a NEW store containing only variables whose Name contains NameContains. */
+	FGenericVariableStore Where(const FString& NameContains, ESearchCase::Type SearchCase = ESearchCase::IgnoreCase) const;
+	
+	/**
+	 * Finds the first variable whose key contains NameContains.
+	 * Returns true if found, and outputs both the variable and the matched key name.
+	 *
+	 * Note: "first" is based on sorted key order (deterministic).
+	 */
+	bool FindFirstByNameContains(
+		const FString& NameContains,
+		FGenericVariable& OutVariable,
+		FString& OutFoundName,
+		ESearchCase::Type SearchCase = ESearchCase::IgnoreCase) const;
+	
+	// ---------- Sorting / Presentation ----------
+	/** If true, mutating operations will auto-sort keys (debug-friendly; not recommended for hot paths). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Generic Variable Store")
+	bool bAutoSortByName = false;
+
+	/** Sorts internal iteration order by variable name (key). */
+	void SortByName(ESearchCase::Type SearchCase = ESearchCase::IgnoreCase);
+
+	/** Returns a sorted list of keys (recommended for UI/debug printing). */
+	TArray<FString> GetSortedNames(ESearchCase::Type SearchCase = ESearchCase::IgnoreCase) const;
+
+private:
+	void MaybeAutoSort();
 };

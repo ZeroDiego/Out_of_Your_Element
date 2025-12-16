@@ -88,20 +88,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
 	static bool GV_GetStringArray(UPARAM(ref) FGenericVariableStore& Store, const FString& Name, TArray<FString>& OutValue);
 
-    // ---------- Misc ----------
-
-    /** Returns true if the store contains a variable with the given Name (regardless of type). */
-    UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
-    static bool GV_HasVariable(UPARAM(ref) FGenericVariableStore& Store, const FString& Name);
-
-    /** Removes the variable with the given Name from the store (if it exists). */
-    UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
-    static void GV_RemoveVariable(UPARAM(ref) FGenericVariableStore& Store, const FString& Name);
-
-    /** Removes all variables from the store. */
-    UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
-    static void GV_Clear(UPARAM(ref) FGenericVariableStore& Store);
-
 	// ---------- Modify / Increment ----------
 
 	/** Adds Delta to an int variable. Creates it if missing (starts at 0). Returns new value. */
@@ -111,5 +97,38 @@ public:
 	/** Adds Delta to a float variable. Creates it if missing (starts at 0). Returns new value. */
 	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
 	static float GV_AddFloat(UPARAM(ref) FGenericVariableStore& Store, const FString& Name, float Delta);
+	
+	// ---------- Misc ----------
+
+	/** Returns true if the store contains a variable with the given Name (regardless of type). */
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static bool GV_HasVariable(UPARAM(ref) FGenericVariableStore& Store, const FString& Name);
+
+	/** Removes the variable with the given Name from the store (if it exists). */
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static void GV_RemoveVariable(UPARAM(ref) FGenericVariableStore& Store, const FString& Name);
+
+	/** Removes all variables from the store. */
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static void GV_Clear(UPARAM(ref) FGenericVariableStore& Store);
+
+	/** Returns a copy of the Store containing only variables whose Name contains NameContains. */
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static FGenericVariableStore GV_Where(UPARAM(ref) FGenericVariableStore& Store, const FString& NameContains);
+
+	/** Finds the first variable whose Name contains NameContains. */
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static bool GV_FindFirstByNameContains(
+		UPARAM(ref) FGenericVariableStore& Store,
+		const FString& NameContains,
+		FGenericVariable& OutVariable,
+		FString& OutFoundName,
+		bool bIgnoreCase = true);
+	
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static void GV_SortByName(UPARAM(ref) FGenericVariableStore& Store, bool bIgnoreCase = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Generic Variable Store")
+	static TArray<FString> GV_GetSortedNames(UPARAM(ref) FGenericVariableStore& Store, bool bIgnoreCase = true);
 
 };

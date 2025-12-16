@@ -85,5 +85,5 @@ protected:
 
 private:
 	UFUNCTION()
-	void OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 };
