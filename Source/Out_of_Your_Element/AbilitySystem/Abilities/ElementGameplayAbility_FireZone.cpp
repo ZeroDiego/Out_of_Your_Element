@@ -50,10 +50,14 @@ void UElementGameplayAbility_FireZone::CastSpell(
 							BaseDamage
 						);
 
+						const int Level = GetAbilityLevel(Handle, ActorInfo);
+						const float ActualRadius = Level < 2
+							                           ? FireZoneRadius
+							                           : FireZoneRadius + AdditionalFireZoneRadius;
 						FireZone->InitializeZone(
 							FireZoneGameplayEffectSpecHandle,
 							FireZoneVfx,
-							FireZoneRadius,
+							ActualRadius,
 							FireZoneLifeSpan
 						);
 
