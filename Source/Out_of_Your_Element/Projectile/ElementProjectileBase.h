@@ -13,14 +13,32 @@
 #include "Out_of_Your_Element/Utillity/BlueprintUtility.h"
 #include "ElementProjectileBase.generated.h"
 
-
 class AElementProjectileBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+USTRUCT(BlueprintType)
+struct FProjectileHitEvent
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	AElementProjectileBase* Projectile;
+
+	UPROPERTY(BlueprintReadOnly)
+	AActor* HitActor;
+
+	UPROPERTY(BlueprintReadOnly)
+	FMutableBool ShouldDestroy;
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector NormalImpulse;
+
+	UPROPERTY(BlueprintReadOnly)
+	FHitResult Hit;
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FOnProjectileHit,
-	AElementProjectileBase*, Projectile,
-	AActor*, HitActor,
-	FMutableBool, ShouldDestroy
+	const FProjectileHitEvent&, Event
 );
 
 UCLASS(Blueprintable)
@@ -81,7 +99,7 @@ protected:
 
 	virtual void LifeSpanExpired() override;
 
-	virtual void DoProjectileHit(AActor* HitActor);
+	virtual void DoProjectileHit(const FProjectileHitEvent& PreEvent);
 
 private:
 	UFUNCTION()

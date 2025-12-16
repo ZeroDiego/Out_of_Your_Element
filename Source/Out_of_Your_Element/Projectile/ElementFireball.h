@@ -27,9 +27,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void DoProjectileHit(AActor* HitActor) override;
+	virtual void DoProjectileHit(const FProjectileHitEvent& PreEvent) override;
 
 private:
 	UFUNCTION()
-	void OnFireballHit(AElementProjectileBase* Projectile, AActor* HitActor, FMutableBool ShouldDestroy);
+	void OnFireballHit(const FProjectileHitEvent& Event);
 };

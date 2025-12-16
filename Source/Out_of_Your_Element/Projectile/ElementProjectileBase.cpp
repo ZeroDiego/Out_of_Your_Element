@@ -27,6 +27,7 @@ AElementProjectileBase::AElementProjectileBase()
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
 	ProjectileMovement->MaxSpeed = ProjectileMaxSpeed;
 	ProjectileMovement->ProjectileGravityScale = GravityScale;
+	ProjectileMovement->SetPlaneConstraintEnabled(true); // Constraint set in begin play
 
 	// Create the Niagara component
 	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
@@ -57,6 +58,7 @@ void AElementProjectileBase::BeginPlay()
 		}
 	}
 
+	ProjectileMovement->SetPlaneConstraintFromVectors(GetActorForwardVector(), GetActorRightVector());
 	SetLifeSpan(LifeTime);
 }
 
@@ -71,8 +73,10 @@ void AElementProjectileBase::LifeSpanExpired()
 	);
 }
 
-void AElementProjectileBase::DoProjectileHit(AActor* HitActor)
+void AElementProjectileBase::DoProjectileHit(const FProjectileHitEvent& PreEvent)
 {
+	AActor* const& HitActor = PreEvent.HitActor;
+
 	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(HitActor))
 	{
 		AbilitySystemInterface->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
@@ -95,14 +99,12 @@ void AElementProjectileBase::DoProjectileHit(AActor* HitActor)
 		);
 	}
 
-	const FMutableBool ShouldDestroy = true;
-	OnProjectileHit.Broadcast(this, HitActor, ShouldDestroy);
-
-	if (ShouldDestroy)
+	OnProjectileHit.Broadcast(PreEvent);
+	if (PreEvent.ShouldDestroy)
 		Destroy();
 }
 
 void AElementProjectileBase::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
-	DoProjectileHit(OtherActor);
+	DoProjectileHit(FProjectileHitEvent(this, OtherActor, true, NormalImpulse, Hit));
 }

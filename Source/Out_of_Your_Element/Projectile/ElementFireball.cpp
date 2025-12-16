@@ -36,9 +36,9 @@ void AElementFireball::BeginPlay()
 	OnProjectileHit.AddUniqueDynamic(this, &AElementFireball::OnFireballHit);
 }
 
-void AElementFireball::DoProjectileHit(AActor* HitActor)
+void AElementFireball::DoProjectileHit(const FProjectileHitEvent& PreEvent)
 {
-	Super::DoProjectileHit(HitActor);
+	Super::DoProjectileHit(PreEvent);
 
 	if (Level >= 2)
 	{
@@ -53,22 +53,21 @@ void AElementFireball::DoProjectileHit(AActor* HitActor)
 			SplashRadius,
 			SplashTypes,
 			AElementAICharacterBase::StaticClass(),
-			{HitActor, Caster},
+			{PreEvent.HitActor, Caster},
 			HitActors
 		);
 
 		for (AActor* const& NearbyActor : HitActors)
-			Super::DoProjectileHit(NearbyActor);
+			Super::DoProjectileHit(PreEvent);
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst -- Used in delegate
 void AElementFireball::OnFireballHit(
-	AElementProjectileBase* Projectile,
-	AActor* HitActor,
-	FMutableBool ShouldDestroy
+	const FProjectileHitEvent& Event
 )
 {
-	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(HitActor))
+	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Event.HitActor))
 	{
 		if (UAbilitySystemComponent* AbilitySystemComponent = AbilitySystemInterface->GetAbilitySystemComponent())
 		{

@@ -8,11 +8,14 @@ struct OUT_OF_YOUR_ELEMENT_API FMutableBool
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
+	friend class UWrapperValuesLibrary;
+
+private:
 	bool Boolean;
 
 	bool* BooleanPtr = &Boolean;
 
+public:
 	FMutableBool() : Boolean(false) {}
 	
 	// ReSharper disable once CppNonExplicitConvertingConstructor
@@ -27,6 +30,7 @@ class OUT_OF_YOUR_ELEMENT_API UWrapperValuesLibrary : public UBlueprintFunctionL
 {
 	GENERATED_BODY()
 
+public:
 	UFUNCTION(BlueprintCallable)
 	static void SetBoolean(const FMutableBool& Boolean, const bool Value)
 	{
