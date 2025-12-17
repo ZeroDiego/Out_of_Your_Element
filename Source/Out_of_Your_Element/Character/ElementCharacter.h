@@ -43,10 +43,10 @@ struct FExperience
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int Current;
+	int Current = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int CurrentLevel;
+	int CurrentLevel = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -55,7 +55,7 @@ struct FLevelData
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int RequiredXPForLevelUp;
+	int RequiredXPForLevelUp = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayAbility> AbilityToUnlock;

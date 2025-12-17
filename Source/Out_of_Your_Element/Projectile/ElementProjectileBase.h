@@ -21,16 +21,16 @@ struct FProjectileHitEvent
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly)
-	AElementProjectileBase* Projectile;
+	AElementProjectileBase* Projectile = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	AActor* HitActor;
+	AActor* HitActor = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
 	FMutableBool ShouldDestroy;
 
 	UPROPERTY(BlueprintReadOnly)
-	FVector NormalImpulse;
+	FVector NormalImpulse = FVector::ZeroVector;
 
 	UPROPERTY(BlueprintReadOnly)
 	FHitResult Hit;
