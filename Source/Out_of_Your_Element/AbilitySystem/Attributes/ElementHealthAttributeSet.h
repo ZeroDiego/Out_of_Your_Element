@@ -11,27 +11,27 @@ struct FDamageTaken
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Damage;
+	float Damage = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool HasElement;
+	bool HasElement = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag Element;
+	FGameplayTag Element = FGameplayTag::EmptyTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* Instigator; // Example: Player
+	AActor* Instigator = nullptr; // Example: Player
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* Cause; // Example: Fireball
+	AActor* Cause = nullptr; // Example: Fireball
 };
 
 struct FResistance
 {
-	float DamageResistancePercent;
-	float DamageResistanceFixed;
-	float HealPercent;
-	float HealFixed;
+	float DamageResistancePercent = 0;
+	float DamageResistanceFixed = 0;
+	float HealPercent = 0;
+	float HealFixed = 0;
 
 	friend bool operator==(const FResistance& Lhs, const FResistance& RHS)
 	{
@@ -45,6 +45,14 @@ struct FResistance
 	{
 		return !(Lhs == RHS);
 	}
+
+	bool IsEmpty() const
+	{
+		return DamageResistancePercent == 0 &&
+			DamageResistanceFixed == 0 &&
+			HealPercent == 0 &&
+			HealFixed == 0;
+	};
 };
 
 DECLARE_MULTICAST_DELEGATE_FourParams(

@@ -139,7 +139,7 @@ void AElementCharacter::PossessedBy(AController* NewController)
 				MouseLook();
 
 				if (CursorWidgetRef)
-					CursorWidgetRef->AddToPlayerScreen();
+					CursorWidgetRef->AddToViewport(1);
 
 				if (AimMarker)
 					AimMarker->Activate();
