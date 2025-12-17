@@ -23,6 +23,24 @@ void UElementDamageExecution::Execute_Implementation(
 {
 	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 
+	const UElementHealthAttributeSet* HealthAttributeSet = nullptr;
+	if (
+		const UElementAbilitySystemComponent* ElementAbilitySystemComponent =
+			Cast<UElementAbilitySystemComponent>(ExecutionParams.GetTargetAbilitySystemComponent()))
+	{
+		if ((HealthAttributeSet =
+				Cast<const UElementHealthAttributeSet>(
+					ElementAbilitySystemComponent->GetAttributeSet(UElementHealthAttributeSet::StaticClass())
+				))
+		)
+		{
+			if (HealthAttributeSet->GetHealth() == 0.0f)
+			{
+				return;
+			}
+		}
+	}
+
 	const FGameplayEffectSpec& DamageSpec = ExecutionParams.GetOwningSpec();
 	const FGameplayEffectModifiedAttribute* DamageAttribute =
 		DamageSpec.GetModifiedAttribute(UElementHealthAttributeSet::GetDamageAttribute());
@@ -105,23 +123,16 @@ void UElementDamageExecution::Execute_Implementation(
 	if (FMath::IsNearlyZero(DamageTaken, .01f))
 		return;
 
-	if (const UElementAbilitySystemComponent* ElementAbilitySystemComponent =
-		Cast<UElementAbilitySystemComponent>(ExecutionParams.GetTargetAbilitySystemComponent()))
+	if (HealthAttributeSet)
 	{
-		if (const UElementHealthAttributeSet* HealthAttributeSet =
-			Cast<const UElementHealthAttributeSet>(
-				ElementAbilitySystemComponent->GetAttributeSet(UElementHealthAttributeSet::StaticClass())
-			))
-		{
-			const FGameplayEffectContextHandle& Context = DamageSpec.GetContext();
-			HealthAttributeSet->OnDamageTaken.Broadcast(FDamageTaken(
-				TotalDamage,
-				true,
-				DamageType,
-				Context.GetOriginalInstigator(),
-				Context.GetEffectCauser()
-			));
-		}
+		const FGameplayEffectContextHandle& Context = DamageSpec.GetContext();
+		HealthAttributeSet->OnDamageTaken.Broadcast(FDamageTaken(
+			TotalDamage,
+			true,
+			DamageType,
+			Context.GetOriginalInstigator(),
+			Context.GetEffectCauser()
+		));
 	}
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(
