@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "ElementCharacterBase.generated.h"
 
 UCLASS(Blueprintable)
@@ -22,6 +23,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
 	TSubclassOf<UGameplayEffect> FreezeImmune;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> DeathEffect;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
@@ -46,4 +50,8 @@ public:
 
 protected:
 	virtual void PostInitializeComponents() override;
+
+private:
+	UFUNCTION()
+	void OnDeath_AddDeathEffect(AActor* DyingActor, const FDamageTaken& DamageTaken);
 };
