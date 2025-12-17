@@ -207,6 +207,8 @@ protected:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	virtual void OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken) override;
+
 private:
 	UFUNCTION()
 	void OnInputMethodChange(const FPlatformUserId UserId, const FInputDeviceId DeviceId);

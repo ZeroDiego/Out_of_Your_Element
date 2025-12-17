@@ -10,6 +10,7 @@
 #include "InputActionValue.h"
 #include "NiagaraComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -278,6 +279,20 @@ void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 			&AElementCharacter::Look
 		);
 	}
+}
+
+void AElementCharacter::OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken)
+{
+	Super::OnDeath(DyingActor, DamageTaken);
+
+	if (CursorWidgetRef)
+		CursorWidgetRef->RemoveFromParent();
+
+	if (AimMarker)
+		AimMarker->DeactivateImmediate();
+
+	GetCharacterMovement()->StopMovementImmediately();
+	GetCharacterMovement()->DisableMovement();
 }
 
 void AElementCharacter::Move(const FInputActionValue& Value)

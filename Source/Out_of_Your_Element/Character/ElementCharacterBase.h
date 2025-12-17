@@ -51,7 +51,6 @@ public:
 protected:
 	virtual void PostInitializeComponents() override;
 
-private:
 	UFUNCTION()
-	void OnDeath_AddDeathEffect(AActor* DyingActor, const FDamageTaken& DamageTaken);
+	virtual void OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken);
 };
