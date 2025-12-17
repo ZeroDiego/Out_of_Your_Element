@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
+#include "Out_of_Your_Element/Projectile/ElementZoneBase.h"
 
 void UElementGameplayAbility_Freeze::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
@@ -37,6 +38,22 @@ void UElementGameplayAbility_Freeze::CastSpell(
 				World,
 				Location,
 				ActualFreezeRadius,
+				{UEngineTypes::ConvertToObjectType(ECC_WorldDynamic)},
+				AElementZoneBase::StaticClass(),
+				TArray<AActor*>(),
+				OutActors)
+		)
+		{
+			for (AActor* const& OutActor : OutActors)
+			{
+				OutActor->Destroy();
+			}
+		}
+
+		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
+				World,
+				Location,
+				ActualFreezeRadius,
 				FreezeTypes,
 				AElementAICharacterBase::StaticClass(),
 				{Caster},
@@ -53,7 +70,7 @@ void UElementGameplayAbility_Freeze::CastSpell(
 				ElementGameplayTags::Abilities_Parameters_Damage, BaseDamage);
 
 			UElementAbilitySystemComponent* CasterAsc = Caster->ElementAbilitySystemComponent;
-			for (AActor* OutActor : OutActors)
+			for (AActor* const& OutActor : OutActors)
 			{
 				if (const AElementCharacterBase* Frozen = Cast<AElementCharacterBase>(OutActor))
 				{
