@@ -23,10 +23,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Rotate(const float Degrees);
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, meta=(ForceAsFunction))
 	float GetCurrentRotation();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetCurrentRotation(const float NewRotation);
 
 protected:
