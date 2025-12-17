@@ -45,6 +45,14 @@ struct FResistance
 	{
 		return !(Lhs == RHS);
 	}
+
+	bool IsEmpty() const
+	{
+		return DamageResistancePercent == 0 &&
+			DamageResistanceFixed == 0 &&
+			HealPercent == 0 &&
+			HealFixed == 0;
+	};
 };
 
 DECLARE_MULTICAST_DELEGATE_FourParams(
