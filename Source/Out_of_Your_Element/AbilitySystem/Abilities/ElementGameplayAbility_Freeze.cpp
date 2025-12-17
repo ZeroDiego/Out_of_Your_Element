@@ -30,6 +30,9 @@ void UElementGameplayAbility_Freeze::CastSpell(
 
 		const int Level = GetAbilityLevel(Handle, ActorInfo);
 		const float ActualFreezeRadius = Level < 2 ? FreezeRadius : FreezeRadius + AdditionalFreezeRadius;
+
+		DrawDebugSphere(World, Location, ActualFreezeRadius, 32, FColor::Red, false, 5.0f);
+
 		if (TArray<AActor*> OutActors; UKismetSystemLibrary::SphereOverlapActors(
 				World,
 				Location,
