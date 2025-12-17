@@ -17,6 +17,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> BurnImmune;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> FreezeImmune;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
@@ -26,10 +32,10 @@ protected:
 
 public:
 	AElementCharacterBase();
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealth() const;
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float IsAlive() const;
 
