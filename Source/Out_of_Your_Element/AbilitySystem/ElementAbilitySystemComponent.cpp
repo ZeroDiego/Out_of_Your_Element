@@ -26,6 +26,28 @@ void UElementAbilitySystemComponent::GetActiveAbilitiesWithTags(const FGameplayT
 	}
 }
 
+bool UElementAbilitySystemComponent::HasAssetTagByHandle(
+	const FGameplayAbilitySpecHandle AbilityHandle, const FGameplayTag Tag
+) const
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilityHandle))
+	{
+		return AbilitySpec->Ability->GetAssetTags().HasTag(Tag);
+	}
+
+	return false;
+}
+
+int UElementAbilitySystemComponent::GetAbilityLevel(const FGameplayAbilitySpecHandle AbilityHandle) const
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilityHandle))
+	{
+		return AbilitySpec->Level;
+	}
+
+	return -1;
+}
+
 void UElementAbilitySystemComponent::SetAbilityLevel(FGameplayAbilitySpec* AbilitySpec, const int NewLevel)
 {
 	if (AbilitySpec)

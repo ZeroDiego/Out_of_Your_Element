@@ -24,6 +24,12 @@ public:
 	void GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer,
 	                                TArray<class UElementGameplayAbilitySpellBase*>& ActiveAbilities) const;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool HasAssetTagByHandle(FGameplayAbilitySpecHandle AbilityHandle, const FGameplayTag Tag) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int GetAbilityLevel(FGameplayAbilitySpecHandle AbilityHandle) const;
+
 	void SetAbilityLevel(FGameplayAbilitySpec* AbilitySpec, int NewLevel);
 
 	UFUNCTION(BlueprintCallable)
