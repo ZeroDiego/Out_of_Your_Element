@@ -64,13 +64,13 @@ bool AElementCharacter::CanAttack() const
 void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
 {
 	UWorld* World = GetWorld();
-	if (!World) 
+	if (!World)
 		return;
 	if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
 	{
 		Egi->GlobalVariables.AddInt(TEXT("Stats.XP Gained"), XP);
 	}
-	
+
 	if (const FLevelUpData* LevelUpData = ElementLevelUpMap.Find(Element))
 	{
 		auto& [Current, CurrentLevel] = ElementXPMap.FindOrAdd(Element);
@@ -92,7 +92,7 @@ void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
 			{
 				++CurrentLevel;
 				GetAbilitySystemComponent()->K2_GiveAbility(AbilityToUnlock);
-				
+
 				if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
 				{
 					Egi->GlobalVariables.AddInt(TEXT("Stats.TotalLevel"), XP);
@@ -213,6 +213,27 @@ void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		);
 
 		EnhancedInputComponent->BindAction(
+			SelectFireElementAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::SelectFireElement
+		);
+
+		EnhancedInputComponent->BindAction(
+			SelectNatureElementAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::SelectNatureElement
+		);
+
+		EnhancedInputComponent->BindAction(
+			SelectWaterElementAction,
+			ETriggerEvent::Triggered,
+			this,
+			&AElementCharacter::SelectWaterElement
+		);
+
+		EnhancedInputComponent->BindAction(
 			MoveAction,
 			ETriggerEvent::Triggered,
 			this,
@@ -295,10 +316,10 @@ void AElementCharacter::CycleElement(const FInputActionValue& Value)
 
 void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const
 {
-	UWorld* World = GetWorld();
-	if (!World) 
+	const UWorld* World = GetWorld();
+	if (!World)
 		return;
-	
+
 	if (!Attack)
 		return;
 
@@ -334,7 +355,7 @@ void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) co
 		if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
 		{
 			Egi->GlobalVariables.AddInt(TEXT("Stats.Abilities.Total"), 1);
-			
+
 			const FString AbilityId = Attack->GetDisplayNameText().ToString();
 			const FString PerAbilityKey = FString::Printf(TEXT("Stats.Abilities.%s.Uses"), *AbilityId);
 
@@ -365,11 +386,41 @@ void AElementCharacter::DoCycleElement(const int Amount)
 
 	ActiveElementIndex = (ActiveElementIndex + Amount) % Elements.Num();
 	if (ActiveElementIndex < 0)
-		ActiveElementIndex = Elements.Num() - 1; // TODO Improve this :sweat_smile:
+		ActiveElementIndex += Elements.Num();
 
-	const FElement OldElement = ActiveElement;
+	const FElement& OldElement = ActiveElement;
 	ActiveElement = Elements[ActiveElementIndex];
-	OnElementChangedDelegate.Broadcast(OldElement, ActiveElement, Amount);
+
+	if (OnElementChangedDelegate.IsBound())
+		OnElementChangedDelegate.Broadcast(OldElement, ActiveElement, Amount);
+}
+
+void AElementCharacter::SelectElement(const int Index)
+{
+	ActiveElementIndex = Index % Elements.Num();
+	if (ActiveElementIndex < 0)
+		ActiveElementIndex += Elements.Num();
+
+	const FElement& OldElement = ActiveElement;
+	ActiveElement = Elements[ActiveElementIndex];
+
+	if (OnElementChangedDelegate.IsBound())
+		OnElementChangedDelegate.Broadcast(OldElement, ActiveElement, 0);
+}
+
+void AElementCharacter::SelectFireElement()
+{
+	SelectElement(0);
+}
+
+void AElementCharacter::SelectNatureElement()
+{
+	SelectElement(1);
+}
+
+void AElementCharacter::SelectWaterElement()
+{
+	SelectElement(2);
 }
 
 void AElementCharacter::DoMove(const float Right, const float Forward)
