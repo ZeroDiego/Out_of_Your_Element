@@ -3,25 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
-#include "GameFramework/Character.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
 #include "ElementAICharacterBase.generated.h"
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAIDeathEvent);
-
-USTRUCT(Blueprintable)
-struct FDefaultGameplayEffectTags
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FGameplayTag, float> Tags;
-};
 
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementAICharacterBase : public AElementCharacterBase
@@ -31,11 +21,14 @@ class OUT_OF_YOUR_ELEMENT_API AElementAICharacterBase : public AElementCharacter
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn), Category = "Effects")
 	TMap<TSubclassOf<UGameplayEffect>, FDefaultGameplayEffectTags> DefaultGameplayEffects;
-	
+
 public:
 	AElementAICharacterBase();
 
 	UBehaviorTree* GetBehaviorTree() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="XP")
+	int DroppedXP;
 
 	//UPROPERTY(BlueprintReadWrite)
 	//int32 AIHealth;
@@ -75,4 +68,8 @@ public:
 	//bool bIsDead = false;
 
 	//FVector LastKnownLocation;
+
+private:
+	UFUNCTION()
+	void OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken);
 };

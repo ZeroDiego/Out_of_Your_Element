@@ -49,7 +49,7 @@ void AElementMeteor::BeginPlay()
 		if (const UGameplayEffect* ImpactDamageEffectCDO = ImpactDamageGameplayEffect.GetDefaultObject())
 		{
 			FGameplayEffectContext* EffectContext = UAbilitySystemGlobals::Get().AllocGameplayEffectContext();
-
+			EffectContext->AddInstigator(Caster, this);
 			ImpactGameplayEffectSpecHandle = FGameplayEffectSpecHandle(
 				new FGameplayEffectSpec(ImpactDamageEffectCDO, FGameplayEffectContextHandle(EffectContext))
 			);
@@ -66,7 +66,7 @@ void AElementMeteor::BeginPlay()
 		if (const UGameplayEffect* DotDamageEffectCDO = DotDamageGameplayEffect.GetDefaultObject())
 		{
 			FGameplayEffectContext* EffectContext = UAbilitySystemGlobals::Get().AllocGameplayEffectContext();
-
+			EffectContext->AddInstigator(Caster, this);
 			DotGameplayEffectSpecHandle = FGameplayEffectSpecHandle(
 				new FGameplayEffectSpec(DotDamageEffectCDO, FGameplayEffectContextHandle(EffectContext))
 			);
@@ -147,14 +147,19 @@ void AElementMeteor::LifeSpanExpired()
 	}
 	if (ImpactDecalMaterial)
 	{
-		UGameplayStatics::SpawnDecalAtLocation(
+		UDecalComponent* DecalComp = UGameplayStatics::SpawnDecalAtLocation(
 			GetWorld(),
 			ImpactDecalMaterial,
 			ImpactDecalSize,
 			TargetLocation,
-			FRotator(-90.f, FMath::RandRange(0.f, 360.f), 0.f),  
+			FRotator(-90.f, FMath::RandRange(0.f, 360.f), 0.f),
 			ImpactDecalLifetime
 		);
-		
+
+		if (DecalComp)
+		{
+			DecalComp->FadeScreenSize = 0.0f;
+			DecalComp->SetFadeOut(ImpactDecalLifetime * 0.3f, ImpactDecalLifetime * 0.3f);
+		}
 	}
 }

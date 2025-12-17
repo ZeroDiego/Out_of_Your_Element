@@ -3,9 +3,12 @@
 
 #include "ElementAnimNotify.h"
 
-void UElementAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-	const FAnimNotifyEventReference& EventReference)
+void UElementAnimNotify::Notify(
+	USkeletalMeshComponent* MeshComp,
+	UAnimSequenceBase* Animation,
+	const FAnimNotifyEventReference& EventReference
+)
 {
-	OnNotified.Broadcast(NotifyType);
+	OnNotified.Broadcast(MeshComp->GetOwner(), NotifyType);
 	Super::Notify(MeshComp, Animation, EventReference);
 }

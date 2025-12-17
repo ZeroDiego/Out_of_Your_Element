@@ -22,12 +22,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Centimeters"), Category="Element Ability Projectile")
 	float ProjectileSpawnOffset = 50.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Element Ability Projectile")
-	UNiagaraSystem* ProjectileVfx;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Element Ability Projectile")
-	UNiagaraSystem* ProjectileHitVfx;
-
 protected:
 	virtual void CastSpell(
 		const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -35,6 +29,5 @@ protected:
 		const FGameplayEventData* TriggerEventData
 	) override;
 
-	void ShootProjectile(const FVector& Location, const FRotator& Direction);
-	void ShootProjectile(const FTransform& Transform);
+	void ShootProjectile(const FTransform& Transform, int Level) const;
 };

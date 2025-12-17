@@ -14,7 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
-#include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
+#include "Out_of_Your_Element/System/ElementGameInstance.h"
 
 AElementCharacter::AElementCharacter()
 {
@@ -59,6 +59,47 @@ bool AElementCharacter::IsCastingSpell() const
 bool AElementCharacter::CanAttack() const
 {
 	return GetWorld() && !UGameplayStatics::IsGamePaused(GetWorld()) && IsAlive() && !IsCastingSpell();
+}
+
+void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
+{
+	UWorld* World = GetWorld();
+	if (!World) 
+		return;
+	if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
+	{
+		Egi->GlobalVariables.AddInt(TEXT("Stats.XP Gained"), XP);
+	}
+	
+	if (const FLevelUpData* LevelUpData = ElementLevelUpMap.Find(Element))
+	{
+		auto& [Current, CurrentLevel] = ElementXPMap.FindOrAdd(Element);
+		const TArray<FLevelData>& Levels = LevelUpData->Levels;
+		const int AvailableLevels = Levels.Num();
+
+		while (
+			CurrentLevel < AvailableLevels &&
+			XP > 0
+		)
+		{
+			const auto& [RequiredXPForLevelUp, AbilityToUnlock] = Levels[CurrentLevel];
+			const int RemainingXP = RequiredXPForLevelUp - Current;
+			const int XPToObtain = FMath::Min(XP, RemainingXP);
+
+			XP -= XPToObtain;
+			Current = (Current + XPToObtain) % RequiredXPForLevelUp;
+			if (Current == 0)
+			{
+				++CurrentLevel;
+				GetAbilitySystemComponent()->K2_GiveAbility(AbilityToUnlock);
+				
+				if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
+				{
+					Egi->GlobalVariables.AddInt(TEXT("Stats.TotalLevel"), XP);
+				}
+			}
+		}
+	}
 }
 
 void AElementCharacter::BeginPlay()
@@ -229,14 +270,11 @@ void AElementCharacter::MouseLook(const FInputActionValue& Value)
 				SetActorRotation(CurrentRotation);
 				if (AimMarker)
 				{
-					const FVector MarkerLocation = HitResult.ImpactPoint + HitResult.ImpactNormal *2.f;
-					AimMarker -> SetWorldLocation(MarkerLocation);
+					const FVector MarkerLocation = HitResult.ImpactPoint + HitResult.ImpactNormal * 2.f;
+					AimMarker->SetWorldLocation(MarkerLocation);
 
 					const FRotator MarkerRotation = FRotationMatrix::MakeFromZ(HitResult.ImpactNormal).Rotator();
 					AimMarker->SetWorldRotation(MarkerRotation);
-					
-
-					
 				}
 			}
 		}
@@ -257,6 +295,10 @@ void AElementCharacter::CycleElement(const FInputActionValue& Value)
 
 void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const
 {
+	UWorld* World = GetWorld();
+	if (!World) 
+		return;
+	
 	if (!Attack)
 		return;
 
@@ -288,6 +330,16 @@ void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) co
 			.Ability = Attack,
 			.Cooldown = MaxDuration
 		});
+
+		if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
+		{
+			Egi->GlobalVariables.AddInt(TEXT("Stats.Abilities.Total"), 1);
+			
+			const FString AbilityId = Attack->GetDisplayNameText().ToString();
+			const FString PerAbilityKey = FString::Printf(TEXT("Stats.Abilities.%s.Uses"), *AbilityId);
+
+			Egi->GlobalVariables.AddInt(PerAbilityKey, 1);
+		}
 	}
 }
 
@@ -309,9 +361,6 @@ void AElementCharacter::StartSpecialAttack()
 void AElementCharacter::DoCycleElement(const int Amount)
 {
 	if (Elements.IsEmpty())
-		return;
-
-	if (IsCastingSpell())
 		return;
 
 	ActiveElementIndex = (ActiveElementIndex + Amount) % Elements.Num();

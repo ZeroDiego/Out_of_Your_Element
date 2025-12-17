@@ -5,6 +5,15 @@
 #include "AbilitySystemComponent.h"
 #include "ElementAbilitySystemComponent.generated.h"
 
+USTRUCT(Blueprintable)
+struct FDefaultGameplayEffectTags
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FGameplayTag, float> Tags;
+};
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UElementAbilitySystemComponent : public UAbilitySystemComponent
 {
@@ -14,4 +23,18 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	void GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer,
 	                                TArray<class UElementGameplayAbilitySpellBase*>& ActiveAbilities) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool HasAssetTagByHandle(FGameplayAbilitySpecHandle AbilityHandle, const FGameplayTag Tag) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	int GetAbilityLevel(FGameplayAbilitySpecHandle AbilityHandle) const;
+
+	void SetAbilityLevel(FGameplayAbilitySpec* AbilitySpec, int NewLevel);
+
+	UFUNCTION(BlueprintCallable)
+	void SetAbilityLevelByClass(TSubclassOf<UGameplayAbility> AbilityClass, int NewLevel);
+
+	UFUNCTION(BlueprintCallable)
+	void SetAbilityLevelByHandle(FGameplayAbilitySpecHandle AbilityHandle, int NewLevel);
 };

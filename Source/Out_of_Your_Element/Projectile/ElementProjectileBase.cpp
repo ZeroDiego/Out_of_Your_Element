@@ -2,10 +2,13 @@
 
 
 #include "ElementProjectileBase.h"
+
+#include "AbilitySystemGlobals.h"
 #include "Components/SceneComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Character/ElementCharacter.h"
 
 // Sets default values
@@ -17,6 +20,7 @@ AElementProjectileBase::AElementProjectileBase()
 	ProjectileSphereComponent = CreateDefaultSubobject<USphereComponent>(FName("ProjectileSphereComponent"));
 	RootComponent = ProjectileSphereComponent;
 	ProjectileSphereComponent->SetRelativeScale3D(ProjectileScale);
+	ProjectileSphereComponent->SetCollisionResponseToAllChannels(ECR_Block);
 	ProjectileSphereComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
 	ProjectileSphereComponent->SetCollisionObjectType(ECC_GameTraceChannel1);
 
@@ -24,26 +28,38 @@ AElementProjectileBase::AElementProjectileBase()
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
 	ProjectileMovement->MaxSpeed = ProjectileMaxSpeed;
 	ProjectileMovement->ProjectileGravityScale = GravityScale;
+	ProjectileMovement->SetPlaneConstraintEnabled(true); // Constraint set in begin play
 
 	// Create the Niagara component
 	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
 	NiagaraComponent->SetupAttachment(RootComponent);
 	NiagaraComponent->bAutoActivate = false; // We activate it in BeginPlay
 
-	// Adds functionality for overlapping with other actors
-	OnActorBeginOverlap.AddDynamic(this, &AElementProjectileBase::OnActorOverlap);
+	OnActorHit.AddDynamic(this, &AElementProjectileBase::OnHit);
 }
 
 void AElementProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ElementVfx)
+	if (!GameplayEffectSpecHandle.IsValid() && DamageGameplayEffect)
 	{
-		NiagaraComponent->SetAsset(ElementVfx);
-		NiagaraComponent->Activate(true);
+		if (const UGameplayEffect* DamageEffectCDO = DamageGameplayEffect.GetDefaultObject())
+		{
+			FGameplayEffectContext* EffectContext = UAbilitySystemGlobals::Get().AllocGameplayEffectContext();
+
+			GameplayEffectSpecHandle = FGameplayEffectSpecHandle(
+				new FGameplayEffectSpec(DamageEffectCDO, FGameplayEffectContextHandle(EffectContext))
+			);
+
+			GameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+				ElementGameplayTags::Abilities_Parameters_Damage,
+				Damage
+			);
+		}
 	}
 
+	ProjectileMovement->SetPlaneConstraintFromVectors(GetActorForwardVector(), GetActorRightVector());
 	SetLifeSpan(LifeTime);
 }
 
@@ -58,13 +74,17 @@ void AElementProjectileBase::LifeSpanExpired()
 	);
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst -- Cannot be const. Used by overlap delegate
-void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* OtherActor)
+void AElementProjectileBase::DoProjectileHit(const FProjectileHitEvent& PreEvent)
 {
-	if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(OtherActor))
-	{
-		ElementCharacterBase->ElementAbilitySystemComponent->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
+	AActor* const& HitActor = PreEvent.HitActor;
 
+	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(HitActor))
+	{
+		AbilitySystemInterface->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
+	}
+
+	if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(HitActor))
+	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			this,
 			ElementPoofVfx,
@@ -80,11 +100,12 @@ void AElementProjectileBase::OnActorOverlap(AActor* OverlappedActor, AActor* Oth
 		);
 	}
 
-	const FMutableBool ShouldDestroy = true;
-	OnProjectileHit.Broadcast(this, OtherActor, ShouldDestroy);
-
-	if (ShouldDestroy)
-	{
+	OnProjectileHit.Broadcast(PreEvent);
+	if (PreEvent.ShouldDestroy)
 		Destroy();
-	}
+}
+
+void AElementProjectileBase::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	DoProjectileHit(FProjectileHitEvent(this, OtherActor, true, NormalImpulse, Hit));
 }

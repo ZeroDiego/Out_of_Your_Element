@@ -22,6 +22,8 @@
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Out_of_Your_Element/Character/ElementCharacter.h"
+#include "Out_of_Your_Element/System/ElementGameInstance.h"
 
 /* ─────────────────────────────────────────────── */
 /*                   CONSTRUCTOR                   */
@@ -31,6 +33,8 @@ AElementAICharacterBase::AElementAICharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AISoundComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
+
+	HealthAttributeSet->OnDeath.AddUniqueDynamic(this, &AElementAICharacterBase::OnDeath);
 }
 
 /* ─────────────────────────────────────────────── */
@@ -79,4 +83,71 @@ void AElementAICharacterBase::BeginPlay()
 void AElementAICharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst -- Cannot be made const, used in OnDeath delegate
+void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken)
+{
+	if (DroppedXP > 0)
+	{
+		if (AElementCharacter* Caster = Cast<AElementCharacter>(DamageTaken.Instigator))
+		{
+			Caster->GiveXP(DamageTaken.Element, DroppedXP);
+		}
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,          // key (-1 = new message)
+				5.0f,        // seconds
+				FColor::Red,
+				TEXT("World not found!")
+			);
+		}
+		return;
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			-1,          // key (-1 = new message)
+			5.0f,        // seconds
+			FColor::Green,
+			TEXT("World found!")
+		);
+	}
+			
+	if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,          // key (-1 = new message)
+				5.0f,        // seconds
+				FColor::Green,
+				TEXT("Stats updated!")
+			);
+		}
+		Egi->GlobalVariables.AddInt(TEXT("Stats.Kills.Total"), 1);
+
+		const FString AbilityId = GetClass()->GetName();
+		const FString PerAbilityKey = FString::Printf(TEXT("Stats.Kills.Type.%s"), *AbilityId);
+
+		Egi->GlobalVariables.AddInt(PerAbilityKey, 1);
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,          // key (-1 = new message)
+				5.0f,        // seconds
+				FColor::Red,
+				TEXT("Stats Not Updated!")
+			);
+		}
+	}
 }

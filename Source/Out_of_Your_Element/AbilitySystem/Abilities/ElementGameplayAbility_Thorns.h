@@ -24,8 +24,20 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Thorns")
 	float ThornLifespan = 5.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Thorns")
 	TSubclassOf<class AElementThorn> AThornClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Centimeters"), Category="Thorns Level 2")
+	float AdditionalLength = 250.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Degrees"), Category="Thorns Level 2")
+	float AdditionalSpread = 25.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Thorns Level 2")
+	int AdditionalThornCount = 15;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Thorns Level 2")
+	float DamageMultiplier = 0.75f;
 
 protected:
 	virtual void CastSpell(

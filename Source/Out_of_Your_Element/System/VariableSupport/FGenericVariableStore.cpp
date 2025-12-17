@@ -5,6 +5,7 @@ void FGenericVariableStore::SetInt(const FString& Name, int32 Value)
 {
     FGenericVariable& Var = Variables.FindOrAdd(Name);
     Var.Set(Value);
+    MaybeAutoSort();
 }
 
 bool FGenericVariableStore::GetInt(const FString& Name, int32& OutValue) const
@@ -21,6 +22,7 @@ void FGenericVariableStore::SetFloat(const FString& Name, float Value)
 {
     FGenericVariable& Var = Variables.FindOrAdd(Name);
     Var.Set(Value);
+    MaybeAutoSort();
 }
 
 bool FGenericVariableStore::GetFloat(const FString& Name, float& OutValue) const
@@ -37,6 +39,7 @@ void FGenericVariableStore::SetBool(const FString& Name, bool Value)
 {
     FGenericVariable& Var = Variables.FindOrAdd(Name);
     Var.Set(Value);
+    MaybeAutoSort();
 }
 
 bool FGenericVariableStore::GetBool(const FString& Name, bool& OutValue) const
@@ -53,6 +56,7 @@ void FGenericVariableStore::SetString(const FString& Name, const FString& Value)
 {
     FGenericVariable& Var = Variables.FindOrAdd(Name);
     Var.Set(Value);
+    MaybeAutoSort();
 }
 
 bool FGenericVariableStore::GetString(const FString& Name, FString& OutValue) const
@@ -69,6 +73,7 @@ void FGenericVariableStore::SetStringArray(const FString& Name, const TArray<FSt
 {
     FGenericVariable& Var = Variables.FindOrAdd(Name);
     Var.Set(Value); // calls FGenericVariable::Set(const TArray<FString>&)
+    MaybeAutoSort();
 }
 
 bool FGenericVariableStore::GetStringArray(const FString& Name, TArray<FString>& OutValue) const
@@ -89,9 +94,134 @@ bool FGenericVariableStore::HasVariable(const FString& Name) const
 void FGenericVariableStore::RemoveVariable(const FString& Name)
 {
     Variables.Remove(Name);
+    MaybeAutoSort();
 }
 
 void FGenericVariableStore::Clear()
 {
     Variables.Empty();
 }
+
+// ---------- Modify / Increment ----------
+
+int32 FGenericVariableStore::AddInt(const FString& Name, int32 Delta)
+{
+    FGenericVariable& Var = Variables.FindOrAdd(Name);
+
+    int32 CurrentValue = 0;
+    if (Var.Type == EVariableType::Int)
+    {
+        CurrentValue = Var.IntValue;
+    }
+
+    const int32 NewValue = CurrentValue + Delta;
+    Var.Set(NewValue);
+    MaybeAutoSort();
+    return NewValue;
+}
+
+float FGenericVariableStore::AddFloat(const FString& Name, float Delta)
+{
+    FGenericVariable& Var = Variables.FindOrAdd(Name);
+
+    float CurrentValue = 0.0f;
+    if (Var.Type == EVariableType::Float)
+    {
+        CurrentValue = Var.FloatValue;
+    }
+
+    const float NewValue = CurrentValue + Delta;
+    Var.Set(NewValue);
+    MaybeAutoSort();
+    return NewValue;
+}
+
+FGenericVariableStore FGenericVariableStore::Where(const FString& NameContains, ESearchCase::Type SearchCase) const
+{
+    FGenericVariableStore Result;
+
+    // Empty substring => return a full copy (everything "contains" "")
+    if (NameContains.IsEmpty())
+    {
+        Result.Variables = Variables;
+        return Result;
+    }
+
+    for (const TPair<FString, FGenericVariable>& Pair : Variables)
+    {
+        if (Pair.Key.Contains(NameContains, SearchCase))
+        {
+            Result.Variables.Add(Pair.Key, Pair.Value);
+        }
+    }
+
+    return Result;
+}
+
+bool FGenericVariableStore::FindFirstByNameContains(const FString& NameContains, FGenericVariable& OutVariable,
+    FString& OutFoundName, ESearchCase::Type SearchCase) const
+{
+    if (Variables.Num() == 0)
+        return false;
+
+    // Deterministic: iterate keys in sorted order
+    const TArray<FString> Keys = GetSortedNames(SearchCase);
+
+    // Empty substring => first key in sorted order
+    if (NameContains.IsEmpty())
+    {
+        const FString& FirstKey = Keys[0];
+        if (const FGenericVariable* Var = Variables.Find(FirstKey))
+        {
+            OutFoundName = FirstKey;
+            OutVariable = *Var;
+            return true;
+        }
+        return false;
+    }
+
+    for (const FString& Key : Keys)
+    {
+        if (Key.Contains(NameContains, SearchCase))
+        {
+            if (const FGenericVariable* Var = Variables.Find(Key))
+            {
+                OutFoundName = Key;
+                OutVariable = *Var;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+void FGenericVariableStore::SortByName(ESearchCase::Type SearchCase)
+{
+    Variables.KeySort([SearchCase](const FString& A, const FString& B)
+    {
+        return A.Compare(B, SearchCase) < 0;
+    });
+}
+
+TArray<FString> FGenericVariableStore::GetSortedNames(ESearchCase::Type SearchCase) const
+{
+    TArray<FString> Keys;
+    Variables.GetKeys(Keys);
+
+    Keys.Sort([SearchCase](const FString& A, const FString& B)
+    {
+        return A.Compare(B, SearchCase) < 0;
+    });
+
+    return Keys;
+}
+
+void FGenericVariableStore::MaybeAutoSort()
+{
+    if (bAutoSortByName)
+    {
+        SortByName();
+    }
+}
+
