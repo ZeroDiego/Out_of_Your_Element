@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Unit="Centimeter"), Category="Meteor Level 2")
 	float MeteorSpacing = 500.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor Level 2")
+	float MeteorSpawnDelay = 0.25f;
+
 protected:
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
@@ -37,6 +40,13 @@ protected:
 	) override;
 
 	virtual void CastSpell(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
+
+	virtual void EndSpell(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,

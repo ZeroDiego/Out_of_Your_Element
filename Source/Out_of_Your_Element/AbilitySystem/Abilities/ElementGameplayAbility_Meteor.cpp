@@ -46,9 +46,31 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 					const int Level = GetAbilityLevel(Handle, ActorInfo);
 					const int SpawnCount = Level < 2 ? 1 : MeteorCount;
 
+					FTimerManager& TimerManager = Caster->GetWorld()->GetTimerManager();
 					for (int i = 0; i < SpawnCount; ++i)
 					{
-						SpawnMeteor(Caster, SpawnLocation, Level);
+						if (const float Delay = MeteorSpawnDelay * i; Delay > 0)
+						{
+							FTimerHandle TimerHandle;
+							TimerManager.SetTimer(
+								TimerHandle,
+								FTimerDelegate::CreateWeakLambda(this, [=, this]
+								{
+									SpawnMeteor(Caster, SpawnLocation, Level);
+
+									if (i == SpawnCount - 1)
+										EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+								}),
+								Delay,
+								false
+							);
+						}
+						else
+						{
+							SpawnMeteor(Caster, SpawnLocation, Level);
+							EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+						}
+
 						SpawnLocation += MeteorSpacing * SpawnDirection;
 					}
 				}
@@ -65,6 +87,15 @@ void UElementGameplayAbility_Meteor::CastSpell(
 {
 }
 
+void UElementGameplayAbility_Meteor::EndSpell(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData
+)
+{
+}
+
 void UElementGameplayAbility_Meteor::SpawnMeteor(
 	AActor* Caster,
 	const FVector& SpawnLocation,
@@ -72,7 +103,7 @@ void UElementGameplayAbility_Meteor::SpawnMeteor(
 ) const
 {
 	const FTransform SpawnTransform(FRotator::ZeroRotator, SpawnLocation);
-	if (AElementMeteor* Meteor = GetWorld()->SpawnActorDeferred<AElementMeteor>(
+	if (AElementMeteor* Meteor = Caster->GetWorld()->SpawnActorDeferred<AElementMeteor>(
 		MeteorClass,
 		SpawnTransform
 	))
