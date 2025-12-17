@@ -54,6 +54,9 @@ void UElementAbilitySystemComponent::SetAbilityLevel(FGameplayAbilitySpec* Abili
 	{
 		AbilitySpec->Level = NewLevel;
 		MarkAbilitySpecDirty(*AbilitySpec);
+
+		if (OnAbilityUpgraded.IsBound())
+			OnAbilityUpgraded.Broadcast(AbilitySpec->Handle);
 	}
 }
 
@@ -67,4 +70,12 @@ void UElementAbilitySystemComponent::SetAbilityLevelByHandle(const FGameplayAbil
                                                              const int NewLevel)
 {
 	SetAbilityLevel(FindAbilitySpecFromHandle(AbilityHandle), NewLevel);
+}
+
+void UElementAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	Super::OnGiveAbility(AbilitySpec);
+
+	if (OnAbilityUnlocked.IsBound())
+		OnAbilityUnlocked.Broadcast(AbilitySpec.Handle);
 }

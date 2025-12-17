@@ -14,10 +14,21 @@ struct FDefaultGameplayEffectTags
 	TMap<FGameplayTag, float> Tags;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityUnlockedDelegate, FGameplayAbilitySpecHandle, AbilityHandle);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityUpgradedDelegate, FGameplayAbilitySpecHandle, AbilityHandle);
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UElementAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FAbilityUnlockedDelegate OnAbilityUnlocked;
+
+	UPROPERTY(BlueprintAssignable)
+	FAbilityUpgradedDelegate OnAbilityUpgraded;
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
@@ -37,4 +48,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetAbilityLevelByHandle(FGameplayAbilitySpecHandle AbilityHandle, int NewLevel);
+	
+	virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 };
