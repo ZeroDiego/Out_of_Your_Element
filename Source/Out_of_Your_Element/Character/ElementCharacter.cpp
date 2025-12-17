@@ -39,7 +39,7 @@ AElementCharacter::AElementCharacter()
 
 	AimMarker = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AimMarker"));
 	AimMarker->SetupAttachment(RootComponent);
-	AimMarker->SetAutoActivate(true);
+	AimMarker->SetAutoActivate(false);
 }
 
 bool AElementCharacter::IsCastingSpell() const
@@ -114,27 +114,51 @@ void AElementCharacter::BeginPlay()
 		}
 	}
 
-	if (CursorWidgetClass)
-	{
-		if (APlayerController* CurrentController = Cast<APlayerController>(GetController()))
-		{
-			if (CurrentController->IsLocalController())
-			{
-				CursorWidgetRef = CreateWidget(CurrentController, CursorWidgetClass, TEXT("Cursor"));
-				FVector2D CursorPosition;
-				CurrentController->GetMousePosition(CursorPosition.X, CursorPosition.Y);
-				CursorWidgetRef->SetPositionInViewport(CursorPosition);
-				CursorWidgetRef->AddToPlayerScreen();
-			}
-		}
-	}
-
 	DoCycleElement(0);
 }
 
-void AElementCharacter::Tick(const float DeltaSeconds)
+void AElementCharacter::PossessedBy(AController* NewController)
 {
-	Super::Tick(DeltaSeconds);
+	Super::PossessedBy(NewController);
+
+	if (NewController->IsLocalPlayerController())
+	{
+		if (APlayerController* CurrentController = Cast<APlayerController>(GetController()))
+		{
+			if (CursorWidgetClass && !CursorWidgetRef)
+				CursorWidgetRef = CreateWidget(CurrentController, CursorWidgetClass, TEXT("Cursor"));
+		}
+
+		// Delay so world is fully loaded and traceable.
+		// TODO Find a better solution!!!
+		FTimerHandle Handle;
+		GetWorldTimerManager().SetTimer(
+			Handle,
+			FTimerDelegate::CreateWeakLambda(this, [this]
+			{
+				MouseLook();
+
+				if (CursorWidgetRef)
+					CursorWidgetRef->AddToPlayerScreen();
+
+				if (AimMarker)
+					AimMarker->Activate();
+			}),
+			1.0f,
+			false
+		);
+	}
+}
+
+void AElementCharacter::UnPossessed()
+{
+	Super::UnPossessed();
+
+	if (CursorWidgetRef)
+		CursorWidgetRef->RemoveFromParent();
+
+	if (AimMarker)
+		AimMarker->DeactivateImmediate();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst -- cannot be const, will break add unique dynamic
@@ -262,7 +286,7 @@ void AElementCharacter::Move(const FInputActionValue& Value)
 	DoMove(MovementVector.X, MovementVector.Y);
 }
 
-void AElementCharacter::MouseLook(const FInputActionValue& Value)
+void AElementCharacter::MouseLook()
 {
 	if (const APlayerController* CurrentController = Cast<APlayerController>(GetController()))
 	{

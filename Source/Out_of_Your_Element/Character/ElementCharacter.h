@@ -201,7 +201,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Tick(const float DeltaSeconds) override;
+	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void UnPossessed() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
@@ -210,7 +212,7 @@ private:
 	void OnInputMethodChange(const FPlatformUserId UserId, const FInputDeviceId DeviceId);
 
 	void Move(const FInputActionValue& Value);
-	void MouseLook(const FInputActionValue& Value);
+	void MouseLook();
 	void Look(const FInputActionValue& Value);
 	void CycleElement(const FInputActionValue& Value);
 
