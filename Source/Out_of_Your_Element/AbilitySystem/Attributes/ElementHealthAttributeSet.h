@@ -26,6 +26,35 @@ struct FDamageTaken
 	AActor* Cause; // Example: Fireball
 };
 
+struct FResistance
+{
+	float DamageResistancePercent;
+	float DamageResistanceFixed;
+	float HealPercent;
+	float HealFixed;
+
+	friend bool operator==(const FResistance& Lhs, const FResistance& RHS)
+	{
+		return Lhs.DamageResistancePercent == RHS.DamageResistancePercent
+			&& Lhs.DamageResistanceFixed == RHS.DamageResistanceFixed
+			&& Lhs.HealPercent == RHS.HealPercent
+			&& Lhs.HealFixed == RHS.HealFixed;
+	}
+
+	friend bool operator!=(const FResistance& Lhs, const FResistance& RHS)
+	{
+		return !(Lhs == RHS);
+	}
+};
+
+DECLARE_MULTICAST_DELEGATE_FourParams(
+	FResistanceChangedEvent,
+	class UElementHealthAttributeSet*,
+	const FGameplayTag& DamageType,
+	const FResistance&,
+	const FResistance&
+);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FDamageTakenEvent,
 	const FDamageTaken&, DamageTaken
@@ -76,8 +105,21 @@ public:
 	UPROPERTY(BlueprintAssignable, Meta = (HideFromModifiers))
 	FDamageTakenEvent OnDamageTaken;
 
+	FResistanceChangedEvent OnResistanceChanged;
+
+private:
+	TMap<FGameplayTag, FResistance> DamageResistances;
+
 public:
 	UElementHealthAttributeSet();
+
+	bool GetResistanceByTag(
+		const FGameplayTag& DamageType,
+		OUT float& OutDamagePercent,
+		OUT float& OutDamageFixed,
+		OUT float& OutHealPercent,
+		OUT float& OutHealFixed
+	) const;
 
 protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
@@ -89,4 +131,6 @@ protected:
 private:
 	UFUNCTION()
 	void SetLastDamageTaken(const FDamageTaken& DamageTaken);
+
+	void UpdateResistances(const FGameplayEffectSpec& Spec, bool Removed);
 };
