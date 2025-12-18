@@ -30,16 +30,6 @@ void AElementZoneBase::BeginPlay()
 	FTimerHandle Handle = FTimerHandle();
 	GetWorld()->GetTimerManager().SetTimer(Handle, this, &AElementZoneBase::DoDamage, 1.0f, true);
 
-	DrawDebugSphere(
-		GetWorld(),
-		GetActorLocation(),
-		ZoneSphereComponent->GetScaledSphereRadius(),
-		32,
-		FColor::Red,
-		false,
-		GetLifeSpan()
-	);
-
 	DoDamage();
 }
 

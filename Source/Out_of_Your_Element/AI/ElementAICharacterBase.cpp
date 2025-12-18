@@ -86,7 +86,7 @@ void AElementAICharacterBase::Tick(float DeltaTime)
 void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken)
 {
 	Super::OnDeath(DyingActor, DamageTaken);
-	
+
 	if (DroppedXP > 0)
 	{
 		if (AElementCharacter* Caster = Cast<AElementCharacter>(DamageTaken.Instigator))
@@ -95,18 +95,20 @@ void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& Da
 		}
 	}
 
-	UWorld* World = GetWorld();
+	const UWorld* World = GetWorld();
 	if (!World)
 	{
+		/*
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
-				-1,          // key (-1 = new message)
-				5.0f,        // seconds
+				-1, // key (-1 = new message)
+				5.0f, // seconds
 				FColor::Red,
 				TEXT("World not found!")
 			);
 		}
+		*/
 		return;
 	}
 	/*
@@ -120,7 +122,7 @@ void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& Da
 		);
 	}
 	*/
-			
+
 	if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
 	{
 		/*
@@ -141,6 +143,7 @@ void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& Da
 
 		Egi->GlobalVariables.AddInt(PerAbilityKey, 1);
 	}
+	/*
 	else
 	{
 		if (GEngine)
@@ -153,4 +156,5 @@ void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& Da
 			);
 		}
 	}
+	*/
 }
