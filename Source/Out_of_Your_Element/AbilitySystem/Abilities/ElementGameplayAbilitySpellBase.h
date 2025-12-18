@@ -23,7 +23,7 @@ protected:
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData
-	) PURE_VIRTUAL(UElementGameplayAbilityBase::CastSpell);
+	);
 
 	virtual void EndSpell(
 		const FGameplayAbilitySpecHandle Handle,
@@ -40,6 +40,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	TSubclassOf<UGameplayEffect> DamageGameplayEffect = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
+	USoundBase* ActivationSound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	float BaseDamage = 25.0f;

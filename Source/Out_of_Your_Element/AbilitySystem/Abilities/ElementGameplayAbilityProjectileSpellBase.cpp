@@ -16,6 +16,8 @@ void UElementGameplayAbilityProjectileSpellBase::CastSpell(
 	const FGameplayEventData* TriggerEventData
 )
 {
+	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	if (const AActor* Caster = GetAvatarActorFromActorInfo())
 	{
 		const FVector Offset = Caster->GetActorForwardVector() * ProjectileSpawnOffset;

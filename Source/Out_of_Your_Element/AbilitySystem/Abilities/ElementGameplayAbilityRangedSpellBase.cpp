@@ -63,6 +63,8 @@ void UElementGameplayAbilityRangedSpellBase::CastSpell(
 	const FGameplayEventData* TriggerEventData
 )
 {
+	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	if (!ActorInfo->AvatarActor.IsValid())
 		return;
 
