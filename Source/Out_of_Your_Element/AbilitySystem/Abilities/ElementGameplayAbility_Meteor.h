@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ElementGameplayAbilitySpellBase.h"
+#include "ElementGameplayAbilityRangedSpellBase.h"
 #include "Out_of_Your_Element/Projectile/ElementZoneBase.h"
 #include "ElementGameplayAbility_Meteor.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Meteor : public UElementGameplayAbilitySpellBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Meteor : public UElementGameplayAbilityRangedSpellBase
 {
 	GENERATED_BODY()
 
@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Unit="Centimeter"), Category="Meteor Level 2")
 	float MeteorSpacing = 500.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor Level 2")
+	float MeteorSpawnDelay = 0.25f;
+
 protected:
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
@@ -37,6 +40,21 @@ protected:
 	) override;
 
 	virtual void CastSpell(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
+
+	virtual void CastSpellAtLocation(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData,
+		const FVector& Location
+	) override;
+
+	virtual void EndSpell(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,

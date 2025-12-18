@@ -87,4 +87,18 @@ void AElementCharacterBase::PostInitializeComponents()
 		this,
 		CheckAndApplyFreezeAndBurnImmune
 	);
+
+	HealthAttributeSet->OnDeath.AddUniqueDynamic(this, &AElementCharacterBase::OnDeath);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst -- Used in delegate
+void AElementCharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken)
+{
+	UAbilitySystemComponent* Asc = HealthAttributeSet->GetOwningAbilitySystemComponent();
+
+	Asc->BP_ApplyGameplayEffectToSelf(
+		DeathEffect,
+		FGameplayEffectConstants::INVALID_LEVEL,
+		Asc->MakeEffectContext()
+	);
 }

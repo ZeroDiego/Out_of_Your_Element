@@ -9,18 +9,23 @@
 void UElementHealthAttributeSet::UpdateResistances(const FGameplayEffectSpec& Spec, const bool Removed)
 {
 	const float Modifier = Removed ? -1 : 1;
-	const TObjectPtr<const UGameplayEffect>& Def = Spec.Def; // Better id
+	const TObjectPtr<const UGameplayEffect>& Def = Spec.Def;
 	if (const FGameplayTag& DamageType = Def->GetAssetTags().First(); DamageType.IsValid())
 	{
-		FResistance& Resistance = DamageResistances.FindOrAdd(DamageType);
-		const FResistance Old = Resistance;
+		FResistance* Resistance = DamageResistances.Find(DamageType);
+
+		const bool bFound = static_cast<bool>(Resistance);
+		FResistance EmptyOrNew = FResistance();
+
+		FResistance& New = bFound ? *Resistance : EmptyOrNew;
+		const FResistance Old = FResistance(New);
 
 		auto& [
 			DamageResistancePercent,
 			DamageResistanceFixed,
 			HealPercent,
 			HealFixed
-		] = Resistance;
+		] = New;
 
 		DamageResistancePercent = FMath::Clamp(
 			DamageResistancePercent + Modifier * Spec.GetSetByCallerMagnitude(
@@ -46,10 +51,21 @@ void UElementHealthAttributeSet::UpdateResistances(const FGameplayEffectSpec& Sp
 			false
 		);
 
-		if (OnResistanceChanged.IsBound())
+		if (Old != New)
 		{
-			if (Old != Resistance)
-				OnResistanceChanged.Broadcast(this, DamageType, Old, Resistance);
+			if (!bFound)
+			{
+				DamageResistances.Add(DamageType, New);
+			}
+			else if (New.IsEmpty())
+			{
+				DamageResistances.Remove(DamageType);
+			}
+
+			if (OnResistanceChanged.IsBound())
+			{
+				OnResistanceChanged.Broadcast(this, DamageType, Old, New);
+			}
 		}
 	}
 }

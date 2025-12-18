@@ -52,6 +52,7 @@ namespace ElementGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Abilities_Cooldowns_Freeze, "Abilities.Cooldowns.Freeze");
 	UE_DEFINE_GAMEPLAY_TAG(Abilities_Cooldowns_Thorns, "Abilities.Cooldowns.Thorns");
 
+	UE_DEFINE_GAMEPLAY_TAG(Status_Dead, "Status.Dead");
 	UE_DEFINE_GAMEPLAY_TAG(Status_Frozen, "Status.Frozen");
 	UE_DEFINE_GAMEPLAY_TAG(Status_Burning, "Status.Burning");
 	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Status_Frozen, "GameplayCue.Status.Frozen");
