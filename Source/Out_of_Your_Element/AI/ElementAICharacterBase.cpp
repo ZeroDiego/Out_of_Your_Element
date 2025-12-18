@@ -109,6 +109,7 @@ void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& Da
 		}
 		return;
 	}
+	/*
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
@@ -118,9 +119,11 @@ void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& Da
 			TEXT("World found!")
 		);
 	}
+	*/
 			
 	if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
 	{
+		/*
 		if (GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
@@ -130,6 +133,7 @@ void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& Da
 				TEXT("Stats updated!")
 			);
 		}
+		*/
 		Egi->GlobalVariables.AddInt(TEXT("Stats.Kills.Total"), 1);
 
 		const FString AbilityId = GetClass()->GetName();

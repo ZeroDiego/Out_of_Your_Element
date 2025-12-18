@@ -100,6 +100,8 @@ void UElementGameplayAbility_Thorns::CastSpell(
 	const FGameplayEventData* TriggerEventData
 )
 {
+	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	if (const AElementCharacterBase* Caster = Cast<AElementCharacterBase>(GetAvatarActorFromActorInfo()))
 	{
 		const FVector ActorLocation = Caster->GetActorLocation();

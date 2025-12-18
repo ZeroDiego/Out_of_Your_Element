@@ -5,6 +5,7 @@
 #include "ElementGameplayAbilitySpellBase.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/Animation/ElementAnimNotify.h"
 
 void UElementGameplayAbilitySpellBase::ActivateAbility(
@@ -71,6 +72,26 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 	}
 
 	MontageTask->ReadyForActivation();
+}
+
+void UElementGameplayAbilitySpellBase::CastSpell(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData
+)
+{
+	if (!ActorInfo->AvatarActor.IsValid())
+		return;
+
+	const AActor* Caster = ActorInfo->AvatarActor.Get();
+
+	UGameplayStatics::PlaySoundAtLocation(
+		Caster->GetWorld(),
+		ActivationSound,
+		Caster->GetActorLocation(),
+		Caster->GetActorRotation()
+	);
 }
 
 void UElementGameplayAbilitySpellBase::EndSpell(
