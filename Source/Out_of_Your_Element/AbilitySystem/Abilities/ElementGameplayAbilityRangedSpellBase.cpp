@@ -50,8 +50,11 @@ bool UElementGameplayAbilityRangedSpellBase::CanPlace(const FHitResult& HitResul
 
 bool UElementGameplayAbilityRangedSpellBase::GetSpellLocation(const AActor* Caster, FVector& OutLocation)
 {
-	if (FHitResult HitResult; TraceSpell(Caster, HitResult))
-		return CanPlace(HitResult);
+	if (FHitResult HitResult; TraceSpell(Caster, HitResult) && CanPlace(HitResult))
+	{
+		OutLocation = HitResult.ImpactPoint;
+		return true;
+	}
 
 	return false;
 }
