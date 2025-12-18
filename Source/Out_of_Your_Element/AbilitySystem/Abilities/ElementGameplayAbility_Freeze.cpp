@@ -1,7 +1,6 @@
 ﻿#include "ElementGameplayAbility_Freeze.h"
 
 #include "NiagaraFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
@@ -14,6 +13,8 @@ void UElementGameplayAbility_Freeze::CastSpell(
 	const FGameplayEventData* TriggerEventData
 )
 {
+	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	if (AElementCharacterBase* Caster = Cast<AElementCharacterBase>(GetAvatarActorFromActorInfo()))
 	{
 		static const TArray<TEnumAsByte<EObjectTypeQuery>> FreezeTypes = {
