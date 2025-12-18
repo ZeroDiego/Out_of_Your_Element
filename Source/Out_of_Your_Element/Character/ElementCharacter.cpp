@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
+#include "Out_of_Your_Element/AbilitySystem/Abilities/ElementGameplayAbilityRangedSpellBase.h"
 #include "Out_of_Your_Element/System/ElementGameInstance.h"
 
 AElementCharacter::AElementCharacter()
@@ -314,27 +315,38 @@ void AElementCharacter::MouseLook()
 				CursorWidgetRef->SetPositionInViewport(CursorPosition);
 			}
 
-			static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
-				UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
-			};
-
-			if (FHitResult HitResult; CurrentController->GetHitResultUnderCursorForObjects(
-				GroundTypes, false, HitResult))
+			if (FHitResult SpellHitResult; UElementGameplayAbilityRangedSpellBase::TraceSpell(this, SpellHitResult))
 			{
+				const FVector& SpellLocation = SpellHitResult.ImpactPoint;
 				const FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(
-					GetActorLocation(), HitResult.Location
+					GetActorLocation(), SpellLocation
 				);
 
 				FRotator CurrentRotation = GetActorRotation();
 				CurrentRotation.Yaw = LookRotation.Yaw;
 				SetActorRotation(CurrentRotation);
+
 				if (AimMarker)
 				{
-					const FVector MarkerLocation = HitResult.ImpactPoint + HitResult.ImpactNormal * 2.f;
-					AimMarker->SetWorldLocation(MarkerLocation);
+					if (UElementGameplayAbilityRangedSpellBase::CanPlace(SpellHitResult))
+					{
+						AimMarker->Activate();
+						AimMarker->SetWorldLocation(SpellLocation);
 
-					const FRotator MarkerRotation = FRotationMatrix::MakeFromZ(HitResult.ImpactNormal).Rotator();
-					AimMarker->SetWorldRotation(MarkerRotation);
+						const auto MarkerRotation = FRotationMatrix::MakeFromZ(SpellHitResult.ImpactNormal).Rotator();
+						AimMarker->SetWorldRotation(MarkerRotation);
+					}
+					else
+					{
+						AimMarker->DeactivateImmediate();
+					}
+				}
+			}
+			else
+			{
+				if (AimMarker)
+				{
+					AimMarker->DeactivateImmediate();
 				}
 			}
 		}

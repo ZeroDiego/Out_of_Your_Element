@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ElementGameplayAbilitySpellBase.h"
+#include "ElementGameplayAbilityRangedSpellBase.h"
 #include "Out_of_Your_Element/Projectile/ElementZoneBase.h"
 #include "ElementGameplayAbility_Meteor.generated.h"
 
 UCLASS()
-class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Meteor : public UElementGameplayAbilitySpellBase
+class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Meteor : public UElementGameplayAbilityRangedSpellBase
 {
 	GENERATED_BODY()
 
@@ -44,6 +44,14 @@ protected:
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData
+	) override;
+
+	virtual void CastSpellAtLocation(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData,
+		const FVector& Location
 	) override;
 
 	virtual void EndSpell(
