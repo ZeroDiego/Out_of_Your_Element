@@ -79,6 +79,21 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
 	int, CycleAmount
 );
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(
+	FOnExperienceChanged,
+	const FGameplayTag&, Element,
+	const FExperience&, OldExperience,
+	const FExperience&, NewExperience,
+	const FLevelData&, LevelData
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnLevelUp,
+	const FGameplayTag&, Element,
+	const FExperience&, Experience,
+	const FLevelData&, LevelData
+);
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API AElementCharacter : public AElementCharacterBase
 {
@@ -129,6 +144,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="XP")
 	TMap<FGameplayTag, FLevelUpData> ElementLevelUpMap;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnExperienceChanged OnExperienceChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnLevelUp OnLevelUpDelegate;
 
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
