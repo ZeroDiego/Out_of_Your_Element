@@ -21,14 +21,18 @@ void UElementGameplayAbility_Freeze::CastSpell(
 			UEngineTypes::ConvertToObjectType(ECC_Pawn)
 		};
 
+		const int Level = GetAbilityLevel(Handle, ActorInfo);
 		const UWorld* World = Caster->GetWorld();
 		const FVector Location = Caster->GetActorLocation();
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(World, FreezeActivateParticle, Location);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			World,
+			Level < 2 ? FreezeActivateParticle : LargeFreezeActivateParticle,
+			Location
+		);
 
 		const FGameplayTagContainer Burning(ElementGameplayTags::Status_Burning);
 		BP_RemoveGameplayEffectFromOwnerWithGrantedTags(Burning);
 
-		const int Level = GetAbilityLevel(Handle, ActorInfo);
 		const float ActualFreezeRadius = Level < 2 ? FreezeRadius : FreezeRadius + AdditionalFreezeRadius;
 
 		DrawDebugSphere(World, Location, ActualFreezeRadius, 32, FColor::Red, false, 5.0f);
