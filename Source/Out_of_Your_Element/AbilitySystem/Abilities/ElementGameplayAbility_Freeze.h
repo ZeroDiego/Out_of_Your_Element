@@ -3,6 +3,8 @@
 #include "ElementGameplayAbilitySpellBase.h"
 #include "ElementGameplayAbility_Freeze.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS()
 class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Freeze : public UElementGameplayAbilitySpellBase
 {
@@ -16,10 +18,13 @@ public:
 	TSubclassOf<UGameplayEffect> FreezeGameplayEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
-	class UNiagaraSystem* FreezeActivateParticle;
+	UNiagaraSystem* FreezeActivateParticle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze Level 2")
 	float AdditionalFreezeRadius = 250;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze Level 2")
+	UNiagaraSystem* LargeFreezeActivateParticle;
 
 protected:
 	virtual void CastSpell(
