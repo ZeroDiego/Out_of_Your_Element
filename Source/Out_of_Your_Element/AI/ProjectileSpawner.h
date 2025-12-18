@@ -31,22 +31,22 @@ public:
     float Spacing = 300.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
-    int32 LeftCount = 6;
+    int32 LeftCount = 24;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
     bool bRightFollowLeft = true;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts", meta=(EditCondition="!bRightFollowLeft"))
-    int32 RightCount = 6;
+    int32 RightCount = 24;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
-    int32 DownCount = 8;
+    int32 DownCount = 24;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts")
     bool bUpFollowDown = true;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Counts", meta=(EditCondition="!bUpFollowDown"))
-    int32 UpCount = 8;
+    int32 UpCount = 24;
 
     // Enable toggles
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Enable")
