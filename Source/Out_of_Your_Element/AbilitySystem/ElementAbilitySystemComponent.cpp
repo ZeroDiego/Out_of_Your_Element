@@ -72,6 +72,14 @@ void UElementAbilitySystemComponent::SetAbilityLevelByHandle(const FGameplayAbil
 	SetAbilityLevel(FindAbilitySpecFromHandle(AbilityHandle), NewLevel);
 }
 
+FGameplayTag UElementAbilitySystemComponent::GetAbilityTagByHandle(const FGameplayAbilitySpecHandle AbilityHandle) const
+{
+	if (const FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityHandle))
+		return Spec->Ability->GetAssetTags().First();
+
+	return FGameplayTag::EmptyTag;
+}
+
 void UElementAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
 {
 	Super::OnGiveAbility(AbilitySpec);

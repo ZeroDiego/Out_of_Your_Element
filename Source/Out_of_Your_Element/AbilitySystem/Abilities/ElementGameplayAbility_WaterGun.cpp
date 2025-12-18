@@ -11,6 +11,8 @@ void UElementGameplayAbility_WaterGun::CastSpell(
 	const FGameplayEventData* TriggerEventData
 )
 {
+	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	if (const AActor* Caster = GetAvatarActorFromActorInfo())
 	{
 		const float StepAngle = Spread / ProjectileCount;
