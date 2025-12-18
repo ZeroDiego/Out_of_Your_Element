@@ -48,6 +48,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetAbilityLevelByHandle(FGameplayAbilitySpecHandle AbilityHandle, int NewLevel);
-	
+
+	UFUNCTION(BlueprintCallable)
+	FGameplayTag GetAbilityTagByHandle(FGameplayAbilitySpecHandle AbilityHandle) const;
+
 	virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 };

@@ -65,9 +65,10 @@ bool AElementCharacter::CanAttack() const
 
 void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
 {
-	UWorld* World = GetWorld();
+	const UWorld* World = GetWorld();
 	if (!World)
 		return;
+
 	if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
 	{
 		Egi->GlobalVariables.AddInt(TEXT("Stats.XP Gained"), XP);
@@ -75,7 +76,10 @@ void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
 
 	if (const FLevelUpData* LevelUpData = ElementLevelUpMap.Find(Element))
 	{
-		auto& [Current, CurrentLevel] = ElementXPMap.FindOrAdd(Element);
+		FExperience& Experience = ElementXPMap.FindOrAdd(Element);
+		const FExperience OldExperience = FExperience(Experience);
+		auto& [Current, CurrentLevel] = Experience;
+
 		const TArray<FLevelData>& Levels = LevelUpData->Levels;
 		const int AvailableLevels = Levels.Num();
 
@@ -84,16 +88,23 @@ void AElementCharacter::GiveXP(const FGameplayTag& Element, int XP)
 			XP > 0
 		)
 		{
-			const auto& [RequiredXPForLevelUp, AbilityToUnlock] = Levels[CurrentLevel];
+			const auto& LevelData = Levels[CurrentLevel];
+			const auto& [RequiredXPForLevelUp, AbilityToUnlock] = LevelData;
 			const int RemainingXP = RequiredXPForLevelUp - Current;
 			const int XPToObtain = FMath::Min(XP, RemainingXP);
 
 			XP -= XPToObtain;
 			Current = (Current + XPToObtain) % RequiredXPForLevelUp;
+
+			if (OnExperienceChangedDelegate.IsBound())
+				OnExperienceChangedDelegate.Broadcast(Element, OldExperience, Experience, LevelData);
+
 			if (Current == 0)
 			{
 				++CurrentLevel;
 				GetAbilitySystemComponent()->K2_GiveAbility(AbilityToUnlock);
+				if (OnLevelUpDelegate.IsBound())
+					OnLevelUpDelegate.Broadcast(Element, Experience, LevelData);
 
 				if (UElementGameInstance* Egi = World->GetGameInstance<UElementGameInstance>())
 				{
