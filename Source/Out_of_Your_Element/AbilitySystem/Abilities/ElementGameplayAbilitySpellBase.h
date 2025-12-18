@@ -19,10 +19,18 @@ protected:
 	) override;
 
 	virtual void CastSpell(
-		const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData
 	) PURE_VIRTUAL(UElementGameplayAbilityBase::CastSpell);
+
+	virtual void EndSpell(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
 	UAnimMontage* AbilityMontage;

@@ -1,5 +1,6 @@
 ﻿#include "ElementGameplayAbility_Thorns.h"
 
+#include "ElementGameplayAbilityRangedSpellBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
 #include "Out_of_Your_Element/Projectile/ElementThorn.h"
@@ -82,8 +83,8 @@ bool FindGroundLocation(const UWorld* World, const FVector& Start, const FVector
 		)
 	)
 	{
-		DrawDebugLine(World, OffsetStart, HitResult.Location, FColor::Green, false, 5);
-		DrawDebugLine(World, HitResult.Location, End, FColor::Red, false, 5);
+		if (!UElementGameplayAbilityRangedSpellBase::CanPlace(HitResult))
+			return false;
 
 		OutLocation = HitResult.Location;
 		return true;
@@ -117,38 +118,24 @@ void UElementGameplayAbility_Thorns::CastSpell(
 		ThornPositions.Reserve(ActualThornCount);
 
 		// Always spawn thorn on cursor if in cone
-		if (const APlayerController* PlayerController = Cast<APlayerController>(Caster->GetController()))
+		if (FVector CastLocation; UElementGameplayAbilityRangedSpellBase::GetSpellLocation(Caster, CastLocation))
 		{
-			if (PlayerController->IsLocalPlayerController())
+			// Is cursor close enough
+			const FVector2D CursorLocation = FVector2D(CastLocation);
+			if (const FVector2D RelativeCursorLocation = CursorLocation - Center;
+				RelativeCursorLocation.SquaredLength() <= ActualLength * ActualLength
+			)
 			{
-				static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
-					UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2),
-				};
+				// Is cursor inside cone angle
+				const FVector2D DirectionNormalized = Direction.GetSafeNormal();
+				const FVector2D CursorNormalized = RelativeCursorLocation.GetSafeNormal();
+				const double Dot = FVector2D::DotProduct(DirectionNormalized, CursorNormalized);
 
-				if (FHitResult MouseCursorHitResult; PlayerController->GetHitResultUnderCursorForObjects(
-					GroundTypes,
-					false,
-					MouseCursorHitResult
-				))
+				if (const double Angle = FMath::Acos(Dot);
+					Angle <= ActualSpread / 2.0f
+				)
 				{
-					// Is cursor close enough
-					const FVector2D CursorLocation = FVector2D(MouseCursorHitResult.Location);
-					if (const FVector2D RelativeCursorLocation = CursorLocation - Center;
-						RelativeCursorLocation.SquaredLength() <= ActualLength * ActualLength
-					)
-					{
-						// Is cursor inside cone angle
-						const FVector2D DirectionNormalized = Direction.GetSafeNormal();
-						const FVector2D CursorNormalized = RelativeCursorLocation.GetSafeNormal();
-						const double Dot = FVector2D::DotProduct(DirectionNormalized, CursorNormalized);
-
-						if (const double Angle = FMath::Acos(Dot);
-							Angle <= ActualSpread / 2.0f
-						)
-						{
-							ThornPositions.Add(CursorLocation);
-						}
-					}
+					ThornPositions.Add(CursorLocation);
 				}
 			}
 		}

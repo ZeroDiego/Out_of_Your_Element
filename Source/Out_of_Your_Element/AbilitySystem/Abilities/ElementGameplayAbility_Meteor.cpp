@@ -21,40 +21,12 @@ void UElementGameplayAbility_Meteor::ActivateAbility(
 		TriggerEventData
 	);
 
-	if (ACharacter* Caster = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
-	{
-		if (const APlayerController* PlayerController = Cast<APlayerController>(Caster->GetController()))
-		{
-			if (PlayerController->IsLocalPlayerController())
-			{
-				static const TArray<TEnumAsByte<EObjectTypeQuery>> GroundTypes = {
-					UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2)
-				};
-
-				if (FHitResult MouseCursorHitResult;
-					PlayerController->GetHitResultUnderCursorForObjects(
-						GroundTypes,
-						false,
-						MouseCursorHitResult
-					)
-				)
-				{
-					const FVector TargetLocation = MouseCursorHitResult.ImpactPoint;
-					const FVector SpawnDirection = Caster->GetActorForwardVector();
-					FVector SpawnLocation = TargetLocation + MeteorSpawnOffset;
-
-					const int Level = GetAbilityLevel(Handle, ActorInfo);
-					const int SpawnCount = Level < 2 ? 1 : MeteorCount;
-
-					for (int i = 0; i < SpawnCount; ++i)
-					{
-						SpawnMeteor(Caster, SpawnLocation, Level);
-						SpawnLocation += MeteorSpacing * SpawnDirection;
-					}
-				}
-			}
-		}
-	}
+	Super::CastSpell(
+		Handle,
+		ActorInfo,
+		ActivationInfo,
+		TriggerEventData
+	);
 }
 
 void UElementGameplayAbility_Meteor::CastSpell(
@@ -65,6 +37,63 @@ void UElementGameplayAbility_Meteor::CastSpell(
 {
 }
 
+void UElementGameplayAbility_Meteor::CastSpellAtLocation(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData,
+	const FVector& Location
+)
+{
+	if (!ActorInfo->AvatarActor.IsValid())
+		return;
+
+	AActor* Caster = ActorInfo->AvatarActor.Get();
+
+	const FVector SpawnDirection = Caster->GetActorForwardVector();
+	FVector SpawnLocation = Location + MeteorSpawnOffset;
+
+	const int Level = GetAbilityLevel(Handle, ActorInfo);
+	const int SpawnCount = Level < 2 ? 1 : MeteorCount;
+
+	FTimerManager& TimerManager = Caster->GetWorld()->GetTimerManager();
+	for (int i = 0; i < SpawnCount; ++i)
+	{
+		if (const float Delay = MeteorSpawnDelay * i; Delay > 0)
+		{
+			FTimerHandle TimerHandle;
+			TimerManager.SetTimer(
+				TimerHandle,
+				FTimerDelegate::CreateWeakLambda(this, [=, this]
+				{
+					SpawnMeteor(Caster, SpawnLocation, Level);
+
+					if (i == SpawnCount - 1)
+						EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+				}),
+				Delay,
+				false
+			);
+		}
+		else
+		{
+			SpawnMeteor(Caster, SpawnLocation, Level);
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		}
+
+		SpawnLocation += MeteorSpacing * SpawnDirection;
+	}
+}
+
+void UElementGameplayAbility_Meteor::EndSpell(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData
+)
+{
+}
+
 void UElementGameplayAbility_Meteor::SpawnMeteor(
 	AActor* Caster,
 	const FVector& SpawnLocation,
@@ -72,7 +101,7 @@ void UElementGameplayAbility_Meteor::SpawnMeteor(
 ) const
 {
 	const FTransform SpawnTransform(FRotator::ZeroRotator, SpawnLocation);
-	if (AElementMeteor* Meteor = GetWorld()->SpawnActorDeferred<AElementMeteor>(
+	if (AElementMeteor* Meteor = Caster->GetWorld()->SpawnActorDeferred<AElementMeteor>(
 		MeteorClass,
 		SpawnTransform
 	))

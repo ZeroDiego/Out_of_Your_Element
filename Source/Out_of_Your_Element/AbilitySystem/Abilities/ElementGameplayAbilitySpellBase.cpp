@@ -63,7 +63,7 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 
 					if (NotifyType == AttackEnd)
 					{
-						EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+						EndSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 					}
 				}
 			);
@@ -71,4 +71,13 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 	}
 
 	MontageTask->ReadyForActivation();
+}
+
+void UElementGameplayAbilitySpellBase::EndSpell(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
+{
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
