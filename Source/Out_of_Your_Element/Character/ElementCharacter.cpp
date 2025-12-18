@@ -379,7 +379,7 @@ void AElementCharacter::CycleElement(const FInputActionValue& Value)
 void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const
 {
 	const UWorld* World = GetWorld();
-	if (!World)
+	if (!World)a
 		return;
 
 	if (!Attack)
