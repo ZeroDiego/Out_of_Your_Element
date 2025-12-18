@@ -6,6 +6,7 @@
 #include "AbilitySystemGlobals.h"
 #include "GameplayAbilitiesModule.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementMovementAttributeSet.h"
 #include "Out_of_Your_Element/AI/ElementalAIController.h"
@@ -45,4 +46,59 @@ void AElementCharacterBase::PostInitializeComponents()
 
 	if (UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement())
 		CharacterMovementComponent->MaxWalkSpeed = MovementAttributeSet->GetMovementSpeed();
+
+	auto CheckAndApplyFreezeAndBurnImmune = [this](
+		const UElementHealthAttributeSet* HealthAttributeSet,
+		const FGameplayTag& DamageType,
+		const FResistance& Old,
+		const FResistance& New
+	)
+	{
+		const bool bIsFire = DamageType == ElementGameplayTags::Damage_Type_Fire;
+		const bool bIsFreeze = DamageType == ElementGameplayTags::Damage_Type_Water;
+
+		if (New.DamageResistancePercent >= 1.0 && Old.DamageResistancePercent < 1.0)
+		{
+			UAbilitySystemComponent* Asc = HealthAttributeSet->GetOwningAbilitySystemComponent();
+			const FGameplayEffectContextHandle ContextHandle = Asc->MakeEffectContext();
+
+			if (bIsFire || bIsFreeze)
+			{
+				Asc->BP_ApplyGameplayEffectToSelf(
+					bIsFire ? BurnImmune : FreezeImmune,
+					FGameplayEffectConstants::INVALID_LEVEL,
+					ContextHandle
+				);
+			}
+		}
+		else if (Old.DamageResistancePercent >= 1.0 && New.DamageResistancePercent < 1.0)
+		{
+			UAbilitySystemComponent* Asc = HealthAttributeSet->GetOwningAbilitySystemComponent();
+			const FGameplayEffectContextHandle ContextHandle = Asc->MakeEffectContext();
+
+			if (bIsFire || bIsFreeze)
+			{
+				Asc->RemoveActiveGameplayEffectBySourceEffect(bIsFire ? BurnImmune : FreezeImmune, Asc);
+			}
+		}
+	};
+
+	HealthAttributeSet->OnResistanceChanged.AddWeakLambda(
+		this,
+		CheckAndApplyFreezeAndBurnImmune
+	);
+
+	HealthAttributeSet->OnDeath.AddUniqueDynamic(this, &AElementCharacterBase::OnDeath);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst -- Used in delegate
+void AElementCharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken)
+{
+	UAbilitySystemComponent* Asc = HealthAttributeSet->GetOwningAbilitySystemComponent();
+
+	Asc->BP_ApplyGameplayEffectToSelf(
+		DeathEffect,
+		FGameplayEffectConstants::INVALID_LEVEL,
+		Asc->MakeEffectContext()
+	);
 }

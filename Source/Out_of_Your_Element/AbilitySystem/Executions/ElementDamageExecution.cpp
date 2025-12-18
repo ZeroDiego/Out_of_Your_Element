@@ -23,6 +23,20 @@ void UElementDamageExecution::Execute_Implementation(
 {
 	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 
+	const UElementAbilitySystemComponent* ElementAbilitySystemComponent = Cast<UElementAbilitySystemComponent>(
+		ExecutionParams.GetTargetAbilitySystemComponent()
+	);
+
+	if (!ElementAbilitySystemComponent)
+		return;
+
+	const UElementHealthAttributeSet* HealthAttributeSet = Cast<const UElementHealthAttributeSet>(
+		ElementAbilitySystemComponent->GetAttributeSet(UElementHealthAttributeSet::StaticClass())
+	);
+
+	if (!HealthAttributeSet || HealthAttributeSet->GetHealth() == 0.0f)
+		return;
+
 	const FGameplayEffectSpec& DamageSpec = ExecutionParams.GetOwningSpec();
 	const FGameplayEffectModifiedAttribute* DamageAttribute =
 		DamageSpec.GetModifiedAttribute(UElementHealthAttributeSet::GetDamageAttribute());
@@ -61,43 +75,13 @@ void UElementDamageExecution::Execute_Implementation(
 	float HealPercent = 0.0f;
 	float HealFixed = 0.0f;
 
-	for (FActiveGameplayEffectIterator<const FActiveGameplayEffect, FActiveGameplayEffectsContainer> It =
-		     ExecutionParams.GetTargetAbilitySystemComponent()->
-		                     GetActiveGameplayEffects().
-		                     CreateConstIterator(); It; ++It
-	)
-	{
-		const FActiveGameplayEffect& ActiveEffect = *It;
-		const FGameplayEffectSpec& Spec = ActiveEffect.Spec;
-
-		if (!Spec.Def || !Spec.Def->GetAssetTags().HasTagExact(DamageType))
-			continue;
-
-		if (DamageResistancePercent <= 1.0)
-		{
-			const float Mod = Spec.GetSetByCallerMagnitude(
-				ElementGameplayTags::Abilities_Parameters_Resistance_Percent,
-				false
-			);
-
-			DamageResistancePercent = FMath::Clamp(DamageResistancePercent + Mod, 0.0f, 1.0f);
-		}
-
-		DamageResistanceFixed += Spec.GetSetByCallerMagnitude(
-			ElementGameplayTags::Abilities_Parameters_Resistance_Fixed,
-			false
-		);
-
-		HealPercent += Spec.GetSetByCallerMagnitude(
-			ElementGameplayTags::Abilities_Parameters_Heal_Percent,
-			false
-		);
-
-		HealFixed += Spec.GetSetByCallerMagnitude(
-			ElementGameplayTags::Abilities_Parameters_Heal_Fixed,
-			false
-		);
-	}
+	HealthAttributeSet->GetResistanceByTag(
+		DamageType,
+		DamageResistancePercent,
+		DamageResistanceFixed,
+		HealPercent,
+		HealFixed
+	);
 
 	const float TotalDamage = DamageTaken * (1.0f - DamageResistancePercent) - DamageResistanceFixed
 		- (DamageTaken * HealPercent + HealFixed);
@@ -105,23 +89,16 @@ void UElementDamageExecution::Execute_Implementation(
 	if (FMath::IsNearlyZero(DamageTaken, .01f))
 		return;
 
-	if (const UElementAbilitySystemComponent* ElementAbilitySystemComponent =
-		Cast<UElementAbilitySystemComponent>(ExecutionParams.GetTargetAbilitySystemComponent()))
+	if (HealthAttributeSet)
 	{
-		if (const UElementHealthAttributeSet* HealthAttributeSet =
-			Cast<const UElementHealthAttributeSet>(
-				ElementAbilitySystemComponent->GetAttributeSet(UElementHealthAttributeSet::StaticClass())
-			))
-		{
-			const FGameplayEffectContextHandle& Context = DamageSpec.GetContext();
-			HealthAttributeSet->OnDamageTaken.Broadcast(FDamageTaken(
-				TotalDamage,
-				true,
-				DamageType,
-				Context.GetOriginalInstigator(),
-				Context.GetEffectCauser()
-			));
-		}
+		const FGameplayEffectContextHandle& Context = DamageSpec.GetContext();
+		HealthAttributeSet->OnDamageTaken.Broadcast(FDamageTaken(
+			TotalDamage,
+			true,
+			DamageType,
+			Context.GetOriginalInstigator(),
+			Context.GetEffectCauser()
+		));
 	}
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(

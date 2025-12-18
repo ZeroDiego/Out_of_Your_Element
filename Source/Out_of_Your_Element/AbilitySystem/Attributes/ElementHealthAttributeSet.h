@@ -11,20 +11,57 @@ struct FDamageTaken
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Damage;
+	float Damage = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool HasElement;
+	bool HasElement = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag Element;
+	FGameplayTag Element = FGameplayTag::EmptyTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* Instigator; // Example: Player
+	AActor* Instigator = nullptr; // Example: Player
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* Cause; // Example: Fireball
+	AActor* Cause = nullptr; // Example: Fireball
 };
+
+struct FResistance
+{
+	float DamageResistancePercent = 0;
+	float DamageResistanceFixed = 0;
+	float HealPercent = 0;
+	float HealFixed = 0;
+
+	friend bool operator==(const FResistance& Lhs, const FResistance& RHS)
+	{
+		return Lhs.DamageResistancePercent == RHS.DamageResistancePercent
+			&& Lhs.DamageResistanceFixed == RHS.DamageResistanceFixed
+			&& Lhs.HealPercent == RHS.HealPercent
+			&& Lhs.HealFixed == RHS.HealFixed;
+	}
+
+	friend bool operator!=(const FResistance& Lhs, const FResistance& RHS)
+	{
+		return !(Lhs == RHS);
+	}
+
+	bool IsEmpty() const
+	{
+		return DamageResistancePercent == 0 &&
+			DamageResistanceFixed == 0 &&
+			HealPercent == 0 &&
+			HealFixed == 0;
+	};
+};
+
+DECLARE_MULTICAST_DELEGATE_FourParams(
+	FResistanceChangedEvent,
+	class UElementHealthAttributeSet*,
+	const FGameplayTag& DamageType,
+	const FResistance&,
+	const FResistance&
+);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FDamageTakenEvent,
@@ -76,8 +113,21 @@ public:
 	UPROPERTY(BlueprintAssignable, Meta = (HideFromModifiers))
 	FDamageTakenEvent OnDamageTaken;
 
+	FResistanceChangedEvent OnResistanceChanged;
+
+private:
+	TMap<FGameplayTag, FResistance> DamageResistances;
+
 public:
 	UElementHealthAttributeSet();
+
+	bool GetResistanceByTag(
+		const FGameplayTag& DamageType,
+		OUT float& OutDamagePercent,
+		OUT float& OutDamageFixed,
+		OUT float& OutHealPercent,
+		OUT float& OutHealFixed
+	) const;
 
 protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
@@ -89,4 +139,6 @@ protected:
 private:
 	UFUNCTION()
 	void SetLastDamageTaken(const FDamageTaken& DamageTaken);
+
+	void UpdateResistances(const FGameplayEffectSpec& Spec, bool Removed);
 };

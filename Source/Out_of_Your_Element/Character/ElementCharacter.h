@@ -43,10 +43,10 @@ struct FExperience
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int Current;
+	int Current = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int CurrentLevel;
+	int CurrentLevel = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -55,7 +55,7 @@ struct FLevelData
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int RequiredXPForLevelUp;
+	int RequiredXPForLevelUp = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayAbility> AbilityToUnlock;
@@ -144,6 +144,15 @@ protected:
 	UInputAction* CycleElementAction;
 
 	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* SelectFireElementAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* SelectNatureElementAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* SelectWaterElementAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MoveAction;
 
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -192,38 +201,53 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Tick(const float DeltaSeconds) override;
+	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void UnPossessed() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	virtual void OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken) override;
 
 private:
 	UFUNCTION()
 	void OnInputMethodChange(const FPlatformUserId UserId, const FInputDeviceId DeviceId);
 
 	void Move(const FInputActionValue& Value);
-	void MouseLook(const FInputActionValue& Value);
+	void MouseLook();
 	void Look(const FInputActionValue& Value);
 	void CycleElement(const FInputActionValue& Value);
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoMove(const float Right, const float Forward);
+	void DoMove(const float Right, const float Forward);
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoLook(const float Yaw);
+	void DoLook(const float Yaw);
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void StartBaseAttack();
+	void StartBaseAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void StartHeavyAttack();
+	void StartHeavyAttack();
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void StartSpecialAttack();
+	void StartSpecialAttack();
 
 	UFUNCTION(BlueprintCallable)
 	void DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const;
 
 	UFUNCTION(BlueprintCallable, Category="Input")
-	virtual void DoCycleElement(const int Amount);
+	void DoCycleElement(const int Amount);
+
+	void SelectElement(const int Index);
+
+	UFUNCTION(BlueprintCallable, Category="Input")
+	void SelectFireElement();
+
+	UFUNCTION(BlueprintCallable, Category="Input")
+	void SelectNatureElement();
+
+	UFUNCTION(BlueprintCallable, Category="Input")
+	void SelectWaterElement();
 };

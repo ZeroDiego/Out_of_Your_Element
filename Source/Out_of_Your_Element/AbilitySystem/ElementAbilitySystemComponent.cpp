@@ -26,12 +26,37 @@ void UElementAbilitySystemComponent::GetActiveAbilitiesWithTags(const FGameplayT
 	}
 }
 
+bool UElementAbilitySystemComponent::HasAssetTagByHandle(
+	const FGameplayAbilitySpecHandle AbilityHandle, const FGameplayTag Tag
+) const
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilityHandle))
+	{
+		return AbilitySpec->Ability->GetAssetTags().HasTag(Tag);
+	}
+
+	return false;
+}
+
+int UElementAbilitySystemComponent::GetAbilityLevel(const FGameplayAbilitySpecHandle AbilityHandle) const
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilityHandle))
+	{
+		return AbilitySpec->Level;
+	}
+
+	return -1;
+}
+
 void UElementAbilitySystemComponent::SetAbilityLevel(FGameplayAbilitySpec* AbilitySpec, const int NewLevel)
 {
 	if (AbilitySpec)
 	{
 		AbilitySpec->Level = NewLevel;
 		MarkAbilitySpecDirty(*AbilitySpec);
+
+		if (OnAbilityUpgraded.IsBound())
+			OnAbilityUpgraded.Broadcast(AbilitySpec->Handle);
 	}
 }
 
@@ -45,4 +70,12 @@ void UElementAbilitySystemComponent::SetAbilityLevelByHandle(const FGameplayAbil
                                                              const int NewLevel)
 {
 	SetAbilityLevel(FindAbilitySpecFromHandle(AbilityHandle), NewLevel);
+}
+
+void UElementAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	Super::OnGiveAbility(AbilitySpec);
+
+	if (OnAbilityUnlocked.IsBound())
+		OnAbilityUnlocked.Broadcast(AbilitySpec.Handle);
 }

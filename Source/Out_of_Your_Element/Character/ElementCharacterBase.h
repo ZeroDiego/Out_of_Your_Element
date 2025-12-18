@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
+#include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "ElementCharacterBase.generated.h"
 
 UCLASS(Blueprintable)
@@ -17,6 +18,15 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 	UElementAbilitySystemComponent* ElementAbilitySystemComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> BurnImmune;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> FreezeImmune;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
+	TSubclassOf<UGameplayEffect> DeathEffect;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	TObjectPtr<class UElementHealthAttributeSet> HealthAttributeSet;
@@ -26,10 +36,10 @@ protected:
 
 public:
 	AElementCharacterBase();
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHealth() const;
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float IsAlive() const;
 
@@ -40,4 +50,7 @@ public:
 
 protected:
 	virtual void PostInitializeComponents() override;
+
+	UFUNCTION()
+	virtual void OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken);
 };

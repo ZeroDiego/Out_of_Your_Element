@@ -70,6 +70,5 @@ public:
 	//FVector LastKnownLocation;
 
 private:
-	UFUNCTION()
-	void OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken);
+	virtual void OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken) override;
 };

@@ -33,8 +33,6 @@ AElementAICharacterBase::AElementAICharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AISoundComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
-
-	HealthAttributeSet->OnDeath.AddUniqueDynamic(this, &AElementAICharacterBase::OnDeath);
 }
 
 /* ─────────────────────────────────────────────── */
@@ -85,9 +83,10 @@ void AElementAICharacterBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst -- Cannot be made const, used in OnDeath delegate
 void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& DamageTaken)
 {
+	Super::OnDeath(DyingActor, DamageTaken);
+	
 	if (DroppedXP > 0)
 	{
 		if (AElementCharacter* Caster = Cast<AElementCharacter>(DamageTaken.Instigator))
