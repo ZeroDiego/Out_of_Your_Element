@@ -189,8 +189,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraRef;
 
-	UPROPERTY(VisibleAnywhere)
-	USpringArmComponent* CameraBoomRef;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess))
+	USpringArmComponent* CameraBoom;
 
 	UPROPERTY(VisibleAnywhere)
 	int ActiveElementIndex;

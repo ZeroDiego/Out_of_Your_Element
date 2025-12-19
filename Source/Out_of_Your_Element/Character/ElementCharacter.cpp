@@ -26,18 +26,16 @@ AElementCharacter::AElementCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	CameraBoomRef = CreateDefaultSubobject<USpringArmComponent>(FName("Camera Boom"));
-
-	CameraBoomRef->SetupAttachment(RootComponent);
-	CameraBoomRef->SetUsingAbsoluteRotation(true);
-	CameraBoomRef->TargetArmLength = TargetArmLength;
-	CameraBoomRef->SetRelativeRotation(CameraRotation);
-	CameraBoomRef->bDoCollisionTest = false;
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("Camera Boom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetUsingAbsoluteRotation(true);
+	CameraBoom->TargetArmLength = TargetArmLength;
+	CameraBoom->SetRelativeRotation(CameraRotation);
+	CameraBoom->bDoCollisionTest = false;
 
 	CameraRef = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
-
-	CameraRef->SetupAttachment(CameraBoomRef);
 	CameraRef->bUsePawnControlRotation = false;
+	CameraRef->AttachToComponent(CameraBoom, FAttachmentTransformRules::SnapToTargetIncludingScale);
 
 	AimMarker = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AimMarker"));
 	AimMarker->SetupAttachment(RootComponent);
