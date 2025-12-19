@@ -3,7 +3,14 @@
 
 #include "ElementAbilitySystemComponent.h"
 
+#include "GameplayTagsManager.h"
 #include "Abilities/ElementGameplayAbilitySpellBase.h"
+
+bool UElementAbilitySystemComponent::TryRequestGameplayTag(const FName TagName, FGameplayTag& Tag)
+{
+	Tag = UGameplayTagsManager::Get().RequestGameplayTag(TagName, false);
+	return Tag.IsValid();
+}
 
 void UElementAbilitySystemComponent::GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer,
                                                                 TArray<UElementGameplayAbilitySpellBase*>&
