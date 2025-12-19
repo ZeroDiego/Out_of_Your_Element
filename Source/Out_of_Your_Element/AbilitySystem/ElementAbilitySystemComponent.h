@@ -31,6 +31,9 @@ public:
 	FAbilityUpgradedDelegate OnAbilityUpgraded;
 
 public:
+	UFUNCTION(BlueprintPure)
+	static bool TryRequestGameplayTag(FName TagName, FGameplayTag& Tag);
+	
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	void GetActiveAbilitiesWithTags(const FGameplayTagContainer& GameplayTagContainer,
 	                                TArray<class UElementGameplayAbilitySpellBase*>& ActiveAbilities) const;

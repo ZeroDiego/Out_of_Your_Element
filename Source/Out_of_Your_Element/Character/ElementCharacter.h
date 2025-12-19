@@ -42,10 +42,10 @@ struct FExperience
 {
 	GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int Current = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int CurrentLevel = 0;
 };
 
@@ -198,7 +198,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	FElement ActiveElement;
 
-	UPROPERTY(VisibleAnywhere, Category="XP")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="XP", meta=(AllowPrivateAccess))
 	TMap<FGameplayTag, FExperience> ElementXPMap;
 
 public:
