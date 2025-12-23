@@ -58,7 +58,11 @@ void AElementFireball::DoProjectileHit(const FProjectileHitEvent& PreEvent)
 		);
 
 		for (AActor* const& NearbyActor : HitActors)
-			Super::DoProjectileHit(PreEvent);
+		{
+			FProjectileHitEvent NewHit(PreEvent);
+			NewHit.HitActor = NearbyActor;
+			Super::DoProjectileHit(NewHit);
+		}
 	}
 }
 

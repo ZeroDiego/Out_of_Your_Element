@@ -26,18 +26,16 @@ AElementCharacter::AElementCharacter()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	CameraBoomRef = CreateDefaultSubobject<USpringArmComponent>(FName("Camera Boom"));
-
-	CameraBoomRef->SetupAttachment(RootComponent);
-	CameraBoomRef->SetUsingAbsoluteRotation(true);
-	CameraBoomRef->TargetArmLength = TargetArmLength;
-	CameraBoomRef->SetRelativeRotation(CameraRotation);
-	CameraBoomRef->bDoCollisionTest = false;
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("Camera Boom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetUsingAbsoluteRotation(true);
+	CameraBoom->TargetArmLength = TargetArmLength;
+	CameraBoom->SetRelativeRotation(CameraRotation);
+	CameraBoom->bDoCollisionTest = false;
 
 	CameraRef = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
-
-	CameraRef->SetupAttachment(CameraBoomRef);
 	CameraRef->bUsePawnControlRotation = false;
+	CameraRef->SetupAttachment(CameraBoom);
 
 	AimMarker = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AimMarker"));
 	AimMarker->SetupAttachment(RootComponent);
@@ -418,7 +416,7 @@ void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) co
 		{
 			Egi->GlobalVariables.AddInt(TEXT("Stats.Abilities.Total"), 1);
 
-			const FString AbilityId = Attack->GetDisplayNameText().ToString();
+			const FString AbilityId = Attack->GetName();
 			const FString PerAbilityKey = FString::Printf(TEXT("Stats.Abilities.%s.Uses"), *AbilityId);
 
 			Egi->GlobalVariables.AddInt(PerAbilityKey, 1);

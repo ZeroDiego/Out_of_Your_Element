@@ -54,34 +54,39 @@ void UElementGameplayAbility_Meteor::CastSpellAtLocation(
 	FVector SpawnLocation = Location + MeteorSpawnOffset;
 
 	const int Level = GetAbilityLevel(Handle, ActorInfo);
-	const int SpawnCount = Level < 2 ? 1 : MeteorCount;
-
-	FTimerManager& TimerManager = Caster->GetWorld()->GetTimerManager();
-	for (int i = 0; i < SpawnCount; ++i)
+	if (const int SpawnCount = Level < 2 ? 1 : MeteorCount; SpawnCount > 1)
 	{
-		if (const float Delay = MeteorSpawnDelay * i; Delay > 0)
+		FTimerManager& TimerManager = Caster->GetWorld()->GetTimerManager();
+		for (int i = 0; i < SpawnCount; ++i)
 		{
-			FTimerHandle TimerHandle;
-			TimerManager.SetTimer(
-				TimerHandle,
-				FTimerDelegate::CreateWeakLambda(this, [=, this]
-				{
-					SpawnMeteor(Caster, SpawnLocation, Level);
+			if (const float Delay = MeteorSpawnDelay * i; Delay > 0)
+			{
+				FTimerHandle TimerHandle;
+				TimerManager.SetTimer(
+					TimerHandle,
+					FTimerDelegate::CreateWeakLambda(this, [=, this]
+					{
+						SpawnMeteor(Caster, SpawnLocation, Level);
 
-					if (i == SpawnCount - 1)
-						EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
-				}),
-				Delay,
-				false
-			);
-		}
-		else
-		{
-			SpawnMeteor(Caster, SpawnLocation, Level);
-			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
-		}
+						if (i == SpawnCount - 1)
+							EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+					}),
+					Delay,
+					false
+				);
+			}
+			else
+			{
+				SpawnMeteor(Caster, SpawnLocation, Level);
+			}
 
-		SpawnLocation += MeteorSpacing * SpawnDirection;
+			SpawnLocation += MeteorSpacing * SpawnDirection;
+		}
+	}
+	else
+	{
+		SpawnMeteor(Caster, SpawnLocation, Level);
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
 }
 

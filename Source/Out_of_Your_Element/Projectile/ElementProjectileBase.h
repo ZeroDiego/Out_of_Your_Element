@@ -79,7 +79,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
 	UNiagaraSystem* ElementPoofVfx;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UNiagaraComponent* NiagaraComponent;
 
 	UPROPERTY(VisibleAnywhere)

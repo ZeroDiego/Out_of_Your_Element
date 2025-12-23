@@ -42,7 +42,7 @@ void UElementGameplayAbility_FireZone::CastSpellAtLocation(
 			                           : FireZoneRadius + AdditionalFireZoneRadius;
 		FireZone->InitializeZone(
 			FireZoneGameplayEffectSpecHandle,
-			FireZoneVfx,
+			Level < 2 ? FireZoneVfx : LargeFireZoneVfx,
 			ActualRadius,
 			FireZoneLifeSpan
 		);
