@@ -67,9 +67,6 @@ void UElementGameplayAbility_Meteor::CastSpellAtLocation(
 					FTimerDelegate::CreateWeakLambda(this, [=, this]
 					{
 						SpawnMeteor(Caster, SpawnLocation, Level);
-
-						if (i == SpawnCount - 1)
-							EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 					}),
 					Delay,
 					false
@@ -86,17 +83,7 @@ void UElementGameplayAbility_Meteor::CastSpellAtLocation(
 	else
 	{
 		SpawnMeteor(Caster, SpawnLocation, Level);
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
-}
-
-void UElementGameplayAbility_Meteor::EndSpell(
-	const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData
-)
-{
 }
 
 void UElementGameplayAbility_Meteor::SpawnMeteor(
