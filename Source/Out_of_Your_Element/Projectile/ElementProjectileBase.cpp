@@ -23,6 +23,7 @@ AElementProjectileBase::AElementProjectileBase()
 	ProjectileSphereComponent->SetCollisionResponseToAllChannels(ECR_Block);
 	ProjectileSphereComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
 	ProjectileSphereComponent->SetCollisionObjectType(ECC_GameTraceChannel1);
+	ProjectileSphereComponent->SetCanEverAffectNavigation(false);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
