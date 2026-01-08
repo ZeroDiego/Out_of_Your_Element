@@ -126,6 +126,7 @@ void AElementCharacter::BeginPlay()
 	}
 
 	DoCycleElement(0);
+	MouseLook();
 }
 
 void AElementCharacter::PossessedBy(AController* NewController)
