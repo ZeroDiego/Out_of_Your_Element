@@ -332,9 +332,7 @@ void AElementCharacter::MouseLook()
 					GetActorLocation(), SpellLocation
 				);
 
-				FRotator CurrentRotation = GetActorRotation();
-				CurrentRotation.Yaw = LookRotation.Yaw;
-				SetActorRotation(CurrentRotation);
+				DoLook(LookRotation.Yaw);
 
 				if (AimMarker)
 				{
@@ -365,8 +363,21 @@ void AElementCharacter::MouseLook()
 
 void AElementCharacter::Look(const FInputActionValue& Value)
 {
-	const FVector2D LookAxisVector = Value.Get<FVector2D>();
-	DoLook(LookAxisVector.X);
+	if (const AController* CurrentController = GetController();
+		CurrentController && CurrentController->IsLocalPlayerController())
+	{
+		FVector2D LookAxisVector = Value.Get<FVector2D>();
+		if (LookAxisVector.SquaredLength() < 0.5 * 0.5)
+			return;
+
+		LookAxisVector = LookAxisVector.GetSafeNormal();
+		const float Yaw = FMath::RadiansToDegrees(
+			FMath::Atan2(LookAxisVector.Y, LookAxisVector.X)
+		) + 90;
+
+		const double ControlYaw = CurrentController->GetControlRotation().Yaw;
+		DoLook(Yaw - ControlYaw);
+	}
 }
 
 void AElementCharacter::CycleElement(const FInputActionValue& Value)
@@ -508,7 +519,7 @@ void AElementCharacter::DoLook(const float Yaw)
 	if (GetController()->IsLocalPlayerController())
 	{
 		FRotator Rotation = GetActorRotation();
-		Rotation.Yaw = FMath::Fmod(Rotation.Yaw + Yaw, 360);
+		Rotation.Yaw = FMath::Fmod(Yaw, 360);
 		SetActorRotation(Rotation);
 	}
 }
