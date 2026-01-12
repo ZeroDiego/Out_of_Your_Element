@@ -4,6 +4,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
+#include "Out_of_Your_Element/Projectile/ElementFireball.h"
 #include "Out_of_Your_Element/Projectile/ElementZoneBase.h"
 
 void UElementGameplayAbility_Freeze::CastSpell(
@@ -39,15 +40,19 @@ void UElementGameplayAbility_Freeze::CastSpell(
 				World,
 				Location,
 				ActualFreezeRadius,
-				{UEngineTypes::ConvertToObjectType(ECC_WorldDynamic)},
-				AElementZoneBase::StaticClass(),
+				{
+					UEngineTypes::ConvertToObjectType(ECC_WorldDynamic),
+					UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1), // Projectiles
+				},
+				nullptr,
 				TArray<AActor*>(),
 				OutActors)
 		)
 		{
 			for (AActor* const& OutActor : OutActors)
 			{
-				OutActor->Destroy();
+				if (OutActor->IsA(AElementZoneBase::StaticClass()) || OutActor->IsA(AElementFireball::StaticClass()))
+					OutActor->Destroy();
 			}
 		}
 
