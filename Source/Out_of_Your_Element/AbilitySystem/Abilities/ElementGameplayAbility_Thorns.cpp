@@ -75,7 +75,7 @@ bool FindGroundLocation(const UWorld* World, const FVector& Start, const FVector
 	const FVector OffsetStart = Start + SearchDistance;
 	const FVector End = Start - SearchDistance;
 	if (FHitResult HitResult;
-		World->LineTraceSingleByChannel(
+		World->LineTraceSingleByObjectType(
 			HitResult,
 			OffsetStart + SearchDistance,
 			End,
