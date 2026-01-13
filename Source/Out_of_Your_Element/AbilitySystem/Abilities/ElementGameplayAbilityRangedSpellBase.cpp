@@ -66,6 +66,7 @@ void UElementGameplayAbilityRangedSpellBase::ActivateAbility(
 	const FGameplayEventData* TriggerEventData
 )
 {
+	// TODO Implement CanActivateAbility instead!
 	if (ActorInfo->AvatarActor.IsValid())
 	{
 		const AActor* Caster = ActorInfo->AvatarActor.Get();
@@ -77,7 +78,7 @@ void UElementGameplayAbilityRangedSpellBase::ActivateAbility(
 				DistSquared > (MaxRangedSpellPlacementRange * MaxRangedSpellPlacementRange)
 			)
 			{
-				CancelAbility(Handle, ActorInfo, ActivationInfo, true);
+				EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 				return;
 			}
 		}
