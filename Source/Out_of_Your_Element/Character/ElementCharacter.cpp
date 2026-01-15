@@ -121,7 +121,17 @@ void AElementCharacter::BeginPlay()
 	{
 		if (Ability)
 		{
-			ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
+			if (FGameplayAbilitySpec Spec = FGameplayAbilitySpec(Ability);
+				!ElementAbilitySystemComponent->GetActivatableAbilities().FindByPredicate(
+					[Ability](const FGameplayAbilitySpec& ExistingAbility)
+					{
+						return ExistingAbility.Ability.IsA(Ability);
+					}
+				)
+			)
+			{
+				ElementAbilitySystemComponent->GiveAbility(Spec);
+			}
 		}
 	}
 
