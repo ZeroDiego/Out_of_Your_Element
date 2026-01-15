@@ -338,11 +338,23 @@ void AElementCharacter::MouseLook()
 				{
 					if (UElementGameplayAbilityRangedSpellBase::CanPlace(SpellHitResult))
 					{
-						AimMarker->Activate();
-						AimMarker->SetWorldLocation(SpellLocation);
+						if (
+							const double DistSquared = FVector::DistSquared(GetActorLocation(), SpellLocation);
+							DistSquared >= (MinRangedSpellPlacementRange * MinRangedSpellPlacementRange) &&
+							DistSquared <= (MaxRangedSpellPlacementRange * MaxRangedSpellPlacementRange)
+						)
+						{
+							AimMarker->Activate();
+							AimMarker->SetWorldLocation(SpellLocation);
 
-						const auto MarkerRotation = FRotationMatrix::MakeFromZ(SpellHitResult.ImpactNormal).Rotator();
-						AimMarker->SetWorldRotation(MarkerRotation);
+							const auto MarkerRotation = FRotationMatrix::MakeFromZ(SpellHitResult.ImpactNormal).
+								Rotator();
+							AimMarker->SetWorldRotation(MarkerRotation);
+						}
+						else
+						{
+							AimMarker->DeactivateImmediate();
+						}
 					}
 					else
 					{

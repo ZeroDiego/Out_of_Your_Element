@@ -26,7 +26,7 @@ void AElementMeteor::BeginPlay()
 		const FVector MaxEnd = StartLocation * GetActorUpVector() * MaxGroundCheckDistance;
 		constexpr ECollisionChannel Ground = ECC_GameTraceChannel2;
 		if (FHitResult HitResult;
-			GetWorld()->LineTraceSingleByChannel(
+			GetWorld()->LineTraceSingleByObjectType(
 				HitResult,
 				StartLocation,
 				MaxEnd,
