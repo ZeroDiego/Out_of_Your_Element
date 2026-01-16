@@ -404,8 +404,12 @@ void AElementCharacter::Look(const FInputActionValue& Value)
 
 void AElementCharacter::CycleElement(const FInputActionValue& Value)
 {
-	const float In = Value.Get<float>();
-	DoCycleElement(In > 0 ? FMath::CeilToInt(In) : FMath::FloorToInt(In));
+	if (GetWorld()->TimeSeconds - LastScrollTime > 0.25f)
+	{
+		LastScrollTime = GetWorld()->TimeSeconds;
+		const float In = Value.Get<float>();
+		DoCycleElement(In > 0 ? FMath::CeilToInt(In) : FMath::FloorToInt(In));
+	}
 }
 
 void AElementCharacter::DoAttack(const TSubclassOf<UGameplayAbility>& Attack) const
