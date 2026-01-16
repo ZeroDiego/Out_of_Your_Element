@@ -74,8 +74,6 @@ UElementHealthAttributeSet::UElementHealthAttributeSet()
 {
 	if (const IAbilitySystemInterface* Asi = Cast<IAbilitySystemInterface>(GetOuter()))
 	{
-		OnDamageTaken.AddUniqueDynamic(this, &UElementHealthAttributeSet::SetLastDamageTaken);
-
 		if (UAbilitySystemComponent* Asc = Asi->GetAbilitySystemComponent())
 		{
 			Asc->OnAnyGameplayEffectRemovedDelegate().AddWeakLambda(
@@ -174,11 +172,6 @@ void UElementHealthAttributeSet::PostAttributeChange(
 			{
 				OnDeath.Broadcast(GetOwningActor(), *LastDamageTaken);
 			}
-			else
-			{
-				const FDamageTaken DamageTaken(OldValue - NewValue, false, FGameplayTag::EmptyTag);
-				OnDeath.Broadcast(GetOwningActor(), DamageTaken);
-			}
 		}
 
 		LastDamageTaken = nullptr;
@@ -217,7 +210,7 @@ void UElementHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffect
 			const float NewHealthValue = FMath::Clamp(OldHealthValue - DamageValue, 0.0f, MaxHealthValue);
 
 			const FGameplayEffectContextHandle& Context = Spec.GetContext();
-			OnDamageTaken.Broadcast(FDamageTaken(
+			NotifyDamageTaken(FDamageTaken(
 				DamageValue,
 				false,
 				FGameplayTag::EmptyTag,
@@ -233,7 +226,8 @@ void UElementHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffect
 	}
 }
 
-void UElementHealthAttributeSet::SetLastDamageTaken(const FDamageTaken& DamageTaken)
+void UElementHealthAttributeSet::NotifyDamageTaken(const FDamageTaken& DamageTaken)
 {
+	OnDamageTaken.Broadcast(DamageTaken);
 	LastDamageTaken = MakeUnique<FDamageTaken>(DamageTaken);
 }

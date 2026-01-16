@@ -87,7 +87,7 @@ void AElementAICharacterBase::OnDeath(AActor* DyingActor, const FDamageTaken& Da
 {
 	Super::OnDeath(DyingActor, DamageTaken);
 
-	if (DroppedXP > 0)
+	if (DroppedXP > 0 && DamageTaken.HasElement)
 	{
 		if (AElementCharacter* Caster = Cast<AElementCharacter>(DamageTaken.Instigator))
 		{

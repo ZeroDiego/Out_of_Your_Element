@@ -30,9 +30,13 @@ void UElementDamageExecution::Execute_Implementation(
 	if (!ElementAbilitySystemComponent)
 		return;
 
-	const UElementHealthAttributeSet* HealthAttributeSet = Cast<const UElementHealthAttributeSet>(
-		ElementAbilitySystemComponent->GetAttributeSet(UElementHealthAttributeSet::StaticClass())
-	);
+	UElementHealthAttributeSet* HealthAttributeSet = nullptr;
+	for (UAttributeSet* SpawnedAttribute : ElementAbilitySystemComponent->GetSpawnedAttributes())
+	{
+		HealthAttributeSet = Cast<UElementHealthAttributeSet>(SpawnedAttribute);
+		if (HealthAttributeSet)
+			break;
+	}
 
 	if (!HealthAttributeSet || HealthAttributeSet->GetHealth() == 0.0f)
 		return;
@@ -50,7 +54,7 @@ void UElementDamageExecution::Execute_Implementation(
 		return;
 	}
 
-	const float DamageTaken = DamageAttribute->TotalMagnitude;
+	const float Damage = DamageAttribute->TotalMagnitude;
 
 	FGameplayTag DamageType;
 	{
@@ -67,7 +71,7 @@ void UElementDamageExecution::Execute_Implementation(
 			return;
 	}
 
-	if (FMath::IsNearlyZero(DamageTaken, .02f))
+	if (FMath::IsNearlyZero(Damage, .02f))
 		return;
 
 	float DamageResistancePercent = 0.0f;
@@ -83,16 +87,16 @@ void UElementDamageExecution::Execute_Implementation(
 		HealFixed
 	);
 
-	const float TotalDamage = DamageTaken * (1.0f - DamageResistancePercent) - DamageResistanceFixed
-		- (DamageTaken * HealPercent + HealFixed);
+	const float TotalDamage = Damage * (1.0f - DamageResistancePercent) - DamageResistanceFixed
+		- (Damage * HealPercent + HealFixed);
 
-	if (FMath::IsNearlyZero(DamageTaken, .01f))
+	if (FMath::IsNearlyZero(Damage, .01f))
 		return;
 
 	if (HealthAttributeSet)
 	{
 		const FGameplayEffectContextHandle& Context = DamageSpec.GetContext();
-		HealthAttributeSet->OnDamageTaken.Broadcast(FDamageTaken(
+		HealthAttributeSet->NotifyDamageTaken(FDamageTaken(
 			TotalDamage,
 			true,
 			DamageType,
