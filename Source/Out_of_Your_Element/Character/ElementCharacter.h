@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ElementCharacterBase.h"
+#include "InputAction.h"
 #include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "InputActionValue.h"
 #include "ElementCharacter.generated.h"
@@ -151,6 +152,10 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnLevelUp OnLevelUpDelegate;
 
+	bool IsBaseAttackHeld = false;
+	bool IsHeavyAttackHeld = false;
+	bool IsSpecialAttackHeld = false;
+
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* BaseAttackAction;
@@ -200,6 +205,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="XP", meta=(AllowPrivateAccess))
 	TMap<FGameplayTag, FExperience> ElementXPMap;
+	
+	FTimerHandle RecastTimerHandle;
 
 public:
 	AElementCharacter();
@@ -233,6 +240,10 @@ protected:
 private:
 	UFUNCTION()
 	void OnInputMethodChange(const FPlatformUserId UserId, const FInputDeviceId DeviceId);
+
+	void OnBaseAttackInput(const FInputActionValue& InputValue);
+	void OnHeavyAttackInput(const FInputActionValue& InputValue);
+	void OnSpecialAttackInput(const FInputActionValue& InputValue);
 
 	void Move(const FInputActionValue& Value);
 	void MouseLook();
