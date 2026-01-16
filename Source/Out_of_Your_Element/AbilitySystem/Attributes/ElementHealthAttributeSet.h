@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "ElementAttributeSet.h"
 #include "AbilitySystemComponent.h"
+#include "Out_of_Your_Element/AbilitySystem/Executions/ElementDamageExecution.h"
 #include "ElementHealthAttributeSet.generated.h"
 
 USTRUCT(BlueprintType)
@@ -89,6 +90,11 @@ class OUT_OF_YOUR_ELEMENT_API UElementHealthAttributeSet : public UElementAttrib
 {
 	GENERATED_BODY()
 
+	friend void UElementDamageExecution::Execute_Implementation(
+		const FGameplayEffectCustomExecutionParameters&,
+		FGameplayEffectCustomExecutionOutput&
+	) const;
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData Health;
@@ -150,8 +156,7 @@ protected:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 private:
-	UFUNCTION()
-	void SetLastDamageTaken(const FDamageTaken& DamageTaken);
+	void NotifyDamageTaken(const FDamageTaken& DamageTaken);
 
 	void UpdateResistances(const FGameplayEffectSpec& Spec, bool Removed);
 };
