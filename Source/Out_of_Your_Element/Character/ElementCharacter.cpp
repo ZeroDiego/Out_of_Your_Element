@@ -217,6 +217,33 @@ void AElementCharacter::OnInputMethodChange(const FPlatformUserId UserId, const 
 	}
 }
 
+void AElementCharacter::OnBaseAttackInput(const FInputActionValue& InputValue)
+{
+	const bool IsPressed = InputValue.Get<bool>();
+	IsBaseAttackHeld = IsPressed;
+
+	if (IsPressed)
+		StartBaseAttack();
+}
+
+void AElementCharacter::OnHeavyAttackInput(const FInputActionValue& InputValue)
+{
+	const bool IsPressed = InputValue.Get<bool>();
+	IsHeavyAttackHeld = IsPressed;
+
+	if (IsPressed)
+		StartHeavyAttack();
+}
+
+void AElementCharacter::OnSpecialAttackInput(const FInputActionValue& InputValue)
+{
+	const bool IsPressed = InputValue.Get<bool>();
+	IsSpecialAttackHeld = IsPressed;
+
+	if (IsPressed)
+		StartSpecialAttack();
+}
+
 void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -234,22 +261,88 @@ void AElementCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 			BaseAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::StartBaseAttack
+			&AElementCharacter::OnBaseAttackInput
 		);
 
 		EnhancedInputComponent->BindAction(
 			HeavyAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::StartHeavyAttack
+			&AElementCharacter::OnHeavyAttackInput
 		);
 
 		EnhancedInputComponent->BindAction(
 			SpecialAttackAction,
 			ETriggerEvent::Triggered,
 			this,
-			&AElementCharacter::StartSpecialAttack
+			&AElementCharacter::OnSpecialAttackInput
 		);
+
+		ElementAbilitySystemComponent->AbilityEndedCallbacks.AddWeakLambda(this, [this](const UGameplayAbility* Ability)
+		{
+			bool IsBaseAttack = false;
+			bool IsHeavyAttack = false;
+			bool IsSpecialAttack = false;
+
+			for (const FElement& Element : Elements)
+			{
+				if (Ability->IsA(Element.BaseAttackAbility))
+				{
+					IsBaseAttack = true;
+					break;
+				}
+
+				if (Ability->IsA(Element.HeavyAttackAbility))
+				{
+					IsHeavyAttack = true;
+					break;
+				}
+
+				if (Ability->IsA(Element.SpecialAttackAbility))
+				{
+					IsSpecialAttack = true;
+					break;
+				}
+			}
+
+			if (!IsBaseAttack && !IsHeavyAttack && !IsSpecialAttack)
+				return;
+
+			const TSharedPtr<FGameplayAbilityActorInfo>& ActorInfo = ElementAbilitySystemComponent->AbilityActorInfo;
+			if (!ActorInfo.IsValid())
+				return;
+
+			// Time offset to prevent timer from running before cooldown is complete
+			const float CooldownTimeRemaining = Ability->GetCooldownTimeRemaining(ActorInfo.Get()) + 0.05;
+
+			const FTimerDelegate RecastDelegate = FTimerDelegate::CreateWeakLambda(
+				this, [this, IsBaseAttack, IsHeavyAttack, IsSpecialAttack]
+				{
+					if (!IsBaseAttackHeld && !IsHeavyAttackHeld && !IsSpecialAttackHeld)
+						return;
+
+					if (IsBaseAttack && IsBaseAttackHeld)
+					{
+						StartBaseAttack();
+						return;
+					}
+
+					if (IsHeavyAttack && IsHeavyAttackHeld)
+					{
+						StartHeavyAttack();
+						return;
+					}
+
+					if (IsSpecialAttack && IsSpecialAttackHeld)
+					{
+						StartSpecialAttack();
+						return;
+					}
+				}
+			);
+
+			GetWorld()->GetTimerManager().SetTimer(RecastTimerHandle, RecastDelegate, CooldownTimeRemaining, false);
+		});
 
 		EnhancedInputComponent->BindAction(
 			CycleElementAction,
