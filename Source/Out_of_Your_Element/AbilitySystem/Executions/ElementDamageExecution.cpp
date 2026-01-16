@@ -33,7 +33,8 @@ void UElementDamageExecution::Execute_Implementation(
 	UElementHealthAttributeSet* HealthAttributeSet = nullptr;
 	for (UAttributeSet* SpawnedAttribute : ElementAbilitySystemComponent->GetSpawnedAttributes())
 	{
-		if ((HealthAttributeSet = Cast<UElementHealthAttributeSet>(SpawnedAttribute)))
+		HealthAttributeSet = Cast<UElementHealthAttributeSet>(SpawnedAttribute);
+		if (HealthAttributeSet)
 			break;
 	}
 
