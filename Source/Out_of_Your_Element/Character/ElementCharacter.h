@@ -238,6 +238,7 @@ private:
 	void MouseLook();
 	void Look(const FInputActionValue& Value);
 	void CycleElement(const FInputActionValue& Value);
+	float LastScrollTime = -9999.f;
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Input")
