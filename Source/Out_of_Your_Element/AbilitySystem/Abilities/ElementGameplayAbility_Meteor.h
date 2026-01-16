@@ -54,13 +54,6 @@ protected:
 		const FVector& Location
 	) override;
 
-	virtual void EndSpell(
-		const FGameplayAbilitySpecHandle Handle,
-		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo,
-		const FGameplayEventData* TriggerEventData
-	) override;
-
 	void SpawnMeteor(
 		AActor* Caster,
 		const FVector& SpawnLocation,

@@ -122,6 +122,21 @@ bool UElementHealthAttributeSet::GetResistanceByTag(
 	return false;
 }
 
+FResistance UElementHealthAttributeSet::BP_GetResistanceByTag(const FGameplayTag& DamageType) const
+{
+	FResistance Resistance = FResistance();
+
+	GetResistanceByTag(
+		DamageType,
+		Resistance.DamageResistancePercent,
+		Resistance.DamageResistanceFixed,
+		Resistance.HealPercent,
+		Resistance.HealFixed
+	);
+
+	return Resistance;
+}
+
 void UElementHealthAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	if (Attribute == GetHealthAttribute())

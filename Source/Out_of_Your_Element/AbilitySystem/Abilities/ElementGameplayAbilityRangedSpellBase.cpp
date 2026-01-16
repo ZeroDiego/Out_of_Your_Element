@@ -59,6 +59,34 @@ bool UElementGameplayAbilityRangedSpellBase::GetSpellLocation(const AActor* Cast
 	return false;
 }
 
+void UElementGameplayAbilityRangedSpellBase::ActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData
+)
+{
+	// TODO Implement CanActivateAbility instead!
+	if (ActorInfo->AvatarActor.IsValid())
+	{
+		const AActor* Caster = ActorInfo->AvatarActor.Get();
+		if (FVector Location; GetSpellLocation(Caster, Location))
+		{
+			if (
+				const double DistSquared = FVector::DistSquared(Caster->GetActorLocation(), Location);
+				DistSquared < (MinRangedSpellPlacementRange * MinRangedSpellPlacementRange) ||
+				DistSquared > (MaxRangedSpellPlacementRange * MaxRangedSpellPlacementRange)
+			)
+			{
+				EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+				return;
+			}
+		}
+	}
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+}
+
 void UElementGameplayAbilityRangedSpellBase::CastSpell(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
@@ -66,14 +94,29 @@ void UElementGameplayAbilityRangedSpellBase::CastSpell(
 	const FGameplayEventData* TriggerEventData
 )
 {
-	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
 	if (!ActorInfo->AvatarActor.IsValid())
+	{
 		return;
+	}
+
+	const AActor* Caster = ActorInfo->AvatarActor.Get();
 
 	FVector Location;
-	if (!GetSpellLocation(ActorInfo->AvatarActor.Get(), Location))
+	if (!GetSpellLocation(Caster, Location))
+	{
 		return;
+	}
+
+	if (
+		const double DistSquared = FVector::DistSquared(Caster->GetActorLocation(), Location);
+		DistSquared < (MinRangedSpellPlacementRange * MinRangedSpellPlacementRange) ||
+		DistSquared > (MaxRangedSpellPlacementRange * MaxRangedSpellPlacementRange)
+	)
+	{
+		return;
+	}
+
+	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	CastSpellAtLocation(
 		Handle,

@@ -26,11 +26,21 @@ struct FDamageTaken
 	AActor* Cause = nullptr; // Example: Fireball
 };
 
+USTRUCT(BlueprintType)
 struct FResistance
 {
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DamageResistancePercent = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DamageResistanceFixed = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float HealPercent = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float HealFixed = 0;
 
 	friend bool operator==(const FResistance& Lhs, const FResistance& RHS)
@@ -128,6 +138,9 @@ public:
 		OUT float& OutHealPercent,
 		OUT float& OutHealFixed
 	) const;
+
+	UFUNCTION(BlueprintCallable, DisplayName="GetResistanceByTag")
+	FResistance BP_GetResistanceByTag(const FGameplayTag& DamageType) const;
 
 protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;

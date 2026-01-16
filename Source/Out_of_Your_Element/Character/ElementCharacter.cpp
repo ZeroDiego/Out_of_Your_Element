@@ -121,11 +121,22 @@ void AElementCharacter::BeginPlay()
 	{
 		if (Ability)
 		{
-			ElementAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability));
+			if (FGameplayAbilitySpec Spec = FGameplayAbilitySpec(Ability);
+				!ElementAbilitySystemComponent->GetActivatableAbilities().FindByPredicate(
+					[Ability](const FGameplayAbilitySpec& ExistingAbility)
+					{
+						return ExistingAbility.Ability.IsA(Ability);
+					}
+				)
+			)
+			{
+				ElementAbilitySystemComponent->GiveAbility(Spec);
+			}
 		}
 	}
 
 	DoCycleElement(0);
+	MouseLook();
 }
 
 void AElementCharacter::PossessedBy(AController* NewController)
@@ -331,19 +342,29 @@ void AElementCharacter::MouseLook()
 					GetActorLocation(), SpellLocation
 				);
 
-				FRotator CurrentRotation = GetActorRotation();
-				CurrentRotation.Yaw = LookRotation.Yaw;
-				SetActorRotation(CurrentRotation);
+				DoLook(LookRotation.Yaw);
 
 				if (AimMarker)
 				{
 					if (UElementGameplayAbilityRangedSpellBase::CanPlace(SpellHitResult))
 					{
-						AimMarker->Activate();
-						AimMarker->SetWorldLocation(SpellLocation);
+						if (
+							const double DistSquared = FVector::DistSquared(GetActorLocation(), SpellLocation);
+							DistSquared >= (MinRangedSpellPlacementRange * MinRangedSpellPlacementRange) &&
+							DistSquared <= (MaxRangedSpellPlacementRange * MaxRangedSpellPlacementRange)
+						)
+						{
+							AimMarker->Activate();
+							AimMarker->SetWorldLocation(SpellLocation);
 
-						const auto MarkerRotation = FRotationMatrix::MakeFromZ(SpellHitResult.ImpactNormal).Rotator();
-						AimMarker->SetWorldRotation(MarkerRotation);
+							const auto MarkerRotation = FRotationMatrix::MakeFromZ(SpellHitResult.ImpactNormal).
+								Rotator();
+							AimMarker->SetWorldRotation(MarkerRotation);
+						}
+						else
+						{
+							AimMarker->DeactivateImmediate();
+						}
 					}
 					else
 					{
@@ -364,8 +385,21 @@ void AElementCharacter::MouseLook()
 
 void AElementCharacter::Look(const FInputActionValue& Value)
 {
-	const FVector2D LookAxisVector = Value.Get<FVector2D>();
-	DoLook(LookAxisVector.X);
+	if (const AController* CurrentController = GetController();
+		CurrentController && CurrentController->IsLocalPlayerController())
+	{
+		FVector2D LookAxisVector = Value.Get<FVector2D>();
+		if (LookAxisVector.SquaredLength() < 0.5 * 0.5)
+			return;
+
+		LookAxisVector = LookAxisVector.GetSafeNormal();
+		const float Yaw = FMath::RadiansToDegrees(
+			FMath::Atan2(LookAxisVector.Y, LookAxisVector.X)
+		) + 90;
+
+		const double ControlYaw = CurrentController->GetControlRotation().Yaw;
+		DoLook(Yaw - ControlYaw);
+	}
 }
 
 void AElementCharacter::CycleElement(const FInputActionValue& Value)
@@ -507,7 +541,7 @@ void AElementCharacter::DoLook(const float Yaw)
 	if (GetController()->IsLocalPlayerController())
 	{
 		FRotator Rotation = GetActorRotation();
-		Rotation.Yaw = FMath::Fmod(Rotation.Yaw + Yaw, 360);
+		Rotation.Yaw = FMath::Fmod(Yaw, 360);
 		SetActorRotation(Rotation);
 	}
 }

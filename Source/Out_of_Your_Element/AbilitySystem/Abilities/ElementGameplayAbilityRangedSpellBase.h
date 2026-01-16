@@ -8,6 +8,10 @@
 class AElementProjectileBase;
 class UNiagaraSystem;
 
+static constexpr float MinRangedSpellPlacementRange = 150.0f;
+
+static constexpr float MaxRangedSpellPlacementRange = 750.0f;
+
 UCLASS(Abstract)
 class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbilityRangedSpellBase : public UElementGameplayAbilitySpellBase
 {
@@ -23,6 +27,13 @@ public:
 	static bool GetSpellLocation(const AActor* Caster, OUT FVector& OutLocation);
 
 protected:
+	virtual void ActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
+
 	virtual void CastSpell(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
