@@ -12,6 +12,21 @@ static constexpr float MinRangedSpellPlacementRange = 150.0f;
 
 static constexpr float MaxRangedSpellPlacementRange = 750.0f;
 
+USTRUCT()
+struct FTargetLocationData : public FGameplayAbilityTargetData
+{
+	GENERATED_BODY()
+
+public:
+	FHitResult HitResult = FHitResult();
+
+	virtual bool HasHitResult() const override;
+
+	virtual const FHitResult* GetHitResult() const override;
+	
+	virtual UScriptStruct* GetScriptStruct() const override;
+};
+
 UCLASS(Abstract)
 class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbilityRangedSpellBase : public UElementGameplayAbilitySpellBase
 {

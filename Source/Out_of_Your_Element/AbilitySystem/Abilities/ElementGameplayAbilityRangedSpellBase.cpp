@@ -6,6 +6,21 @@
 
 static const FName NoPlaceTag = TEXT("Collision.Spell.BlockPlacement");
 
+bool FTargetLocationData::HasHitResult() const
+{
+	return true;
+}
+
+const FHitResult* FTargetLocationData::GetHitResult() const
+{
+	return &HitResult;
+}
+
+UScriptStruct* FTargetLocationData::GetScriptStruct() const
+{
+	return StaticStruct();
+}
+
 FName UElementGameplayAbilityRangedSpellBase::GetNoPlaceTag()
 {
 	return NoPlaceTag;
@@ -84,6 +99,29 @@ void UElementGameplayAbilityRangedSpellBase::ActivateAbility(
 		}
 	}
 
+	const AActor* Caster = ActorInfo->AvatarActor.Get();
+
+	if (!TriggerEventData)
+	{
+		// TODO FIX THIS BAD HACK :skull:
+		FGameplayEventData* GameplayEventData = new FGameplayEventData();
+
+		FTargetLocationData* DataPtr = new FTargetLocationData();
+		TraceSpell(Caster, DataPtr->HitResult);
+
+		if (CanPlace(DataPtr->HitResult))
+		{
+			GameplayEventData->TargetData.Add(DataPtr);
+		}
+		else
+		{
+			delete DataPtr;
+		}
+
+		Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, GameplayEventData);
+		return;
+	}
+
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
@@ -101,8 +139,32 @@ void UElementGameplayAbilityRangedSpellBase::CastSpell(
 
 	const AActor* Caster = ActorInfo->AvatarActor.Get();
 
+	bool FoundLocation = false;
 	FVector Location;
-	if (!GetSpellLocation(Caster, Location))
+	if (TriggerEventData)
+	{
+		for (const TSharedPtr<FGameplayAbilityTargetData>& TargetData : TriggerEventData->TargetData.Data)
+		{
+			if (
+				TargetData.IsValid() &&
+				TargetData->HasHitResult() &&
+				TargetData->GetScriptStruct() == FTargetLocationData::StaticStruct()
+			)
+			{
+				Location = TargetData->GetHitResult()->ImpactPoint;
+				FoundLocation = true;
+				break;
+			}
+		}
+	}
+
+	if (FoundLocation)
+	{
+		delete TriggerEventData;
+		TriggerEventData = nullptr;
+	}
+
+	if (!FoundLocation && !GetSpellLocation(Caster, Location))
 	{
 		return;
 	}
