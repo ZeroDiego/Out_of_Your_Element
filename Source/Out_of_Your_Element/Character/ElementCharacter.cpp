@@ -134,7 +134,6 @@ void AElementCharacter::BeginPlay()
 	}
 
 	DoCycleElement(0);
-	MouseLook();
 }
 
 void AElementCharacter::PossessedBy(AController* NewController)
@@ -156,15 +155,12 @@ void AElementCharacter::PossessedBy(AController* NewController)
 			Handle,
 			FTimerDelegate::CreateWeakLambda(this, [this]
 			{
-				MouseLook();
-
 				if (CursorWidgetRef)
 					CursorWidgetRef->AddToViewport(1);
 
-				if (AimMarker)
-					AimMarker->Activate();
+				MouseLook();
 			}),
-			1.0f,
+			5.0f,
 			false
 		);
 	}
