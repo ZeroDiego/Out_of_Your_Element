@@ -74,6 +74,33 @@ bool UElementGameplayAbilityRangedSpellBase::GetSpellLocation(const AActor* Cast
 	return false;
 }
 
+bool UElementGameplayAbilityRangedSpellBase::CanActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags,
+	FGameplayTagContainer* OptionalRelevantTags
+) const
+{
+	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+		return false;
+
+	const AActor* Caster = ActorInfo->AvatarActor.Get();
+	if (FVector Location; GetSpellLocation(Caster, Location))
+	{
+		if (
+			const double DistSquared = FVector::DistSquared(Caster->GetActorLocation(), Location);
+			DistSquared < (MinRangedSpellPlacementRange * MinRangedSpellPlacementRange) ||
+			DistSquared > (MaxRangedSpellPlacementRange * MaxRangedSpellPlacementRange)
+		)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void UElementGameplayAbilityRangedSpellBase::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
@@ -81,24 +108,6 @@ void UElementGameplayAbilityRangedSpellBase::ActivateAbility(
 	const FGameplayEventData* TriggerEventData
 )
 {
-	// TODO Implement CanActivateAbility instead!
-	if (ActorInfo->AvatarActor.IsValid())
-	{
-		const AActor* Caster = ActorInfo->AvatarActor.Get();
-		if (FVector Location; GetSpellLocation(Caster, Location))
-		{
-			if (
-				const double DistSquared = FVector::DistSquared(Caster->GetActorLocation(), Location);
-				DistSquared < (MinRangedSpellPlacementRange * MinRangedSpellPlacementRange) ||
-				DistSquared > (MaxRangedSpellPlacementRange * MaxRangedSpellPlacementRange)
-			)
-			{
-				EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-				return;
-			}
-		}
-	}
-
 	const AActor* Caster = ActorInfo->AvatarActor.Get();
 
 	if (!TriggerEventData)

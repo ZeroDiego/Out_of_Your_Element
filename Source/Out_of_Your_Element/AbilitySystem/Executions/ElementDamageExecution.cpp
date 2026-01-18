@@ -19,7 +19,8 @@ bool FindAnyExact(const FGameplayTagContainer& Target, const FGameplayTagContain
 
 void UElementDamageExecution::Execute_Implementation(
 	const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-	FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+	FGameplayEffectCustomExecutionOutput& OutExecutionOutput
+) const
 {
 	Super::Execute_Implementation(ExecutionParams, OutExecutionOutput);
 
@@ -47,9 +48,13 @@ void UElementDamageExecution::Execute_Implementation(
 
 	if (!DamageAttribute)
 	{
-		UE_LOG(LogAbilitySystemComponent, Error, TEXT(
-			       "An elemental damage was triggered without damage? Make sure the Damage Attribute is set as a modifier!"
-		       ));
+		UE_LOG(
+			LogAbilitySystemComponent,
+			Error,
+			TEXT(
+				"Elemental damage was triggered without damage? Make sure the Damage Attribute is set as a modifier!"
+			)
+		);
 
 		return;
 	}
@@ -87,7 +92,8 @@ void UElementDamageExecution::Execute_Implementation(
 		HealFixed
 	);
 
-	const float TotalDamage = Damage * (1.0f - DamageResistancePercent) - DamageResistanceFixed
+	const float TotalDamage =
+		Damage * (1.0f - DamageResistancePercent) - DamageResistanceFixed
 		- (Damage * HealPercent + HealFixed);
 
 	if (FMath::IsNearlyZero(Damage, .01f))

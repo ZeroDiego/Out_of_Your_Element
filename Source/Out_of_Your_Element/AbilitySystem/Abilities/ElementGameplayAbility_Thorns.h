@@ -24,7 +24,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Thorns")
 	float ThornLifespan = 5.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Thorns")
+	UPROPERTY(EditAnywhere, Category="Thorns")
 	TSubclassOf<class AElementThorn> AThornClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Centimeters"), Category="Thorns Level 2")

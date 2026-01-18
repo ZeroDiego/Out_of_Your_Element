@@ -15,7 +15,7 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbilityProjectileSpellBase : publi
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Element Ability Projectile")
+	UPROPERTY(EditDefaultsOnly, Category="Element Ability Projectile")
 	TSubclassOf<AElementProjectileBase> ProjectileClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Centimeters"), Category="Element Ability Projectile")
@@ -29,5 +29,5 @@ protected:
 		const FGameplayEventData* TriggerEventData
 	) override;
 
-	void ShootProjectile(const FTransform& Transform, int Level) const;
+	void ShootProjectile(const FTransform& Transform, AActor* Caster = nullptr, int Level = 1) const;
 };

@@ -16,7 +16,7 @@ void UElementGameplayAbility_Freeze::CastSpell(
 {
 	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (AElementCharacterBase* Caster = Cast<AElementCharacterBase>(GetAvatarActorFromActorInfo()))
+	if (AElementCharacterBase* Caster = Cast<AElementCharacterBase>(ActorInfo->AvatarActor.Get()))
 	{
 		static const TArray<TEnumAsByte<EObjectTypeQuery>> FreezeTypes = {
 			UEngineTypes::ConvertToObjectType(ECC_Pawn)

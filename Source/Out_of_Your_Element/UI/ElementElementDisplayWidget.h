@@ -10,6 +10,10 @@ class OUT_OF_YOUR_ELEMENT_API UElementElementDisplayWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditDefaultsOnly, meta=(Units="Degrees"), Category="ElementDisplayWidget")
+	float RotationSpeed = 270;
+
 private:
 	UPROPERTY(BlueprintReadOnly, meta=(AllowPrivateAccess=true))
 	bool bIsSpinning = false;

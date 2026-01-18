@@ -1,17 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "NiagaraComponent.h"
-#include "CoreMinimal.h"
-#include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
+
 #include "ElementCharacterBase.h"
 #include "InputAction.h"
-#include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "InputActionValue.h"
+#include "Out_of_Your_Element/AbilitySystem/Element.h"
 #include "ElementCharacter.generated.h"
-
 
 class UInputAction;
 
@@ -141,7 +136,7 @@ public:
 	UAnimMontage* HeavyAttackMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UNiagaraComponent* AimMarker;
+	class UNiagaraComponent* AimMarker;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="XP")
 	TMap<FGameplayTag, FLevelUpData> ElementLevelUpMap;
@@ -155,6 +150,7 @@ public:
 	bool IsBaseAttackHeld = false;
 	bool IsHeavyAttackHeld = false;
 	bool IsSpecialAttackHeld = false;
+	double LastScrollTime = 0;
 
 protected:
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -192,10 +188,10 @@ private:
 	UUserWidget* CursorWidgetRef;
 
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* CameraRef;
+	class UCameraComponent* Camera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess))
-	USpringArmComponent* CameraBoom;
+	class USpringArmComponent* CameraArm;
 
 	UPROPERTY(VisibleAnywhere)
 	int ActiveElementIndex;
@@ -205,7 +201,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="XP", meta=(AllowPrivateAccess))
 	TMap<FGameplayTag, FExperience> ElementXPMap;
-	
+
 	FTimerHandle RecastTimerHandle;
 
 public:
@@ -249,7 +245,6 @@ private:
 	void MouseLook();
 	void Look(const FInputActionValue& Value);
 	void CycleElement(const FInputActionValue& Value);
-	float LastScrollTime = -9999.f;
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Input")

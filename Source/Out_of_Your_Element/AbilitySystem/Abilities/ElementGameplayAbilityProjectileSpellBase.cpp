@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ElementGameplayAbilityProjectileSpellBase.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
@@ -18,7 +18,7 @@ void UElementGameplayAbilityProjectileSpellBase::CastSpell(
 {
 	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (const AActor* Caster = GetAvatarActorFromActorInfo())
+	if (AActor* Caster = ActorInfo->AvatarActor.Get())
 	{
 		const FVector Offset = Caster->GetActorForwardVector() * ProjectileSpawnOffset;
 		const FVector Location = Caster->GetActorLocation() + Offset;
@@ -26,12 +26,13 @@ void UElementGameplayAbilityProjectileSpellBase::CastSpell(
 		const FTransform Transform(Rotation, Location);
 		const int Level = GetAbilityLevel(Handle, ActorInfo);
 
-		ShootProjectile(Transform, Level);
+		ShootProjectile(Transform, Caster, Level);
 	}
 }
 
 void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(
 	const FTransform& Transform,
+	AActor* Caster,
 	const int Level
 ) const
 {
@@ -41,7 +42,7 @@ void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(
 	{
 		Projectile->Level = Level;
 
-		if (AActor* Caster = GetAvatarActorFromActorInfo())
+		if (Caster)
 		{
 			Projectile->Caster = Caster;
 			Projectile->ProjectileSphereComponent->IgnoreActorWhenMoving(Caster, true);
@@ -61,7 +62,7 @@ void UElementGameplayAbilityProjectileSpellBase::ShootProjectile(
 				BaseDamage
 			);
 
-			Projectile->GameplayEffectSpecHandle = SpecHandle;
+			Projectile->DamageGameplayEffectSpecHandle = SpecHandle;
 		}
 
 		UGameplayStatics::FinishSpawningActor(Projectile, Transform);

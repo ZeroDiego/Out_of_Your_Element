@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ElementGameplayAbility_WaterGun.h"
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 
@@ -13,7 +12,7 @@ void UElementGameplayAbility_WaterGun::CastSpell(
 {
 	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (const AActor* Caster = GetAvatarActorFromActorInfo())
+	if (AActor* Caster = ActorInfo->AvatarActor.Get())
 	{
 		const float StepAngle = Spread / ProjectileCount;
 		const int LeftSteps = ProjectileCount / 2;
@@ -33,7 +32,7 @@ void UElementGameplayAbility_WaterGun::CastSpell(
 			const FVector Location = Caster->GetActorLocation() + Offset;
 			const FRotator Rotation = Forward.Rotation();
 			const FTransform Transform(Rotation, Location);
-			ShootProjectile(Transform, Level);
+			ShootProjectile(Transform, Caster, Level);
 
 			Forward = Forward.RotateAngleAxis(
 				StepAngle,

@@ -14,26 +14,26 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_FireZone : public UElement
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, Category="FireZone")
 	TSubclassOf<AElementZoneBase> FireZoneClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="FireZone")
 	float FireZoneDamageDuration = 4;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="FireZone")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Centimeters"), Category="FireZone")
 	float FireZoneRadius = 250;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="FireZone")
 	float FireZoneLifeSpan = 10;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="FireZone Level 2")
-	float AdditionalFireZoneRadius = 250;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="FireZone Level 2")
-	UNiagaraSystem* LargeFireZoneVfx;
-
-	UPROPERTY(EditDefaultsOnly, Category="VFX")
+	UPROPERTY(EditDefaultsOnly, Category="FireZone")
 	UNiagaraSystem* FireZoneVfx;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Centimeters"), Category="FireZone Level 2")
+	float AdditionalFireZoneRadius = 125;
+
+	UPROPERTY(EditDefaultsOnly, Category="FireZone Level 2")
+	UNiagaraSystem* LargeFireZoneVfx;
 
 protected:
 	virtual void CastSpellAtLocation(

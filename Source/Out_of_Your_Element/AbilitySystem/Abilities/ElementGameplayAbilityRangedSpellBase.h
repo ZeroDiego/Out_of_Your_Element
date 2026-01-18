@@ -23,7 +23,7 @@ public:
 	virtual bool HasHitResult() const override;
 
 	virtual const FHitResult* GetHitResult() const override;
-	
+
 	virtual UScriptStruct* GetScriptStruct() const override;
 };
 
@@ -42,6 +42,14 @@ public:
 	static bool GetSpellLocation(const AActor* Caster, OUT FVector& OutLocation);
 
 protected:
+	virtual bool CanActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags = nullptr,
+		const FGameplayTagContainer* TargetTags = nullptr,
+		FGameplayTagContainer* OptionalRelevantTags = nullptr
+	) const override;
+
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,

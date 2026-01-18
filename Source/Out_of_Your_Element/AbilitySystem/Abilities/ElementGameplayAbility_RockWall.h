@@ -13,7 +13,7 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_RockWall : public UElement
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, Category="RockWall")
 	TSubclassOf<AElementWallBase> ElementWallBase;
 
 protected:

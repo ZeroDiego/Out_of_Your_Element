@@ -102,7 +102,7 @@ void UElementGameplayAbility_Thorns::CastSpell(
 {
 	Super::CastSpell(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (const AElementCharacterBase* Caster = Cast<AElementCharacterBase>(GetAvatarActorFromActorInfo()))
+	if (const AElementCharacterBase* Caster = Cast<AElementCharacterBase>(ActorInfo->AvatarActor.Get()))
 	{
 		const FVector ActorLocation = Caster->GetActorLocation();
 		const float Height = ActorLocation.Z - Caster->GetSimpleCollisionHalfHeight();

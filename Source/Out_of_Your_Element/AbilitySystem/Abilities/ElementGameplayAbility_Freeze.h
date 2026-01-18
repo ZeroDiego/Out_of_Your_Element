@@ -11,19 +11,19 @@ class OUT_OF_YOUR_ELEMENT_API UElementGameplayAbility_Freeze : public UElementGa
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Centimeters"), Category="Freeze")
 	float FreezeRadius = 500;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
+	UPROPERTY(EditDefaultsOnly, Category="Freeze")
 	TSubclassOf<UGameplayEffect> FreezeGameplayEffectClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze")
+	UPROPERTY(EditDefaultsOnly, Category="Freeze")
 	UNiagaraSystem* FreezeActivateParticle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze Level 2")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Centimeters"), Category="Freeze Level 2")
 	float AdditionalFreezeRadius = 250;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Freeze Level 2")
+	UPROPERTY(EditDefaultsOnly, Category="Freeze Level 2")
 	UNiagaraSystem* LargeFreezeActivateParticle;
 
 protected:

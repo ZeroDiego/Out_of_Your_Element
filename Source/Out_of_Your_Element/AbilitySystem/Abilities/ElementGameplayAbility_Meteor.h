@@ -16,7 +16,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
 	FVector MeteorSpawnOffset = FVector(0, 0, 5000);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor")
+	UPROPERTY(EditDefaultsOnly, Category="Meteor")
 	TSubclassOf<class AElementMeteor> MeteorClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor Level 2")
@@ -25,10 +25,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor Level 2")
 	int MeteorCount = 3;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Unit="Centimeter"), Category="Meteor Level 2")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Unit="Centimeters"), Category="Meteor Level 2")
 	float MeteorSpacing = 500.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Meteor Level 2")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta=(Units="Seconds"), Category="Meteor Level 2")
 	float MeteorSpawnDelay = 0.25f;
 
 protected:
