@@ -81,9 +81,6 @@ void UElementGameplayAbilitySpellBase::CastSpell(
 	const FGameplayEventData* TriggerEventData
 )
 {
-	if (!ActorInfo->AvatarActor.IsValid())
-		return;
-
 	const AActor* Caster = ActorInfo->AvatarActor.Get();
 
 	UGameplayStatics::PlaySoundAtLocation(

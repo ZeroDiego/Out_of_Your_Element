@@ -29,5 +29,5 @@ protected:
 		const FGameplayEventData* TriggerEventData
 	) override;
 
-	void ShootProjectile(const FTransform& Transform, int Level) const;
+	void ShootProjectile(const FTransform& Transform, AActor* Caster = nullptr, int Level = 1) const;
 };
