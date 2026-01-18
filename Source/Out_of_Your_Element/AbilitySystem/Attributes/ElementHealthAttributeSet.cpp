@@ -5,7 +5,6 @@
 #include "GameplayEffectExtension.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 
-// TODO Test this thoroughly
 void UElementHealthAttributeSet::UpdateResistances(const FGameplayEffectSpec& Spec, const bool Removed)
 {
 	const float Modifier = Removed ? -1 : 1;
