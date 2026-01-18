@@ -49,7 +49,7 @@ void UElementGameplayAbilitySpellBase::ActivateAbility(
 	{
 		if (UElementAnimNotify* const ElementAnimNotify = Cast<UElementAnimNotify>(EventNotify.Notify))
 		{
-			const AActor* Caster = GetAvatarActorFromActorInfo();
+			const AActor* Caster = ActorInfo->AvatarActor.Get();
 			ElementAnimNotify->OnNotified.AddWeakLambda(
 				this,
 				[=, this](const AActor* Actor, const EAnimNotifyType NotifyType)
