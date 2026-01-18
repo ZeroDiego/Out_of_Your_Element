@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemInterface.h"
+#include "NiagaraComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/AI/ElementAICharacterBase.h"
@@ -10,6 +11,12 @@
 void AElementFireball::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (Level > 1)
+	{
+		ElementPoofVfx = UpgradedFireballPoofVfx;
+		ProjectileVfx->SetAsset(UpgradedFireballVfx);
+	}
 
 	if (!DotGameplayEffectSpecHandle.IsValid())
 	{

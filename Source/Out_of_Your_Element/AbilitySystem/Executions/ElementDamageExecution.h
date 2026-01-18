@@ -9,6 +9,8 @@ class UElementDamageExecution : public UGameplayEffectExecutionCalculation
 	GENERATED_BODY()
 
 public:
-	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-	                                    FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
+	virtual void Execute_Implementation(
+		const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+		FGameplayEffectCustomExecutionOutput& OutExecutionOutput
+	) const override;
 };

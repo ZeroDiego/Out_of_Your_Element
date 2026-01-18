@@ -1,25 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ElementProjectileBase.h"
 
 #include "AbilitySystemGlobals.h"
 #include "Components/SceneComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "NiagaraSystem.h"
+#include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
 #include "Out_of_Your_Element/Character/ElementCharacter.h"
 
-// Sets default values
 AElementProjectileBase::AElementProjectileBase()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	ProjectileSphereComponent = CreateDefaultSubobject<USphereComponent>(FName("ProjectileSphereComponent"));
 	RootComponent = ProjectileSphereComponent;
-	ProjectileSphereComponent->SetRelativeScale3D(ProjectileScale);
 	ProjectileSphereComponent->SetCollisionResponseToAllChannels(ECR_Block);
 	ProjectileSphereComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);
 	ProjectileSphereComponent->SetCollisionObjectType(ECC_GameTraceChannel1);
@@ -28,13 +23,10 @@ AElementProjectileBase::AElementProjectileBase()
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->InitialSpeed = ProjectileInitialSpeed;
 	ProjectileMovement->MaxSpeed = ProjectileMaxSpeed;
-	ProjectileMovement->ProjectileGravityScale = GravityScale;
 	ProjectileMovement->SetPlaneConstraintEnabled(true); // Constraint set in begin play
 
-	// Create the Niagara component
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
-	NiagaraComponent->SetupAttachment(RootComponent);
-	NiagaraComponent->bAutoActivate = false; // We activate it in BeginPlay
+	ProjectileVfx = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ProjectileVFX"));
+	ProjectileVfx->SetupAttachment(RootComponent);
 
 	OnActorHit.AddDynamic(this, &AElementProjectileBase::OnHit);
 }
@@ -43,17 +35,17 @@ void AElementProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!GameplayEffectSpecHandle.IsValid() && DamageGameplayEffect)
+	if (!DamageGameplayEffectSpecHandle.IsValid() && DamageGameplayEffect)
 	{
 		if (const UGameplayEffect* DamageEffectCDO = DamageGameplayEffect.GetDefaultObject())
 		{
 			FGameplayEffectContext* EffectContext = UAbilitySystemGlobals::Get().AllocGameplayEffectContext();
 
-			GameplayEffectSpecHandle = FGameplayEffectSpecHandle(
+			DamageGameplayEffectSpecHandle = FGameplayEffectSpecHandle(
 				new FGameplayEffectSpec(DamageEffectCDO, FGameplayEffectContextHandle(EffectContext))
 			);
 
-			GameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
+			DamageGameplayEffectSpecHandle.Data->SetSetByCallerMagnitude(
 				ElementGameplayTags::Abilities_Parameters_Damage,
 				Damage
 			);
@@ -81,7 +73,7 @@ void AElementProjectileBase::DoProjectileHit(const FProjectileHitEvent& PreEvent
 
 	if (const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(HitActor))
 	{
-		AbilitySystemInterface->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(GameplayEffectSpecHandle);
+		AbilitySystemInterface->GetAbilitySystemComponent()->BP_ApplyGameplayEffectSpecToSelf(DamageGameplayEffectSpecHandle);
 	}
 
 	if (const AElementCharacterBase* ElementCharacterBase = Cast<AElementCharacterBase>(HitActor))

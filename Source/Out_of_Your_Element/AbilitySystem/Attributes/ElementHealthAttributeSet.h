@@ -1,6 +1,7 @@
-﻿#pragma once
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CoreMinimal.h"
+#pragma once
+
 #include "ElementAttributeSet.h"
 #include "AbilitySystemComponent.h"
 #include "Out_of_Your_Element/AbilitySystem/Executions/ElementDamageExecution.h"

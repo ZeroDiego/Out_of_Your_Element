@@ -1,17 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ElementCharacter.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"
 #include "Out_of_Your_Element/Projectile/ElementProjectileBase.h"
 #include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "Out_of_Your_Element/AbilitySystem/Attributes/ElementHealthAttributeSet.h"
 #include "InputActionValue.h"
 #include "NiagaraComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/InputDeviceSubsystem.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Out_of_Your_Element/ElementGameplayTags.h"
@@ -20,22 +20,20 @@
 
 AElementCharacter::AElementCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("Camera Boom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->SetUsingAbsoluteRotation(true);
-	CameraBoom->TargetArmLength = TargetArmLength;
-	CameraBoom->SetRelativeRotation(CameraRotation);
-	CameraBoom->bDoCollisionTest = false;
+	CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
+	CameraArm->SetupAttachment(RootComponent);
+	CameraArm->SetUsingAbsoluteRotation(true);
+	CameraArm->TargetArmLength = TargetArmLength;
+	CameraArm->SetRelativeRotation(CameraRotation);
+	CameraArm->bDoCollisionTest = false;
 
-	CameraRef = CreateDefaultSubobject<UCameraComponent>(FName("Camera"));
-	CameraRef->bUsePawnControlRotation = false;
-	CameraRef->SetupAttachment(CameraBoom);
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera->bUsePawnControlRotation = false;
+	Camera->SetupAttachment(CameraArm);
 
 	AimMarker = CreateDefaultSubobject<UNiagaraComponent>(TEXT("AimMarker"));
 	AimMarker->SetupAttachment(RootComponent);
@@ -497,9 +495,11 @@ void AElementCharacter::Look(const FInputActionValue& Value)
 
 void AElementCharacter::CycleElement(const FInputActionValue& Value)
 {
-	if (GetWorld()->TimeSeconds - LastScrollTime > 0.25f)
+	if (const double RealTimeSeconds = GetWorld()->GetRealTimeSeconds();
+		RealTimeSeconds - LastScrollTime > 0.25f
+	)
 	{
-		LastScrollTime = GetWorld()->TimeSeconds;
+		LastScrollTime = RealTimeSeconds;
 		const float In = Value.Get<float>();
 		DoCycleElement(In > 0 ? FMath::CeilToInt(In) : FMath::FloorToInt(In));
 	}

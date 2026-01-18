@@ -21,6 +21,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Units="Centimeters"), Category="Fireball Level 2")
 	float SplashRadius = 250.0f;
 
+	UPROPERTY(EditDefaultsOnly, Category="Fireball Level 2")
+	UNiagaraSystem* UpgradedFireballVfx;
+
+	UPROPERTY(EditDefaultsOnly, Category="Fireball Level 2")
+	UNiagaraSystem* UpgradedFireballPoofVfx;
+
 	UPROPERTY(BlueprintReadWrite)
 	FGameplayEffectSpecHandle DotGameplayEffectSpecHandle;
 

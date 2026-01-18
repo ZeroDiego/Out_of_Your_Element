@@ -2,14 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameplayEffect.h"
-#include "GameplayEffectTypes.h"
-#include "GameFramework/Actor.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "NiagaraFunctionLibrary.h"
-#include "Components/ActorComponent.h"
-#include "Components/SphereComponent.h"
 #include "Out_of_Your_Element/Utillity/BlueprintUtility.h"
 #include "ElementProjectileBase.generated.h"
 
@@ -49,50 +42,44 @@ class OUT_OF_YOUR_ELEMENT_API AElementProjectileBase : public AActor
 public:
 	AElementProjectileBase();
 
-	UPROPERTY(EditAnywhere)
-	FVector ProjectileScale = FVector(1.0f, 1.0f, 1.0f);
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	float ProjectileInitialSpeed = 800.0f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	float ProjectileMaxSpeed = 8500.0f;
 
-	UPROPERTY(EditAnywhere)
-	float GravityScale = 0.0f;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	float LifeTime = 5.0f;
 
-	UPROPERTY(EditAnywhere)
-	FGameplayEffectSpecHandle GameplayEffectSpecHandle;
+	UPROPERTY(BlueprintReadWrite, Category="Projectile")
+	FGameplayEffectSpecHandle DamageGameplayEffectSpecHandle;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	TSubclassOf<UGameplayEffect> DamageGameplayEffect = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	float Damage = 25.0f;
 
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* ProjectileSphereComponent;
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
+	class UNiagaraSystem* ElementPoofVfx;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VFX")
-	UNiagaraSystem* ElementPoofVfx;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UNiagaraComponent* NiagaraComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	UProjectileMovementComponent* ProjectileMovement;
-
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="Projectile")
 	FOnProjectileHit OnProjectileHit;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Projectile")
 	AActor* Caster;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ExposeOnSpawn), Category="Projectile")
 	int Level = 1;
+
+	UPROPERTY(VisibleAnywhere)
+	class UNiagaraComponent* ProjectileVfx;
+
+	UPROPERTY(VisibleAnywhere)
+	class UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(VisibleAnywhere)
+	class USphereComponent* ProjectileSphereComponent;
 
 protected:
 	virtual void BeginPlay() override;

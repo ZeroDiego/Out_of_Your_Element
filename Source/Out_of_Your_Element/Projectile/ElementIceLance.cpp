@@ -1,6 +1,7 @@
 ﻿#include "ElementIceLance.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Out_of_Your_Element/Character/ElementCharacterBase.h"
 
@@ -21,7 +22,7 @@ void AElementIceLance::ShootIceLance(const FTransform& Transform, ACharacter* Ig
 	{
 		IceLance->Level = Level;
 		IceLance->CanSplit = false;
-		IceLance->GameplayEffectSpecHandle = GameplayEffectSpecHandle;
+		IceLance->DamageGameplayEffectSpecHandle = DamageGameplayEffectSpecHandle;
 
 		if (Caster)
 		{

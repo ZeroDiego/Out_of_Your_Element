@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "Out_of_Your_Element/AbilitySystem/ElementAbilitySystemComponent.h"

@@ -32,16 +32,16 @@ protected:
 		const FGameplayEventData* TriggerEventData
 	);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
+	UPROPERTY(EditDefaultsOnly, Category="Element Ability")
 	UAnimMontage* AbilityMontage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
+	UPROPERTY(EditDefaultsOnly, Category="Element Ability")
 	TSubclassOf<UGameplayEffect> CastingGameplayEffect;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
+	UPROPERTY(EditDefaultsOnly, Category="Element Ability")
 	TSubclassOf<UGameplayEffect> DamageGameplayEffect = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
+	UPROPERTY(EditDefaultsOnly, Category="Element Ability")
 	USoundBase* ActivationSound;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Element Ability")
