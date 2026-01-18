@@ -25,7 +25,7 @@ void UElementElementDisplayWidget::NativeTick(const FGeometry& MyGeometry, const
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (bIsSpinning && !RotateTowardsTarget(270, InDeltaTime))
+	if (bIsSpinning && !RotateTowardsTarget(RotationSpeed, InDeltaTime))
 		bIsSpinning = false;
 }
 
